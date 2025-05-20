@@ -34,7 +34,7 @@ Hosting: railway para backend y frontend
 
 El objetivo es construir una aplicación funcional (MVP) que resuelva esta necesidad de seguimiento de manera eficiente y centralizada, aprovechando servicios gratuitos para el despliegue inicial
 
-Como  experto en producto con conocimiento en desarrollo de aplicaciones crea el PRD correspondiente.
+Como experto en producto con conocimiento en desarrollo de aplicaciones crea el PRD correspondiente.
 ```
 
 ## Prompt 2: Solicitud de historias de usuario basadas en el PRD
@@ -46,13 +46,14 @@ Estoy de acuerdo con el PRD que me proporcionas, basado en este PRD y como exper
 ## Prompt 3: Solicitud de actualización de la ficha del proyecto
 
 ```
-basado en el PRD y las HUS creadas, redacta los 3 principales tickets
+basado en el PRD y las HUS creadas, redacta 0. Ficha del proyecto, este es mi repo: @https://github.com/jchara/AI4Devs-final.git 
+@readme.md 
 ```
 
 ## Prompt 4: Solicitud de modificación de la descripción breve del proyecto
 
 ```
-Dame una descripción breve del proyecto quisiera que fuera un poco mas cercana a la descripción que te pase inicialmente como requerimiento.
+Dame una descripción breve del proyecto, quisiera que fuera un poco mas cercana a la descripción que te pase inicialmente como requerimiento.
 ```
 
 ## Prompt 5: Solicitud de realización de la descripción general del producto
