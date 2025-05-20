@@ -989,113 +989,105 @@ jobs:
 ```mermaid
 erDiagram
     users {
-        integer id PK
-        varchar email UK "not null"
-        varchar password "not null"
-        varchar first_name
-        varchar last_name
-        varchar role "not null"
-        boolean is_active "not null"
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
-        timestamp last_login
+        int id PK
+        string email
+        string password
+        string first_name
+        string last_name
+        string role
+        bool is_active
+        datetime created_at
+        datetime updated_at
+        datetime last_login
     }
-
     developments {
-        integer id PK
-        varchar name "not null"
-        varchar description
-        varchar status "not null"
-        varchar jira_key UK
-        integer created_by FK "not null"
-        integer assigned_to FK
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
-        timestamp deployed_at
+        int id PK
+        string name
+        string description
+        string status
+        string jira_key
+        int created_by
+        int assigned_to
+        datetime created_at
+        datetime updated_at
+        datetime deployed_at
     }
-
     environments {
-        integer id PK
-        varchar name "not null" UK
-        varchar description
-        boolean is_active "not null"
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
+        int id PK
+        string name
+        string description
+        bool is_active
+        datetime created_at
+        datetime updated_at
     }
-
     development_environments {
-        integer id PK
-        integer development_id FK "not null"
-        integer environment_id FK "not null"
-        varchar status "not null"
-        timestamp deployed_at
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
+        int id PK
+        int development_id
+        int environment_id
+        string status
+        datetime deployed_at
+        datetime created_at
+        datetime updated_at
     }
-
     microservices {
-        integer id PK
-        varchar name "not null" UK
-        varchar description
-        varchar repository_url
-        boolean is_active "not null"
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
+        int id PK
+        string name
+        string description
+        string repository_url
+        bool is_active
+        datetime created_at
+        datetime updated_at
     }
-
     development_microservices {
-        integer id PK
-        integer development_id FK "not null"
-        integer microservice_id FK "not null"
-        varchar version "not null"
-        varchar changes "not null"
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
+        int id PK
+        int development_id
+        int microservice_id
+        string version
+        string changes
+        datetime created_at
+        datetime updated_at
     }
-
     database_scripts {
-        integer id PK
-        integer development_id FK "not null"
-        varchar name "not null"
-        varchar description
-        varchar script_type "not null"
-        text script_content "not null"
-        boolean is_executed "not null"
-        timestamp executed_at
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
+        int id PK
+        int development_id
+        string name
+        string description
+        string script_type
+        string script_content
+        bool is_executed
+        datetime executed_at
+        datetime created_at
+        datetime updated_at
     }
-
     config_files {
-        integer id PK
-        integer development_id FK "not null"
-        varchar name "not null"
-        varchar file_path "not null"
-        varchar file_type "not null"
-        text content "not null"
-        timestamp created_at "not null"
-        timestamp updated_at "not null"
+        int id PK
+        int development_id
+        string name
+        string file_path
+        string file_type
+        string content
+        datetime created_at
+        datetime updated_at
     }
-
     audit_logs {
-        integer id PK
-        integer user_id FK "not null"
-        varchar action "not null"
-        varchar entity_type "not null"
-        integer entity_id "not null"
-        jsonb changes "not null"
-        timestamp created_at "not null"
+        int id PK
+        int user_id
+        string action
+        string entity_type
+        int entity_id
+        string changes
+        datetime created_at
     }
 
-    users ||--o{ developments : "creates"
-    users ||--o{ developments : "assigned_to"
-    developments ||--o{ development_environments : "has"
-    environments ||--o{ development_environments : "contains"
-    developments ||--o{ development_microservices : "includes"
-    microservices ||--o{ development_microservices : "modified_in"
-    developments ||--o{ database_scripts : "contains"
-    developments ||--o{ config_files : "contains"
-    users ||--o{ audit_logs : "performs"
+    users ||--o{ developments : creates
+    users ||--o{ developments : assigned_to
+    developments ||--o{ development_environments : has
+    environments ||--o{ development_environments : contains
+    developments ||--o{ development_microservices : includes
+    microservices ||--o{ development_microservices : modified_in
+    developments ||--o{ database_scripts : contains
+    developments ||--o{ config_files : contains
+    users ||--o{ audit_logs : performs
 ```
 
 ### **3.2. Descripción de entidades principales:**
