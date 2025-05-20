@@ -1,12 +1,10 @@
-# Historial de Prompts
+# Historial de Prompts de back y front
 
-## Iteración 1 - Configuración Inicial del Proyecto
+## Prompt 1 - Configuración Inicial del Proyecto
 - Creación de la estructura base del proyecto
 - Configuración de README.md con instrucciones detalladas
 - Implementación de la arquitectura DDD
 - Configuración de Docker para PostgreSQL
-
-### Prompt Original
 ```
 Como desarrollador Senior, crea la base de un proyecto (cascaron), utilizando las siguientes tecnologías:
 
@@ -22,7 +20,14 @@ Node 20
 * implementar practicas DDD o TDD
 ```
 
-### Resultado
-- Creación de estructura base del proyecto
-- Documentación inicial
-- Próximos pasos: Configuración de Docker y creación de proyectos backend/frontend 
+## Prompt 2 - Configuración de Variables de Entorno
+- Creación y configuración del archivo .env
+- Actualización del docker-compose.yml para usar variables de entorno
+- Creación del archivo .env.example como plantilla
+```
+@docker-compose.yml 
+revisa mi archivo de docker y crea el archivo de .env y pasa las variables a allí, adicionalmente crea el archivo de ejemplo .env.example.
+```
+
+
+# Historial de Prompts documentación
