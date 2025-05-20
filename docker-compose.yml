@@ -2,14 +2,14 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16
     container_name: jcc-postgres
     environment:
-      POSTGRES_DB: JCC-APP
-      POSTGRES_USER: jcc-user
-      POSTGRES_PASSWORD: jcc-password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
