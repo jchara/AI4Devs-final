@@ -1,13 +1,7 @@
 # Lista de Prompts
 > Modelo de IA utilizado: Claude 3.7 Sonnet
 
-## Prompt 1: Solicitud de corrección de error de sintaxis en código
-
-```
-Hay un error de sintaxis en este código, ¿lo puedes ajustar?
-```
-
-## Prompt 2: Solicitud de creación de PRD para aplicación de seguimiento de desarrollos
+## Prompt 1: Solicitud de creación de PRD para aplicación de seguimiento de desarrollos
 
 ```
 Tengo esta necesidad, como desarrollador junior en un entorno de desarrollo de micro servicios me enfrento al desafío de rastrear el estado de múltiples desarrollos (asociados a HUS o Épicas de Jira) a través de diferentes ambientes (Desarrollo, QA, Producción). 
