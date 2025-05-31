@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:prod": "npx serve dist/frontend -s -n -l 3000",
+    "start:dev": "ng serve",
+    "start:prod": "npx serve dist/frontend/browser -s -n -l 3000",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
