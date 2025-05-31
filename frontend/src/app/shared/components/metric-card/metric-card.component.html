@@ -1,0 +1,25 @@
+<div class="metric-card" [class]="cardClass">
+  <div class="metric-content">
+    <div class="metric-header">
+      <div class="metric-icon" [style.background-color]="iconColor">
+        <ng-content select="[slot=icon]"></ng-content>
+      </div>
+      <h3 class="metric-title">{{ title }}</h3>
+    </div>
+    
+    <div class="metric-value">
+      <span class="value">{{ value }}</span>
+      <span class="change" [class.positive]="changeValue > 0" [class.negative]="changeValue < 0" *ngIf="changeValue !== undefined">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="changeValue > 0">
+          <path d="m7 14 5-5 5 5"/>
+        </svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="changeValue < 0">
+          <path d="m7 10 5 5 5-5"/>
+        </svg>
+        {{ Math.abs(changeValue) }}%
+      </span>
+    </div>
+    
+    <p class="metric-description" *ngIf="description">{{ description }}</p>
+  </div>
+</div>

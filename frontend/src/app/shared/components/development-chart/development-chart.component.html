@@ -1,0 +1,23 @@
+<div class="chart-container">
+  <div class="chart-wrapper" *ngIf="data && data.length > 0">
+    <!-- Por ahora un gráfico simple con barras CSS -->
+    <div class="simple-chart">
+      <div class="chart-bars">
+        <div 
+          class="chart-bar" 
+          *ngFor="let item of data"
+          [style.height.%]="getBarHeight(item.cantidad)"
+          [style.background-color]="item.color">
+          <span class="bar-value">{{ item.cantidad }}</span>
+        </div>
+      </div>
+      <div class="chart-labels">
+        <span class="chart-label" *ngFor="let item of data">{{ item.ambiente }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="no-data" *ngIf="!data || data.length === 0">
+    <p>No hay datos disponibles</p>
+  </div>
+</div>

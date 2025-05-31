@@ -1,0 +1,134 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  transition: var(--transition);
+  overflow-y: auto;
+  
+  @media (max-width: 768px) {
+    transform: translateX(-100%);
+    
+    &:not(.mobile-hidden) {
+      transform: translateX(0);
+    }
+  }
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--spacing-lg) 0;
+}
+
+.nav-items {
+  flex: 1;
+  padding: 0 var(--spacing-md);
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    border-radius: var(--border-radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+    
+    &:hover {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      transform: translateX(4px);
+    }
+    
+    &.active {
+      background-color: var(--color-primary);
+      color: white;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: -var(--spacing-md);
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background-color: var(--color-accent);
+        border-radius: 0 2px 2px 0;
+      }
+      
+      svg {
+        stroke: white;
+      }
+    }
+    
+    svg {
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    
+    .nav-text {
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  }
+}
+
+.sidebar-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+  
+  .version-info {
+    text-align: center;
+    
+    .version-text {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+  }
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 80;
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+// Animaciones para móvil
+@media (max-width: 768px) {
+  .sidebar {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .mobile-overlay {
+    animation: fadeIn 0.3s ease-out;
+  }
+}
+
+// Estados de hover mejorados
+.nav-item {
+  &:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  
+  &:active {
+    transform: translateX(2px);
+  }
+}

@@ -1,4 +1,4 @@
-# Lista de Prompts
+# Lista de Prompts para crear documentación de proyecto.
 > Modelo de IA utilizado: Claude 3.7 Sonnet
 
 ## Prompt 1: Solicitud de creación de PRD para aplicación de seguimiento de desarrollos

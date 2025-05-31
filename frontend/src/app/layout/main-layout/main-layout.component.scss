@@ -1,0 +1,59 @@
+.main-layout {
+  display: grid;
+  grid-template-areas: 
+    "header header"
+    "sidebar content";
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+  
+  @media (max-width: 768px) {
+    grid-template-areas: 
+      "header"
+      "content";
+    grid-template-columns: 1fr;
+  }
+}
+
+.main-content {
+  grid-area: content;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  margin-top: 64px; // Altura del header
+  
+  @media (max-width: 768px) {
+    margin-top: 0;
+    padding: var(--spacing-md);
+  }
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Ajustes para el header y sidebar
+app-header {
+  grid-area: header;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+app-sidebar {
+  grid-area: sidebar;
+  position: fixed;
+  top: 64px; // Debajo del header
+  left: 0;
+  height: calc(100vh - 64px);
+  z-index: 90;
+  
+  @media (max-width: 768px) {
+    top: 0;
+    height: 100vh;
+  }
+}

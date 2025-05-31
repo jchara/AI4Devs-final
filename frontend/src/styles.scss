@@ -1,4 +1,252 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Variables CSS por defecto (serán sobrescritas por el ThemeService)
+:root {
+  // Colores tema claro
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #F1F3F4;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --color-primary: #7D2BE3;
+  --color-accent: #66C6EA;
+  --border-color: #E0E0E0;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  
+  // Espaciado
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  // Border radius
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  
+  // Transiciones
+  --transition: all 0.3s ease;
+  --transition-fast: all 0.15s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--transition);
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Utilidades globales
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  
+  &.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+  }
+  
+  &.btn-accent {
+    background-color: var(--color-accent);
+    color: white;
+    
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+  }
+  
+  &.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    
+    &:hover {
+      background-color: var(--bg-secondary);
+    }
+  }
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+// Grid utilities
+.grid {
+  display: grid;
+  gap: var(--spacing-md);
+  
+  &.grid-cols-1 { grid-template-columns: 1fr; }
+  &.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  &.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  &.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  @media (max-width: 768px) {
+    &.grid-cols-2,
+    &.grid-cols-3,
+    &.grid-cols-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    &.grid-cols-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &.grid-cols-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+// Flex utilities
+.flex {
+  display: flex;
+  
+  &.items-center { align-items: center; }
+  &.items-start { align-items: flex-start; }
+  &.items-end { align-items: flex-end; }
+  &.justify-center { justify-content: center; }
+  &.justify-between { justify-content: space-between; }
+  &.justify-start { justify-content: flex-start; }
+  &.justify-end { justify-content: flex-end; }
+  &.flex-col { flex-direction: column; }
+  &.flex-wrap { flex-wrap: wrap; }
+  &.gap-sm { gap: var(--spacing-sm); }
+  &.gap-md { gap: var(--spacing-md); }
+  &.gap-lg { gap: var(--spacing-lg); }
+}
+
+// Responsivo
+.hidden-mobile {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.hidden-desktop {
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+// Estados de estado para desarrollos
+.estado-desarrollo {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  
+  &.desarrollo {
+    background-color: var(--color-accent);
+    color: white;
+  }
+  
+  &.en-qa {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  &.produccion {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  &.pendiente {
+    background-color: #FF9800;
+    color: white;
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Scrollbar personalizado
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}

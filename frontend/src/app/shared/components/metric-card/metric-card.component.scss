@@ -1,0 +1,140 @@
+.metric-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.metric-content {
+  padding: var(--spacing-lg);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  
+  .metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    
+    ::ng-deep svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+    }
+  }
+  
+  .metric-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.metric-value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  
+  .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  
+  .change {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 12px;
+    
+    &.positive {
+      color: #4CAF50;
+      background-color: rgba(76, 175, 80, 0.1);
+    }
+    
+    &.negative {
+      color: #F44336;
+      background-color: rgba(244, 67, 54, 0.1);
+    }
+    
+    svg {
+      flex-shrink: 0;
+    }
+  }
+}
+
+.metric-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+// Variantes de tarjetas
+.metric-card {
+  &.primary {
+    border-left: 4px solid var(--color-primary);
+  }
+  
+  &.accent {
+    border-left: 4px solid var(--color-accent);
+  }
+  
+  &.success {
+    border-left: 4px solid #4CAF50;
+  }
+  
+  &.warning {
+    border-left: 4px solid #FF9800;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .metric-content {
+    padding: var(--spacing-md);
+  }
+  
+  .metric-header {
+    .metric-icon {
+      width: 40px;
+      height: 40px;
+      
+      ::ng-deep svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    
+    .metric-title {
+      font-size: 12px;
+    }
+  }
+  
+  .metric-value .value {
+    font-size: 24px;
+  }
+}
