@@ -47,7 +47,7 @@ app-header {
 app-sidebar {
   grid-area: sidebar;
   position: fixed;
-  top: 64px; // Debajo del header
+  top: 64px;
   left: 0;
   height: calc(100vh - 64px);
   z-index: 90;

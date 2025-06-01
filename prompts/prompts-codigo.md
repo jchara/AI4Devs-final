@@ -77,3 +77,9 @@ Respondiendo a tus preguntas antes de realizar la integración del Dashboard:
 6. El avatar de usuario por el momento es solo visual, se podrán agregar funciones más adelante ya que aún no existe sistema de sesión de usuarios.
 ```
 
+## Prompt 5: Ajustar sidebar para evitar superposición con header - FRONTEND
+
+```
+Necesito ajustar el sidebar ya que el header no deja ver bien el menú, el primer item de dashboard no se ve.
+```
+

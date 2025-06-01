@@ -1,16 +1,18 @@
 .sidebar {
   width: 250px;
-  height: 100vh;
+  height: calc(100vh - 64px);
   background-color: var(--bg-primary);
   border-right: 1px solid var(--border-color);
   position: fixed;
   left: 0;
-  top: 0;
+  top: 64px;
   z-index: 90;
   transition: var(--transition);
   overflow-y: auto;
   
   @media (max-width: 768px) {
+    top: 0;
+    height: 100vh;
     transform: translateX(-100%);
     
     &:not(.mobile-hidden) {
@@ -28,7 +30,7 @@
 
 .nav-items {
   flex: 1;
-  padding: 0 var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md) 0;
   
   .nav-item {
     display: flex;
@@ -52,17 +54,6 @@
     &.active {
       background-color: var(--color-primary);
       color: white;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        left: -var(--spacing-md);
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background-color: var(--color-accent);
-        border-radius: 0 2px 2px 0;
-      }
       
       svg {
         stroke: white;
