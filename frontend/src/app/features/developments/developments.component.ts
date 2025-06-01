@@ -66,7 +66,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
 
   // UI
   isMobile = false;
-  displayedColumns: string[] = ['status', 'name', 'description', 'microservices', 'environment', 'updatedDate', 'actions'];
+  isTablet = false;
+  displayedColumns: string[] = ['status', 'name', 'description', 'microservices', 'environment', 'createdDate', 'updatedDate', 'actions'];
+  displayedColumnsTablet: string[] = ['status', 'name', 'microservices', 'environment', 'updatedDate', 'actions'];
 
   // Filtros
   searchControl = new FormControl('');
@@ -108,11 +110,16 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   private setupResponsiveLayout(): void {
+    // Observar múltiples breakpoints
     this.breakpointObserver
-      .observe([Breakpoints.Handset])
+      .observe([Breakpoints.Handset, Breakpoints.Tablet])
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        this.isMobile = result.matches;
+        const breakpoints = this.breakpointObserver.isMatched(Breakpoints.Handset);
+        const isTabletBreakpoint = this.breakpointObserver.isMatched(Breakpoints.Tablet) && !breakpoints;
+        
+        this.isMobile = breakpoints;
+        this.isTablet = isTabletBreakpoint;
       });
   }
 
@@ -183,7 +190,6 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       filteredData = filteredData.filter(dev =>
         dev.name.toLowerCase().includes(searchTerm) ||
         dev.description?.toLowerCase().includes(searchTerm) ||
-        dev.author.toLowerCase().includes(searchTerm) ||
         dev.microservices.some(ms => ms.name.toLowerCase().includes(searchTerm))
       );
     }
@@ -223,25 +229,13 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMicroserviceIcon(technology?: string): string {
-    switch (technology?.toLowerCase()) {
-      case 'nestjs':
-        return 'web';
-      case 'node.js':
-      case 'nodejs':
-        return 'code';
-      case 'python':
-        return 'smart_toy';
-      default:
-        return 'api';
-    }
-  }
-
   formatDate(date: Date): string {
     return new Intl.DateTimeFormat('es-ES', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     }).format(new Date(date));
   }
 

@@ -24,12 +24,12 @@ import {
 export class DevelopmentService {
 
   private mockMicroservices: Microservice[] = [
-    { id: '1', name: 'Auth Service', technology: 'NestJS', icon: 'nestjs' },
-    { id: '2', name: 'Payment API', technology: 'Node.js', icon: 'nodejs' },
-    { id: '3', name: 'User Service', technology: 'Python', icon: 'python' },
-    { id: '4', name: 'Notification Service', technology: 'NestJS', icon: 'nestjs' },
-    { id: '5', name: 'Analytics API', technology: 'Python', icon: 'python' },
-    { id: '6', name: 'File Service', technology: 'Node.js', icon: 'nodejs' }
+    { id: '1', name: 'Auth Service', technology: 'NestJS' },
+    { id: '2', name: 'Payment API', technology: 'Node.js' },
+    { id: '3', name: 'User Service', technology: 'Python' },
+    { id: '4', name: 'Notification Service', technology: 'NestJS' },
+    { id: '5', name: 'Analytics API', technology: 'Python' },
+    { id: '6', name: 'File Service', technology: 'Node.js' }
   ];
 
   private mockDevelopments: Development[] = [
@@ -40,7 +40,6 @@ export class DevelopmentService {
       environment: Environment.TESTING,
       createdDate: new Date('2024-01-10'),
       updatedDate: new Date('2024-01-15'),
-      author: 'Carlos Mendoza',
       description: 'Implementación de autenticación JWT con refresh tokens y 2FA',
       microservices: [this.mockMicroservices[0]],
       version: 'v2.1.0'
@@ -52,7 +51,6 @@ export class DevelopmentService {
       environment: Environment.PRODUCTION,
       createdDate: new Date('2024-01-05'),
       updatedDate: new Date('2024-01-14'),
-      author: 'Ana García',
       description: 'Integración con múltiples proveedores de pago',
       microservices: [this.mockMicroservices[1]],
       version: 'v1.5.2'
@@ -64,7 +62,6 @@ export class DevelopmentService {
       environment: Environment.DEVELOPMENT,
       createdDate: new Date('2024-01-08'),
       updatedDate: new Date('2024-01-13'),
-      author: 'Luis Rodriguez',
       description: 'Sistema completo de gestión de perfiles y preferencias',
       microservices: [this.mockMicroservices[2]],
       version: 'v3.0.0-beta'
@@ -76,7 +73,6 @@ export class DevelopmentService {
       environment: Environment.DEVELOPMENT,
       createdDate: new Date('2024-01-06'),
       updatedDate: new Date('2024-01-12'),
-      author: 'María López',
       description: 'Notificaciones en tiempo real multiplataforma',
       microservices: [this.mockMicroservices[3]],
       version: 'v1.0.0'
@@ -88,7 +84,6 @@ export class DevelopmentService {
       environment: Environment.TESTING,
       createdDate: new Date('2024-01-04'),
       updatedDate: new Date('2024-01-11'),
-      author: 'David Morales',
       description: 'Análisis de datos y métricas en tiempo real',
       microservices: [this.mockMicroservices[4]],
       version: 'v2.3.1'
@@ -100,7 +95,6 @@ export class DevelopmentService {
       environment: Environment.DEVELOPMENT,
       createdDate: new Date('2024-01-07'),
       updatedDate: new Date('2024-01-16'),
-      author: 'Sofia Ruiz',
       description: 'Upload, procesamiento y almacenamiento de archivos',
       microservices: [this.mockMicroservices[5]],
       version: 'v1.2.0'
@@ -112,7 +106,6 @@ export class DevelopmentService {
       environment: Environment.PRODUCTION,
       createdDate: new Date('2024-01-03'),
       updatedDate: new Date('2024-01-17'),
-      author: 'Roberto Silva',
       description: 'Conectores para sistemas externos empresariales',
       microservices: [this.mockMicroservices[0], this.mockMicroservices[1]],
       version: 'v1.8.0'
@@ -124,7 +117,6 @@ export class DevelopmentService {
       environment: Environment.TESTING,
       createdDate: new Date('2024-01-09'),
       updatedDate: new Date('2024-01-18'),
-      author: 'Elena Vega',
       description: 'IA para recomendaciones personalizadas',
       microservices: [this.mockMicroservices[4], this.mockMicroservices[2]],
       version: 'v0.9.0'
@@ -199,7 +191,6 @@ export class DevelopmentService {
         filteredDevelopments = filteredDevelopments.filter(d =>
           d.name.toLowerCase().includes(searchTerm) ||
           d.description?.toLowerCase().includes(searchTerm) ||
-          d.author.toLowerCase().includes(searchTerm) ||
           d.microservices.some(m => m.name.toLowerCase().includes(searchTerm))
         );
       }
@@ -210,10 +201,6 @@ export class DevelopmentService {
 
       if (filters.environment) {
         filteredDevelopments = filteredDevelopments.filter(d => d.environment === filters.environment);
-      }
-
-      if (filters.author) {
-        filteredDevelopments = filteredDevelopments.filter(d => d.author === filters.author);
       }
     }
 
@@ -314,11 +301,6 @@ export class DevelopmentService {
 
   getMicroservices(): Observable<Microservice[]> {
     return of(this.mockMicroservices).pipe(delay(200));
-  }
-
-  getAuthors(): Observable<string[]> {
-    const authors = [...new Set(this.mockDevelopments.map(d => d.author))];
-    return of(authors).pipe(delay(200));
   }
 
   createDevelopment(development: Omit<Development, 'id' | 'createdDate' | 'updatedDate'>): Observable<Development> {

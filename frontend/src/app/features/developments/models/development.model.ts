@@ -2,7 +2,6 @@ export interface Microservice {
   id: string;
   name: string;
   technology?: string;
-  icon?: string;
 }
 
 export interface Development {
@@ -12,7 +11,6 @@ export interface Development {
   environment: Environment;
   createdDate: Date;
   updatedDate: Date;
-  author: string;
   description?: string;
   microservices: Microservice[];
   version?: string;
@@ -52,7 +50,6 @@ export interface DevelopmentFilter {
   search?: string;
   status?: DevelopmentStatus | 'all';
   environment?: Environment;
-  author?: string;
 }
 
 // Pagination interface

@@ -28,14 +28,20 @@
 }
 
 // Legacy table styles - aplicando estilos directamente
+.table-scroll {
+  overflow-x: auto;
+}
+
 .developments-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   
   th, td {
     padding: var(--spacing-md);
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
   }
   
   th {
