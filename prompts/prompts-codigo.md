@@ -186,3 +186,68 @@ La tabla de @developments.component.html se ve blanca en modo oscuro y el desple
 Ten cuenta buenas prácticas tanto de diseño como de seguridad.
 Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero
 ```
+
+## Prompt 14: Resolución de problemas de presupuesto CSS y optimización - FRONTEND
+
+```
+Error de despliegue en Railway: el archivo developments.component.scss excede el límite de 8kB (tenía 10.81kB). Optimizar el CSS aplicando técnicas de reducción como eliminación de redundancias, simplificación de selectores y consolidación de reglas para cumplir con el budget de Angular.
+```
+
+## Prompt 15: Refactorización del modelo de datos - FRONTEND
+
+```
+Actualizar el modelo de datos eliminando campos innecesarios:
+- Remover campo `author` de la interfaz Development y datos mock
+- Remover campo `icon` de la interfaz Microservice y datos relacionados
+- Actualizar lógica de filtrado y métodos dependientes en development.service.ts
+```
+
+## Prompt 16: Mejoras en diseño de microservicios y fechas - FRONTEND
+
+```
+Implementar mejoras de UX en la vista de desarrollos:
+
+**Microservicios:**
+- Convertir texto simple a componentes mat-chip pequeños y compactos
+- Aplicar truncado con ellipsis para nombres largos usando ::ng-deep
+- Unificar diseño entre vistas desktop y móvil
+
+**Columnas de fecha:**
+- Dividir columna única en "Fecha Creación" y "Última Actualización"
+- Actualizar formato para incluir hora (DD/MM/YYYY, HH:MM)
+- Aplicar cambios tanto en tabla de desarrollos como dashboard
+```
+
+## Prompt 17: Diseño responsive optimizado con scroll horizontal - FRONTEND
+
+```
+Implementar diseño responsive de tres niveles:
+
+**Breakpoints:**
+- Mobile (cards): vista de tarjetas apiladas
+- Tablet: tabla con columnas reducidas (displayedColumnsTablet)
+- Desktop: tabla completa con todas las columnas
+
+**Optimizaciones:**
+- Scroll horizontal (overflow-x: auto) con min-width para prevenir corte de contenido
+- Aplicar white-space: nowrap para evitar salto de línea
+- Ajustar tamaños de badges y chips para mantener consistencia
+- Mejorar espaciado y proporciones en vista móvil
+```
+
+## Prompt 18: Rediseño del menú de acciones con enfoque minimalista - FRONTEND
+
+```
+@developments.component.html mejorar el diseño del menú de acciones con algo más minimalista y profesional manteniendo las mismas opciones:
+
+**Estructura organizada:**
+- Agrupar opciones en secciones lógicas con separación visual
+- Iconografía mejorada (visibility, edit, radio_button_unchecked, delete_outline)
+- Etiquetas de sección en mayúsculas pequeñas
+
+**Diseño refinado:**
+- Espaciado optimizado con padding consistente
+- Transiciones suaves en hover con cambio de color de iconos
+- Tratamiento especial para acción destructiva (Eliminar)
+- Versión simplificada para móvil
+```
