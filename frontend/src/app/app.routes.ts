@@ -11,12 +11,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
-    path: 'desarrollos',
+    path: 'developments',
     loadComponent: () => import('./features/developments/developments.component').then(m => m.DevelopmentsComponent)
   },
   {
-    path: 'microservicios',
-    loadComponent: () => import('./features/microservicios/microservicios.component').then(m => m.MicroserviciosComponent)
+    path: 'microservices',
+    loadComponent: () => import('./features/microservices/microservices.component').then(m => m.MicroservicesComponent)
   },
   {
     path: '**',

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MicroserviciosComponent } from './microservicios.component';
+import { MicroservicesComponent } from './microservices.component';
 
-describe('MicroserviciosComponent', () => {
-  let component: MicroserviciosComponent;
-  let fixture: ComponentFixture<MicroserviciosComponent>;
+describe('MicroservicesComponent', () => {
+  let component: MicroservicesComponent;
+  let fixture: ComponentFixture<MicroservicesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MicroserviciosComponent]
+      imports: [MicroservicesComponent]
     })
     .compileComponents();
-
-    fixture = TestBed.createComponent(MicroserviciosComponent);
+    
+    fixture = TestBed.createComponent(MicroservicesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -20,4 +20,4 @@ describe('MicroserviciosComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-});
+}); 
