@@ -9,6 +9,15 @@
 // ESTILOS ESPECÍFICOS DEL DASHBOARD
 // -----------------------------------------------------------------------------
 
+// Section titles - Estilos para títulos de las cards del sidebar
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
+}
+
 // Desarrollo info legacy - mantener para compatibilidad temporal
 .development-info {
   display: flex;
