@@ -21,6 +21,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   isMobile$: Observable<boolean>;
   isCollapsed$: Observable<boolean>;
   isMobileMenuOpen$: Observable<boolean>;
+  
+  // Variables para trackear estado actual
+  private isCurrentlyMobile = false;
+  private isCurrentlyCollapsed = false;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -38,12 +42,36 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Solo manejar la clase collapsed
-    this.isCollapsed$.pipe(takeUntil(this.destroy$)).subscribe(collapsed => {
-      if (collapsed) {
-        this.renderer.addClass(this.elementRef.nativeElement, 'collapsed');
-      } else {
+    // Trackear si es móvil y manejar clase collapsed
+    this.isMobile$.pipe(takeUntil(this.destroy$)).subscribe(isMobile => {
+      this.isCurrentlyMobile = isMobile;
+      
+      // Cuando cambia el estado móvil, revaluar la clase collapsed
+      if (isMobile) {
+        // En móvil, SIEMPRE remover collapsed
         this.renderer.removeClass(this.elementRef.nativeElement, 'collapsed');
+      } else {
+        // En desktop, aplicar collapsed según el estado actual
+        if (this.isCurrentlyCollapsed) {
+          this.renderer.addClass(this.elementRef.nativeElement, 'collapsed');
+        } else {
+          this.renderer.removeClass(this.elementRef.nativeElement, 'collapsed');
+        }
+      }
+      this.cdr.markForCheck();
+    });
+
+    // Trackear cambios en el estado collapsed
+    this.isCollapsed$.pipe(takeUntil(this.destroy$)).subscribe(collapsed => {
+      this.isCurrentlyCollapsed = collapsed;
+      
+      // Solo aplicar collapsed si NO estamos en móvil
+      if (!this.isCurrentlyMobile) {
+        if (collapsed) {
+          this.renderer.addClass(this.elementRef.nativeElement, 'collapsed');
+        } else {
+          this.renderer.removeClass(this.elementRef.nativeElement, 'collapsed');
+        }
       }
       this.cdr.markForCheck();
     });
@@ -71,8 +99,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  // Método helper para determinar si mostrar tooltip
-  shouldShowTooltip(isCollapsed: boolean | null, isMobile: boolean | null): boolean {
+  // Método helper para determinar si mostrar tooltip - Simplificado
+  shouldShowTooltip(): boolean {
+    return this.isCurrentlyCollapsed && !this.isCurrentlyMobile;
+  }
+  
+  // Mantener el método anterior como backup
+  shouldShowTooltipOld(isCollapsed: boolean | null, isMobile: boolean | null): boolean {
     return !!isCollapsed && !isMobile;
   }
 }

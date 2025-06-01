@@ -7,7 +7,7 @@
         routerLinkActive="active"
         class="nav-item"
         title="Dashboard"
-        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Dashboard' : ''"
+        [matTooltip]="shouldShowTooltip() ? 'Dashboard' : ''"
         matTooltipPosition="right"
         matTooltipClass="sidebar-tooltip"
         (click)="onNavigate()">
@@ -25,7 +25,7 @@
         routerLinkActive="active"
         class="nav-item"
         title="Desarrollos"
-        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Desarrollos' : ''"
+        [matTooltip]="shouldShowTooltip() ? 'Desarrollos' : ''"
         matTooltipPosition="right"
         matTooltipClass="sidebar-tooltip"
         (click)="onNavigate()">
@@ -40,7 +40,7 @@
         routerLinkActive="active"
         class="nav-item"
         title="Microservicios"
-        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Microservicios' : ''"
+        [matTooltip]="shouldShowTooltip() ? 'Microservicios' : ''"
         matTooltipPosition="right"
         matTooltipClass="sidebar-tooltip"
         (click)="onNavigate()">
@@ -61,7 +61,7 @@
         routerLinkActive="active"
         class="nav-item"
         title="Ambientes"
-        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Ambientes' : ''"
+        [matTooltip]="shouldShowTooltip() ? 'Ambientes' : ''"
         matTooltipPosition="right"
         matTooltipClass="sidebar-tooltip"
         (click)="onNavigate()">
@@ -78,7 +78,7 @@
         routerLinkActive="active"
         class="nav-item"
         title="Jira Sync"
-        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Jira Sync' : ''"
+        [matTooltip]="shouldShowTooltip() ? 'Jira Sync' : ''"
         matTooltipPosition="right"
         matTooltipClass="sidebar-tooltip"
         (click)="onNavigate()">

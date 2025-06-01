@@ -59,7 +59,7 @@
   }
 }
 
-// Estilos para cuando el host está collapsed
+// Estilos para cuando el host está collapsed (SOLO DESKTOP)
 :host.collapsed {
   .nav-text {
     opacity: 0 !important;
@@ -96,25 +96,6 @@
   .sidebar-footer {
     .version-text {
       opacity: 0;
-    }
-  }
-}
-
-// En móvil, resetear el collapsed
-@media (max-width: 768px) {
-  :host.collapsed {
-    .nav-text {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    
-    .nav-item {
-      justify-content: flex-start;
-      padding: var(--spacing-md);
-    }
-    
-    .sidebar-footer .version-text {
-      opacity: 1;
     }
   }
 }
