@@ -4,6 +4,12 @@
 <!-- Sidebar - Fuera del contenedor principal -->
 <app-sidebar class="gpu-accelerated"></app-sidebar>
 
+<!-- Overlay móvil - Independiente para correcto z-index -->
+<div class="mobile-overlay" 
+     (click)="closeMobileMenu()" 
+     *ngIf="(isMobile$ | async) && (isMobileMenuOpen$ | async)">
+</div>
+
 <!-- Contenido principal -->
 <div class="main-layout">
   <main class="main-content" 

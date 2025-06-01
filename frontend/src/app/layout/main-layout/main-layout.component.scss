@@ -44,6 +44,32 @@
   transition: background-color var(--transition);
 }
 
+// Overlay móvil - Separado del sidebar para correcto z-index
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 9997; // Justo debajo del sidebar (9998)
+  animation: fadeIn 0.3s ease-out;
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+// Animación para el overlay
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 // Ajustes para pantallas ultra-wide
 @media (min-width: 1920px) {
   .content-wrapper {

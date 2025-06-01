@@ -16,7 +16,7 @@
     transform: translateX(-100%);
     box-shadow: var(--shadow-hover);
     
-    &:not(.mobile-hidden) {
+    &.mobile-menu-open {
       transform: translateX(0);
     }
     
@@ -204,21 +204,6 @@
       font-weight: 400;
       transition: opacity 0.3s ease;
     }
-  }
-}
-
-.mobile-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 80;
-  animation: fadeIn 0.3s ease-out;
-  
-  @media (min-width: 769px) {
-    display: none;
   }
 }
 

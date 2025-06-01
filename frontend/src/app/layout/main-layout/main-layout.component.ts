@@ -17,6 +17,8 @@ import { map } from 'rxjs/operators';
 })
 export class MainLayoutComponent implements OnInit {
   contentMarginLeft$: Observable<string>;
+  isMobile$: Observable<boolean>;
+  isMobileMenuOpen$: Observable<boolean>;
 
   constructor(
     private sidebarService: SidebarService,
@@ -36,8 +38,19 @@ export class MainLayoutComponent implements OnInit {
         return isCollapsed ? '60px' : '250px'; // Desktop: collapsed = 60px, expanded = 250px
       })
     );
+
+    // Observables para el overlay móvil
+    this.isMobile$ = this.breakpointObserver.observe([Breakpoints.Handset]).pipe(
+      map(result => result.matches)
+    );
+    
+    this.isMobileMenuOpen$ = this.sidebarService.mobileMenuOpen$;
   }
 
   ngOnInit(): void {
+  }
+
+  closeMobileMenu(): void {
+    this.sidebarService.closeMobileMenu();
   }
 }

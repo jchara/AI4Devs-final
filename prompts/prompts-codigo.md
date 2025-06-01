@@ -273,8 +273,7 @@ Implementa estas optimizaciones, sin perder la fluidez de las transiciones cuand
 ## Prompt 21: Ajustar header y sidebar fijos con funcionalidad de toggle - FRONTEND
 
 ```
-Respuestas a las preguntas:
-1. Fixed, siempre visible incluso al hacer scroll
-2. El sidebar debe poder ocultarse en escritorio y en móviles se debe ocultar pero poder mostrarse con el botón hamburguesa cuando se necesite para navegar
-3. Mantener la altura del header de 64px
+Como experto desarrollador front senior en angular, analiza la estructura de los layout y realza los siguientes ajustes:
+1. Header siempre visible incluso al hacer scroll
+2. El sidebar debe poder ocultarse, ten presente diseño responsivo
 ```
