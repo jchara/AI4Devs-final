@@ -1,12 +1,12 @@
-<div class="main-layout route-transition">
-  <!-- Header -->
-  <app-header class="gpu-accelerated"></app-header>
-  
-  <!-- Sidebar -->
-  <app-sidebar class="gpu-accelerated"></app-sidebar>
-  
-  <!-- Contenido principal -->
-  <main class="main-content route-transition" 
+<!-- Header - Fuera del contenedor principal -->
+<app-header class="gpu-accelerated"></app-header>
+
+<!-- Sidebar - Fuera del contenedor principal -->
+<app-sidebar class="gpu-accelerated"></app-sidebar>
+
+<!-- Contenido principal -->
+<div class="main-layout">
+  <main class="main-content" 
         [style.margin-left]="contentMarginLeft$ | async">
     <div class="content-wrapper lazy-content">
       <router-outlet></router-outlet>

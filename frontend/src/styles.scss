@@ -395,14 +395,6 @@ body.dark {
   will-change: transform, opacity;
 }
 
-// Transiciones fluidas para navegación
-.route-transition {
-  transition: var(--transition);
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
-
 // Optimización para elementos que cambian frecuentemente
 .optimized-animation {
   will-change: transform, opacity;

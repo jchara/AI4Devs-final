@@ -39,16 +39,6 @@
   }
 }
 
-// Optimizaciones de rendimiento aplicadas
-.main-layout {
-  contain: layout style;
-}
-
-.main-content {
-  contain: layout style paint;
-  will-change: margin-left;
-}
-
 // Transiciones suaves para cambio de tema
 .main-layout {
   transition: background-color var(--transition);
