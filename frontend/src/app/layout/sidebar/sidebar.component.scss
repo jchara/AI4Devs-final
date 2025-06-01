@@ -9,11 +9,36 @@
   z-index: 90;
   transition: var(--transition);
   overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  // Scroll suave y optimizado
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+    
+    &:hover {
+      background: var(--text-secondary);
+    }
+  }
   
   @media (max-width: 768px) {
     top: 0;
     height: 100vh;
     transform: translateX(-100%);
+    box-shadow: var(--shadow-hover);
     
     &:not(.mobile-hidden) {
       transform: translateX(0);
@@ -30,20 +55,23 @@
 
 .nav-items {
   flex: 1;
-  padding: var(--spacing-md) var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
   
   .nav-item {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-md);
-    margin-bottom: var(--spacing-xs);
     border-radius: var(--border-radius);
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition);
     position: relative;
+    min-height: 48px; // Altura mínima para touch targets
     
     &:hover {
       background-color: var(--bg-secondary);
@@ -54,20 +82,35 @@
     &.active {
       background-color: var(--color-primary);
       color: white;
+      box-shadow: 0 2px 8px rgba(125, 43, 227, 0.3);
       
       svg {
         stroke: white;
+      }
+      
+      &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 24px;
+        background-color: white;
+        border-radius: 2px 0 0 2px;
       }
     }
     
     svg {
       flex-shrink: 0;
       transition: var(--transition);
+      stroke-width: 2;
     }
     
     .nav-text {
       font-size: 14px;
       white-space: nowrap;
+      font-weight: 500;
     }
   }
 }
@@ -76,6 +119,7 @@
   padding: var(--spacing-md);
   border-top: 1px solid var(--border-color);
   margin-top: auto;
+  background-color: var(--bg-primary);
   
   .version-info {
     text-align: center;
@@ -83,6 +127,7 @@
     .version-text {
       color: var(--text-secondary);
       font-size: 12px;
+      font-weight: 400;
     }
   }
 }
@@ -95,31 +140,60 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 80;
+  animation: fadeIn 0.3s ease-out;
   
   @media (min-width: 769px) {
     display: none;
   }
 }
 
-// Animaciones para móvil
-@media (max-width: 768px) {
-  .sidebar {
-    box-shadow: var(--shadow-hover);
-  }
-  
-  .mobile-overlay {
-    animation: fadeIn 0.3s ease-out;
-  }
-}
-
-// Estados de hover mejorados
+// Estados de hover y focus mejorados
 .nav-item {
   &:focus {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+    background-color: var(--bg-secondary);
   }
   
   &:active {
     transform: translateX(2px);
+  }
+  
+  // Efecto de carga optimizado
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Animación de entrada
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Optimizaciones de rendimiento
+.sidebar {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+// Ajustes para pantallas muy pequeñas
+@media (max-height: 600px) {
+  .sidebar-nav {
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .nav-items {
+    gap: var(--spacing-xs);
+  }
+  
+  .nav-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 40px;
   }
 }

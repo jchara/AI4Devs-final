@@ -21,10 +21,12 @@
   overflow-y: auto;
   padding: var(--spacing-lg);
   margin-top: 64px; // Altura del header
+  min-height: calc(100vh - 64px);
   
   @media (max-width: 768px) {
     margin-top: 0;
     padding: var(--spacing-md);
+    min-height: 100vh;
   }
 }
 
@@ -32,9 +34,10 @@
   max-width: 1400px;
   margin: 0 auto;
   animation: fadeIn 0.3s ease-out;
+  min-height: calc(100vh - 128px); // Compensar header y padding
 }
 
-// Ajustes para el header y sidebar
+// Ajustes para el header
 app-header {
   grid-area: header;
   position: fixed;
@@ -44,16 +47,53 @@ app-header {
   z-index: 100;
 }
 
+// El sidebar se maneja completamente en su propio componente
 app-sidebar {
   grid-area: sidebar;
-  position: fixed;
-  top: 64px;
-  left: 0;
-  height: calc(100vh - 64px);
-  z-index: 90;
+  // Sin estilos adicionales - se manejan en sidebar.component.scss
+}
+
+// Animación de entrada optimizada
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Optimizaciones de rendimiento aplicadas
+.main-layout {
+  contain: layout style;
+}
+
+.main-content {
+  contain: layout style paint;
+  will-change: scroll-position;
+}
+
+// Transiciones suaves para cambio de tema
+.main-layout {
+  transition: background-color var(--transition);
+}
+
+// Ajustes para pantallas ultra-wide
+@media (min-width: 1920px) {
+  .content-wrapper {
+    max-width: 1600px;
+  }
+}
+
+// Ajustes para pantallas pequeñas en altura
+@media (max-height: 600px) {
+  .main-content {
+    padding: var(--spacing-md);
+  }
   
-  @media (max-width: 768px) {
-    top: 0;
-    height: 100vh;
+  .content-wrapper {
+    min-height: calc(100vh - 96px);
   }
 }
