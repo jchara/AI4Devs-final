@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   {
     path: 'desarrollos',
-    loadComponent: () => import('./features/desarrollos/desarrollos.component').then(m => m.DesarrollosComponent)
+    loadComponent: () => import('./features/developments/developments.component').then(m => m.DevelopmentsComponent)
   },
   {
     path: 'microservicios',

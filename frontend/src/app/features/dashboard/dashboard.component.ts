@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { DesarrolloService } from '../../core/services/desarrollo.service';
+import { DevelopmentService } from '../developments/services/development.service';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { DevelopmentChartComponent } from '../../shared/components/development-chart/development-chart.component';
 import { 
-  Desarrollo, 
-  MetricaDesarrollo, 
-  ActividadReciente, 
-  ProximoDespliegue, 
-  DatosGrafico,
-  EstadoDesarrollo,
-  Ambiente,
-  TipoActividad
-} from '../../core/models/desarrollo.model';
+  Development, 
+  DevelopmentMetrics, 
+  RecentActivity, 
+  UpcomingDeployment, 
+  ChartData,
+  DevelopmentStatus,
+  Environment,
+  ActivityType
+} from '../developments/models/development.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,84 +23,82 @@ import {
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
-  metricas: MetricaDesarrollo | null = null;
-  desarrollos: Desarrollo[] = [];
-  actividadReciente: ActividadReciente[] = [];
-  proximosDespliegues: ProximoDespliegue[] = [];
-  datosGrafico: DatosGrafico[] = [];
+  metrics: DevelopmentMetrics | null = null;
+  developments: Development[] = [];
+  recentActivity: RecentActivity[] = [];
+  upcomingDeployments: UpcomingDeployment[] = [];
+  chartData: ChartData[] = [];
 
-  constructor(private desarrolloService: DesarrolloService) { }
+  constructor(private developmentService: DevelopmentService) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
   }
 
   private loadDashboardData(): void {
-    // Cargar métricas
-    this.desarrolloService.getMetricas().subscribe(metricas => {
-      this.metricas = metricas;
+    // Load metrics
+    this.developmentService.getMetrics().subscribe(metrics => {
+      this.metrics = metrics;
     });
 
-    // Cargar desarrollos
-    this.desarrolloService.getDesarrollos().subscribe(desarrollos => {
-      this.desarrollos = desarrollos;
+    // Load developments
+    this.developmentService.getDevelopments().subscribe(developments => {
+      this.developments = developments;
     });
 
-    // Cargar actividad reciente
-    this.desarrolloService.getActividadReciente().subscribe(actividad => {
-      this.actividadReciente = actividad;
+    // Load recent activity
+    this.developmentService.getRecentActivity().subscribe(activity => {
+      this.recentActivity = activity;
     });
 
-    // Cargar próximos despliegues
-    this.desarrolloService.getProximosDespliegues().subscribe(despliegues => {
-      this.proximosDespliegues = despliegues;
+    // Load upcoming deployments
+    this.developmentService.getUpcomingDeployments().subscribe(deployments => {
+      this.upcomingDeployments = deployments;
     });
 
-    // Cargar datos del gráfico
-    this.desarrolloService.getDatosGrafico().subscribe(datos => {
-      this.datosGrafico = datos;
+    // Load chart data
+    this.developmentService.getChartData().subscribe(data => {
+      this.chartData = data;
     });
   }
 
-  getEstadoClass(estado: EstadoDesarrollo): string {
-    switch (estado) {
-      case EstadoDesarrollo.DESARROLLO:
+  getStatusClass(status: DevelopmentStatus): string {
+    switch (status) {
+      case DevelopmentStatus.DEVELOPMENT:
         return 'desarrollo';
-      case EstadoDesarrollo.EN_QA:
-        return 'en-qa';
-      case EstadoDesarrollo.PRODUCCION:
-        return 'produccion';
-      case EstadoDesarrollo.PENDIENTE:
-        return 'pendiente';
+      case DevelopmentStatus.ARCHIVED:
+        return 'archivado';
+      case DevelopmentStatus.COMPLETED:
+        return 'completado';
       default:
         return '';
     }
   }
 
-  getAmbienteClass(ambiente: Ambiente): string {
-    switch (ambiente) {
-      case Ambiente.DEVELOPMENT:
+  getEnvironmentClass(environment: Environment): string {
+    switch (environment) {
+      case Environment.DEVELOPMENT:
         return 'development';
-      case Ambiente.TESTING:
+      case Environment.TESTING:
         return 'testing';
-      case Ambiente.STAGING:
+      case Environment.STAGING:
         return 'staging';
-      case Ambiente.PRODUCTION:
+      case Environment.PRODUCTION:
         return 'production';
       default:
         return '';
     }
   }
 
-  getTipoActividadClass(tipo: TipoActividad): string {
-    switch (tipo) {
-      case TipoActividad.DESPLIEGUE:
+  getActivityTypeClass(type: ActivityType): string {
+    switch (type) {
+      case ActivityType.DEPLOYMENT:
         return 'deployment';
-      case TipoActividad.ACTUALIZACION:
+      case ActivityType.UPDATE:
         return 'update';
-      case TipoActividad.REVISION:
+      case ActivityType.REVIEW:
         return 'review';
-      case TipoActividad.COMPLETADO:
+      case ActivityType.COMPLETED:
         return 'completed';
       default:
         return '';

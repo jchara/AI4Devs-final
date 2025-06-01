@@ -8,7 +8,7 @@
   <div class="metrics-grid">
     <app-metric-card
       title="Total Desarrollos"
-      [value]="metricas?.total || 0"
+      [value]="metrics?.total || 0"
       iconColor="var(--color-accent)"
       cardClass="accent">
       <svg slot="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -20,8 +20,8 @@
     </app-metric-card>
 
     <app-metric-card
-      title="En QA"
-      [value]="metricas?.enQA || 0"
+      title="En Desarrollo"
+      [value]="metrics?.inDevelopment || 0"
       iconColor="var(--color-primary)"
       cardClass="primary">
       <svg slot="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -31,26 +31,25 @@
     </app-metric-card>
 
     <app-metric-card
-      title="En Producción"
-      [value]="metricas?.enProduccion || 0"
+      title="Completados"
+      [value]="metrics?.completed || 0"
       iconColor="#4CAF50"
       cardClass="success">
       <svg slot="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="m2 17 10 5 10-5"/>
-        <path d="m2 12 10 5 10-5"/>
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22,4 12,14.01 9,11.01"/>
       </svg>
     </app-metric-card>
 
     <app-metric-card
-      title="Pendientes"
-      [value]="metricas?.pendientes || 0"
-      iconColor="#FF9800"
-      cardClass="warning">
+      title="Archivados"
+      [value]="metrics?.archived || 0"
+      iconColor="#9E9E9E"
+      cardClass="secondary">
       <svg slot="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="m9 9 6 6"/>
-        <path d="m15 9-6 6"/>
+        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+        <path d="m3.3 7 8.7 5 8.7-5"/>
+        <path d="M12 22V12"/>
       </svg>
     </app-metric-card>
   </div>
@@ -83,24 +82,24 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let desarrollo of desarrollos" class="fade-in">
+            <tr *ngFor="let development of developments" class="fade-in">
               <td>
                 <div class="development-info">
-                  <span class="development-name">{{ desarrollo.nombre }}</span>
-                  <span class="development-version" *ngIf="desarrollo.version">{{ desarrollo.version }}</span>
+                  <span class="development-name">{{ development.name }}</span>
+                  <span class="development-version" *ngIf="development.version">{{ development.version }}</span>
                 </div>
               </td>
               <td>
-                <span class="estado-desarrollo" [ngClass]="getEstadoClass(desarrollo.estado)">
-                  {{ desarrollo.estado }}
+                <span class="estado-desarrollo" [ngClass]="getStatusClass(development.status)">
+                  {{ development.status }}
                 </span>
               </td>
               <td>
-                <span class="ambiente-badge" [ngClass]="getAmbienteClass(desarrollo.ambiente)">
-                  {{ desarrollo.ambiente }}
+                <span class="ambiente-badge" [ngClass]="getEnvironmentClass(development.environment)">
+                  {{ development.environment }}
                 </span>
               </td>
-              <td>{{ desarrollo.fecha | date:'dd/MM/yyyy' }}</td>
+              <td>{{ development.updatedDate | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="actions">
                   <button class="btn-icon" title="Ver detalles">
@@ -122,22 +121,22 @@
       <!-- Gráfico de desarrollos por ambiente -->
       <div class="content-section">
         <h3 class="section-title">Desarrollos por Ambiente</h3>
-        <app-development-chart [data]="datosGrafico"></app-development-chart>
+        <app-development-chart [data]="chartData"></app-development-chart>
       </div>
 
       <!-- Actividad reciente -->
       <div class="content-section">
         <h3 class="section-title">Actividad Reciente</h3>
         <div class="activity-list">
-          <div class="activity-item" *ngFor="let actividad of actividadReciente">
-            <div class="activity-icon" [ngClass]="getTipoActividadClass(actividad.tipo)">
+          <div class="activity-item" *ngFor="let activity of recentActivity">
+            <div class="activity-icon" [ngClass]="getActivityTypeClass(activity.type)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"/>
               </svg>
             </div>
             <div class="activity-content">
-              <p class="activity-description">{{ actividad.descripcion }}</p>
-              <span class="activity-time">{{ actividad.fecha | date:'dd/MM HH:mm' }}</span>
+              <p class="activity-description">{{ activity.description }}</p>
+              <span class="activity-time">{{ activity.date | date:'dd/MM HH:mm' }}</span>
             </div>
           </div>
         </div>
@@ -147,13 +146,13 @@
       <div class="content-section">
         <h3 class="section-title">Próximos Despliegues</h3>
         <div class="deployment-list">
-          <div class="deployment-item" *ngFor="let despliegue of proximosDespliegues">
+          <div class="deployment-item" *ngFor="let deployment of upcomingDeployments">
             <div class="deployment-info">
-              <span class="deployment-name">{{ despliegue.nombre }}</span>
-              <span class="deployment-date">{{ despliegue.fechaProgramada | date:'dd/MM/yyyy' }}</span>
+              <span class="deployment-name">{{ deployment.name }}</span>
+              <span class="deployment-date">{{ deployment.scheduledDate | date:'dd/MM/yyyy' }}</span>
             </div>
-            <span class="ambiente-badge" [ngClass]="getAmbienteClass(despliegue.ambiente)">
-              {{ despliegue.ambiente }}
+            <span class="ambiente-badge" [ngClass]="getEnvironmentClass(deployment.environment)">
+              {{ deployment.environment }}
             </span>
           </div>
         </div>

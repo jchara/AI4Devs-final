@@ -6,13 +6,13 @@
         <div 
           class="chart-bar" 
           *ngFor="let item of data"
-          [style.height.%]="getBarHeight(item.cantidad)"
+          [style.height.%]="getBarHeight(item.count)"
           [style.background-color]="item.color">
-          <span class="bar-value">{{ item.cantidad }}</span>
+          <span class="bar-value">{{ item.count }}</span>
         </div>
       </div>
       <div class="chart-labels">
-        <span class="chart-label" *ngFor="let item of data">{{ item.ambiente }}</span>
+        <span class="chart-label" *ngFor="let item of data">{{ item.environment }}</span>
       </div>
     </div>
   </div>

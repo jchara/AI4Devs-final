@@ -83,3 +83,80 @@ Respondiendo a tus preguntas antes de realizar la integración del Dashboard:
 Necesito ajustar el sidebar ya que el header no deja ver bien el menú, el primer item de dashboard no se ve.
 ```
 
+## Prompt 6: Eliminar línea azul del elemento activo del sidebar - FRONTEND
+
+```
+Cuando se selecciona un item del menú, cambia de color indicando que es el seleccionado, eso está bien, pero como ves en la imagen se muestra una línea azul dentro del item seleccionado, puedes quitar esa línea azul.
+```
+
+## Prompt 7: Vista de lista avanzada para gestionar desarrollos - FRONTEND
+
+```
+Eres un experto desarrollador front senior en angular y experto en UX/UI, crea una vista de lista avanzada para gestionar desarrollos con funcionalidades de filtrado y búsqueda:
+
+**Header de la vista:**
+- Título "Mis Desarrollos" con contador total
+- Botón primario "+ Nuevo Desarrollo"
+- Barra de búsqueda con icono de lupa
+- Filtros rápidos: Todos, En desarrollo, En QA, En producción, Completados
+
+**Tabla de desarrollos:**
+- Columnas: Estado (badge), Nombre, Descripción breve, Microservicios, Ambiente actual, Fecha actualización, Acciones
+- Badges de estado con colores: Desarrollo (azul), QA (amarillo), Aprobado (verde), Rechazado (rojo)
+- Avatares/iconos para microservicios (NestJS, Python, Node)
+- Menu de acciones: Ver detalles, Editar, Cambiar estado, Eliminar
+
+**Funcionalidades:**
+- Paginación con 20 elementos por página
+- Ordenamiento por columnas clickeables
+- Selección múltiple con checkbox
+- Acciones masivas en header seleccionado
+- Estados vacíos con ilustración y CTA
+
+**Responsive:**
+- En móviles: Cards apiladas en lugar de tabla
+- Navegación de filtros como tabs horizontales
+- Búsqueda expandible
+
+Utiliza los mocks pero crea el servicio correspondiente para después integrar el servicio desde el backend, los mocks deben estar en el servicio para que al momento de integrar los servicios reales no se deba modificar los componentes.ts
+
+Ten cuenta buenas prácticas tanto de diseño como de seguridad.
+Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero.
+```
+
+## Prompt 8: Respuestas sobre implementación de vista de desarrollos - FRONTEND
+
+```
+Respondiendo tus preguntas para proceder con el desarrollo:
+1. 
+- Si crea los campos id, fecha creación, fecha de actualización y autor.
+- Los microservicios son una lista de objetos, id y nombre
+- Los estados del desarrollo son: Desarrollo, Archivado, Completado
+2. 
+- Si la vista debe ser accesible desde la ruta /desarrollos
+- El botón "Nuevo Desarrollo" debe abrir un overlay (de momento déjalo vacío)
+- Las acciones "Ver detalles" y "Editar" deben abrir un overlay
+3.
+- Cambio de opinión, No incluir acciones masivas por el momento.
+- El ordenamiento debe ser solo visual (frontend) no enviar datos al backend para ordenar
+- La búsqueda debe ser en tiempo real, puedes implementar un debounce con un tiempo adecuado
+4. 
+- En esta vista puedes utilizar los mismos datos mock del dashboard si corresponde el servicio, si ves que debe ser un servicio nuevo, entonces deben ser otros datos.
+- Si los contadores deben tener coherencia con el dashboard
+
+Adicionalmente:
+- utiliza las mismas librerías de UI del proyecto
+- Mantén diseño responsive 
+- Animaciones suaves de entrada/salida
+- Botones: "Cancelar" (secundario) y "Crear Desarrollo" (primario)
+- Estados de loading y éxito
+```
+
+## Prompt 9: Actualización de estados de desarrollos - FRONTEND
+
+```
+En @development.model.ts del front quite el estado Rechazado para desarrollos, verifica y actualiza la app para que no genere error
+```
+
+
+

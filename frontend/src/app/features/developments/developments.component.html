@@ -1,0 +1,334 @@
+<div class="developments-container">
+  <!-- Header principal -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          Desarrollos 
+          <div class="count-chip">
+            <mat-chip>{{ totalElements }}</mat-chip>
+          </div>
+        </h1>
+        <p class="page-subtitle">Gestiona y supervisa todos los desarrollos del sistema</p>
+      </div>
+
+      <div class="header-actions">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          class="btn-nuevo"
+          (click)="newDevelopment()">
+          <mat-icon>add</mat-icon>
+          <span>Nuevo Desarrollo</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="filters-section">
+    <div class="search-container">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Buscar desarrollos</mat-label>
+        <input 
+          matInput 
+          [formControl]="searchControl"
+          placeholder="Buscar por nombre, descripción, autor o microservicio...">
+        <mat-icon matPrefix>search</mat-icon>
+        <button 
+          matSuffix 
+          mat-icon-button 
+          *ngIf="searchControl.value" 
+          (click)="searchControl.setValue('')">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Filtros rápidos -->
+    <div class="quick-filters" [class.mobile-filters]="isMobile">
+      <div class="filter-group">
+        <label class="filter-label">Estado:</label>
+        <mat-chip-listbox [formControl]="statusFilter" class="status-chips">
+          <mat-chip 
+            *ngFor="let status of availableStatuses" 
+            [value]="status.value"
+            [class]="'chip-' + status.value"
+            selected="false">
+            {{ status.label }}
+            <span class="chip-count" *ngIf="status.count > 0">({{ status.count }})</span>
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
+
+      <div class="filter-group" *ngIf="!isMobile">
+        <label class="filter-label">Ambiente:</label>
+        <mat-form-field appearance="outline" class="environment-select">
+          <mat-select [formControl]="environmentFilter" placeholder="Todos los ambientes">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let environment of availableEnvironments" [value]="environment">
+              {{ environment }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button 
+          mat-button 
+          color="warn" 
+          (click)="clearFilters()"
+          *ngIf="searchControl.value || statusFilter.value !== 'all' || environmentFilter.value">
+          <mat-icon>clear_all</mat-icon>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando desarrollos...</p>
+  </div>
+
+  <!-- Tabla para desktop -->
+  <div class="table-container" *ngIf="!isMobile && !loading">
+    <mat-table [dataSource]="dataSource" class="developments-table" matSort>
+      <!-- Columna Estado -->
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Estado</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(development.status)">
+            {{ development.status }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Columna Nombre -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <div class="name-cell">
+            <h4 class="name-title">{{ development.name }}</h4>
+            <p class="name-version">{{ development.version }}</p>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Columna Descripción -->
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <p class="description-text" 
+             [matTooltip]="development.description"
+             matTooltipPosition="above">
+            {{ truncateText(development.description || '', 60) }}
+          </p>
+          <small class="author-text">por {{ development.author }}</small>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Columna Microservicios -->
+      <ng-container matColumnDef="microservices">
+        <mat-header-cell *matHeaderCellDef>Microservicios</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <div class="microservices-cell">
+            <div 
+              *ngFor="let microservice of development.microservices; let i = index" 
+              class="microservice-item"
+              [matTooltip]="microservice.name + ' (' + microservice.technology + ')'"
+              matTooltipPosition="above">
+              <mat-icon [fontIcon]="getMicroserviceIcon(microservice.technology)" class="microservice-icon"></mat-icon>
+              <span class="microservice-name">{{ microservice.name }}</span>
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Columna Ambiente -->
+      <ng-container matColumnDef="environment">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Ambiente</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <span class="environment-badge" [ngClass]="'ambiente-' + development.environment.toLowerCase()">
+            {{ development.environment }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Columna Fecha Actualización -->
+      <ng-container matColumnDef="updatedDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Última Actualización</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <div class="date-cell">
+            <span class="date-primary">{{ formatDate(development.updatedDate) }}</span>
+            <small class="date-created">Creado: {{ formatDate(development.createdDate) }}</small>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Columna Acciones -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <div class="actions-cell">
+            <button 
+              mat-icon-button 
+              [matMenuTriggerFor]="menuAcciones"
+              [matMenuTriggerData]="{development: development}"
+              matTooltip="Acciones">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" class="development-row"></mat-row>
+    </mat-table>
+
+    <!-- Paginación -->
+    <mat-paginator 
+      [length]="totalElements"
+      [pageSize]="20"
+      [pageSizeOptions]="[10, 20, 50, 100]"
+      showFirstLastButtons
+      (page)="onPageChange()"
+      class="table-paginator">
+    </mat-paginator>
+  </div>
+
+  <!-- Cards para móvil -->
+  <div class="cards-container" *ngIf="isMobile && !loading">
+    <div class="development-card" *ngFor="let development of developments">
+      <mat-card class="development-card-content">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="card-title-section">
+              <mat-card-title>{{ development.name }}</mat-card-title>
+              <mat-card-subtitle>{{ development.version }} • por {{ development.author }}</mat-card-subtitle>
+            </div>
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(development.status)">
+              {{ development.status }}
+            </span>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p class="card-description">{{ development.description }}</p>
+
+          <div class="card-info-grid">
+            <div class="info-item">
+              <mat-icon>business</mat-icon>
+              <span>{{ development.environment }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ formatDate(development.updatedDate) }}</span>
+            </div>
+          </div>
+
+          <div class="card-microservices" *ngIf="development.microservices.length > 0">
+            <label>Microservicios:</label>
+            <div class="microservices-list">
+              <div class="microservice-chip" *ngFor="let microservice of development.microservices">
+                <mat-icon [fontIcon]="getMicroserviceIcon(microservice.technology)"></mat-icon>
+                <span>{{ microservice.name }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-button (click)="viewDetails(development)">
+            <mat-icon>visibility</mat-icon>
+            Ver detalles
+          </button>
+          <button 
+            mat-icon-button 
+            [matMenuTriggerFor]="menuAccionesMobile"
+            [matMenuTriggerData]="{development: development}">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Paginación móvil -->
+    <mat-paginator 
+      [length]="totalElements"
+      [pageSize]="20"
+      [pageSizeOptions]="[10, 20, 50]"
+      showFirstLastButtons
+      (page)="onPageChange()"
+      class="mobile-paginator">
+    </mat-paginator>
+  </div>
+  
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="!loading && developments.length === 0">
+    <div class="empty-content">
+      <mat-icon class="empty-icon">code</mat-icon>
+      <h3>No se encontraron desarrollos</h3>
+      <p>No hay desarrollos que coincidan con los filtros aplicados o aún no se han creado desarrollos.</p>
+      <div class="empty-actions">
+        <button mat-raised-button color="primary" (click)="newDevelopment()">
+          <mat-icon>add</mat-icon>
+          Crear primer desarrollo
+        </button>
+        <button mat-button (click)="clearFilters()" *ngIf="searchControl.value || statusFilter.value !== 'all' || environmentFilter.value">
+          <mat-icon>clear_all</mat-icon>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Menú de acciones desktop -->
+<mat-menu #menuAcciones="matMenu">
+  <ng-template matMenuContent let-development="development">
+    <button mat-menu-item (click)="viewDetails(development)">
+      <mat-icon>visibility</mat-icon>
+      <span>Ver detalles</span>
+    </button>
+    
+    <button mat-menu-item (click)="editDevelopment(development)">
+      <mat-icon>edit</mat-icon>
+      <span>Editar</span>
+    </button>
+
+    <mat-divider></mat-divider>
+    
+    <div class="submenu-header">Cambiar estado</div>
+    <button 
+      mat-menu-item 
+      *ngFor="let status of getStatusesForChange(development.status)"
+      (click)="changeStatus(development, status)">
+      <mat-icon>swap_horiz</mat-icon>
+      <span>{{ status }}</span>
+    </button>
+
+    <mat-divider></mat-divider>
+    
+    <button mat-menu-item (click)="deleteDevelopment(development)" class="delete-option">
+      <mat-icon>delete</mat-icon>
+      <span>Eliminar</span>
+    </button>
+  </ng-template>
+</mat-menu>
+
+<!-- Menú de acciones móvil -->
+<mat-menu #menuAccionesMobile="matMenu">
+  <ng-template matMenuContent let-development="development">
+    <button mat-menu-item (click)="editDevelopment(development)">
+      <mat-icon>edit</mat-icon>
+      <span>Editar</span>
+    </button>
+
+    <button mat-menu-item (click)="deleteDevelopment(development)" class="delete-option">
+      <mat-icon>delete</mat-icon>
+      <span>Eliminar</span>
+    </button>
+  </ng-template>
+</mat-menu>
