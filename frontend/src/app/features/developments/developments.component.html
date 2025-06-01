@@ -258,7 +258,7 @@
 
   <!-- Cards para móvil -->
   <div class="cards-container" *ngIf="isMobile && !loading">
-    <div class="development-card" *ngFor="let development of developments; trackBy: trackByDevelopment">
+    <div class="development-card" *ngFor="let development of dataSource.data; trackBy: trackByDevelopment">
       <mat-card class="development-card-content">
         <mat-card-header>
           <div class="card-header-content">
@@ -340,7 +340,7 @@
   </div>
 
   <!-- Estado vacío -->
-  <div class="empty-state" *ngIf="!loading && developments.length === 0">
+  <div class="empty-state" *ngIf="!loading && dataSource.data.length === 0">
     <div class="empty-content">
       <mat-icon class="empty-icon">code</mat-icon>
       <h3>No se encontraron desarrollos</h3>
