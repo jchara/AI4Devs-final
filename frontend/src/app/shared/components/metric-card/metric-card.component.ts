@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './metric-card.component.html',
-  styleUrl: './metric-card.component.scss'
+  styleUrl: './metric-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MetricCardComponent {
   @Input() title: string = '';

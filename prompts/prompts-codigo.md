@@ -251,3 +251,21 @@ Implementar diseño responsive de tres niveles:
 - Tratamiento especial para acción destructiva (Eliminar)
 - Versión simplificada para móvil
 ```
+
+## Prompt 19: Análisis de implementación de lazy loading en navegación del sidebar - FRONTEND
+
+```
+Eres un experto desarrollador front senior en angular, @frontend analiza este proyecto y verifica que el lazy load esta bien implementado, que la precarga esté activada y que el use memory de material angular este bien gestionado, ya que al navegar en el sidebar la primer vez se siente lento.
+```
+
+## Prompt 20: Implementación de optimizaciones avanzadas de rendimiento - FRONTEND
+
+```
+Implementa estas optimizaciones, sin perder la fluidez de las transiciones cuando se navega entre vistas:
+
+- Implementar @angular/pwa con cache inteligente
+- Añadir ChangeDetectorRef para manejo manual de detección de cambios
+- Implementar patrón unsubscribe en los componentes
+- Material Modules Centralizados para reducir los imports
+- Cache para API endpoints y assets estáticos
+```

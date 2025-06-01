@@ -1,27 +1,17 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDividerModule } from '@angular/material/divider';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 
+import { MaterialModule } from '../../shared/material.module';
 import { DevelopmentService } from './services/development.service';
-import { Development, DevelopmentStatus, Environment } from './models/development.model';
+import { Development, DevelopmentStatus, Environment, Microservice } from './models/development.model';
 
 interface StatusOption {
   value: string;
@@ -35,24 +25,11 @@ interface StatusOption {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatCardModule,
-    MatMenuModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-    MatDividerModule
+    MaterialModule
   ],
   templateUrl: './developments.component.html',
-  styleUrl: './developments.component.scss'
+  styleUrl: './developments.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DevelopmentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -95,7 +72,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   constructor(
     private developmentService: DevelopmentService,
     private breakpointObserver: BreakpointObserver,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -109,6 +87,23 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  // TrackBy functions para optimizar renderizado
+  trackByDevelopment(index: number, item: Development): string {
+    return item.id;
+  }
+
+  trackByMicroservice(index: number, item: Microservice): string {
+    return item.id;
+  }
+
+  trackByStatus(index: number, item: StatusOption): string {
+    return item.value;
+  }
+
+  trackByEnvironment(index: number, item: string): string {
+    return item;
+  }
+
   private setupResponsiveLayout(): void {
     // Observar múltiples breakpoints
     this.breakpointObserver
@@ -120,6 +115,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
         
         this.isMobile = breakpoints;
         this.isTablet = isTabletBreakpoint;
+        
+        // Trigger change detection manualmente con OnPush
+        this.changeDetectorRef.markForCheck();
       });
   }
 
@@ -137,11 +135,13 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe(() => {
       this.applyFilters();
+      this.changeDetectorRef.markForCheck();
     });
   }
 
   private loadDevelopments(): void {
     this.loading = true;
+    this.changeDetectorRef.markForCheck();
     
     this.developmentService.getDevelopments()
       .pipe(takeUntil(this.destroy$))
@@ -151,11 +151,13 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
           this.updateStatusCounts();
           this.applyFilters();
           this.loading = false;
+          this.changeDetectorRef.markForCheck();
         },
         error: (error) => {
           console.error('Error loading developments:', error);
           this.showErrorMessage('Error al cargar los desarrollos');
           this.loading = false;
+          this.changeDetectorRef.markForCheck();
         }
       });
   }
@@ -277,10 +279,12 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
             this.applyFilters();
           }
           this.showSuccessMessage(`Estado cambiado a: ${newStatus}`);
+          this.changeDetectorRef.markForCheck();
         },
         error: (error) => {
           console.error('Error changing status:', error);
           this.showErrorMessage('Error al cambiar el estado');
+          this.changeDetectorRef.markForCheck();
         }
       });
   }
@@ -298,14 +302,17 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     this.searchControl.setValue('');
     this.statusFilter.setValue('all');
     this.environmentFilter.setValue('');
+    this.changeDetectorRef.markForCheck();
   }
 
   selectStatusFilter(statusValue: string): void {
     this.statusFilter.setValue(statusValue);
+    this.changeDetectorRef.markForCheck();
   }
 
   onPageChange(): void {
     // La paginación se maneja automáticamente por MatTableDataSource
+    this.changeDetectorRef.markForCheck();
   }
 
   private showSuccessMessage(message: string): void {

@@ -174,7 +174,7 @@ export class DevelopmentService {
   constructor() { }
 
   getDevelopments(): Observable<Development[]> {
-    return of(this.mockDevelopments).pipe(delay(300));
+    return of(this.mockDevelopments);
   }
 
   getPaginatedDevelopments(
@@ -207,28 +207,20 @@ export class DevelopmentService {
     // Apply sorting
     if (sort) {
       filteredDevelopments.sort((a, b) => {
-        const aVal = a[sort.field];
-        const bVal = b[sort.field];
+        const aValue = this.getPropertyValue(a, sort.field);
+        const bValue = this.getPropertyValue(b, sort.field);
         
-        if (aVal == null && bVal == null) return 0;
-        if (aVal == null) return sort.direction === 'asc' ? 1 : -1;
-        if (bVal == null) return sort.direction === 'asc' ? -1 : 1;
-        
-        if (aVal < bVal) return sort.direction === 'asc' ? -1 : 1;
-        if (aVal > bVal) return sort.direction === 'asc' ? 1 : -1;
-        return 0;
+        const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        return sort.direction === 'desc' ? -comparison : comparison;
       });
     }
 
     // Apply pagination
-    const pageSize = pagination?.pageSize || 20;
-    const page = pagination?.page || 1;
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
+    const { page = 0, pageSize = 20 } = pagination || {};
     const total = filteredDevelopments.length;
     const totalPages = Math.ceil(total / pageSize);
-
-    const paginatedData = filteredDevelopments.slice(start, end);
+    const startIndex = page * pageSize;
+    const paginatedData = filteredDevelopments.slice(startIndex, startIndex + pageSize);
 
     const response: PaginatedResponse<Development> = {
       data: paginatedData,
@@ -240,7 +232,11 @@ export class DevelopmentService {
       }
     };
 
-    return of(response).pipe(delay(300));
+    return of(response);
+  }
+
+  private getPropertyValue(obj: Development, field: keyof Development): any {
+    return obj[field];
   }
 
   getMetrics(): Observable<DevelopmentMetrics> {
@@ -256,15 +252,15 @@ export class DevelopmentService {
       completed: completed + 8 // 10 completados
     };
 
-    return of(metrics).pipe(delay(200));
+    return of(metrics);
   }
 
   getRecentActivity(): Observable<RecentActivity[]> {
-    return of(this.mockRecentActivities).pipe(delay(200));
+    return of(this.mockRecentActivities);
   }
 
   getUpcomingDeployments(): Observable<UpcomingDeployment[]> {
-    return of(this.mockUpcomingDeployments).pipe(delay(200));
+    return of(this.mockUpcomingDeployments);
   }
 
   getChartData(): Observable<ChartData[]> {
@@ -291,16 +287,16 @@ export class DevelopmentService {
       }
     ];
 
-    return of(data).pipe(delay(200));
+    return of(data);
   }
 
   getDevelopmentById(id: string): Observable<Development | undefined> {
     const development = this.mockDevelopments.find(d => d.id === id);
-    return of(development).pipe(delay(200));
+    return of(development);
   }
 
   getMicroservices(): Observable<Microservice[]> {
-    return of(this.mockMicroservices).pipe(delay(200));
+    return of(this.mockMicroservices);
   }
 
   createDevelopment(development: Omit<Development, 'id' | 'createdDate' | 'updatedDate'>): Observable<Development> {
@@ -313,7 +309,7 @@ export class DevelopmentService {
     };
     
     this.mockDevelopments.unshift(newDevelopment);
-    return of(newDevelopment).pipe(delay(500));
+    return of(newDevelopment);
   }
 
   updateDevelopment(id: string, development: Partial<Development>): Observable<Development> {
@@ -324,7 +320,7 @@ export class DevelopmentService {
         ...development,
         updatedDate: new Date()
       };
-      return of(this.mockDevelopments[index]).pipe(delay(500));
+      return of(this.mockDevelopments[index]);
     }
     throw new Error('Development not found');
   }
@@ -334,7 +330,7 @@ export class DevelopmentService {
     if (index !== -1) {
       this.mockDevelopments.splice(index, 1);
     }
-    return of(void 0).pipe(delay(300));
+    return of(void 0);
   }
 
   changeStatus(id: string, newStatus: DevelopmentStatus): Observable<Development> {

@@ -1,13 +1,13 @@
-<div class="main-layout">
+<div class="main-layout route-transition">
   <!-- Header -->
-  <app-header></app-header>
+  <app-header class="gpu-accelerated"></app-header>
   
   <!-- Sidebar -->
-  <app-sidebar></app-sidebar>
+  <app-sidebar class="gpu-accelerated"></app-sidebar>
   
   <!-- Contenido principal -->
-  <main class="main-content">
-    <div class="content-wrapper">
+  <main class="main-content route-transition">
+    <div class="content-wrapper lazy-content">
       <router-outlet></router-outlet>
     </div>
   </main>

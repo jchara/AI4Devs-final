@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartData } from '../../../features/developments/models/development.model';
 
@@ -7,7 +7,8 @@ import { ChartData } from '../../../features/developments/models/development.mod
   standalone: true,
   imports: [CommonModule],
   templateUrl: './development-chart.component.html',
-  styleUrl: './development-chart.component.scss'
+  styleUrl: './development-chart.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DevelopmentChartComponent implements OnInit {
   @Input() data: ChartData[] = [];
@@ -15,6 +16,11 @@ export class DevelopmentChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  // TrackBy function para optimizar renderizado
+  trackByEnvironment(index: number, item: ChartData): string {
+    return item.environment;
   }
 
   getBarHeight(count: number): number {

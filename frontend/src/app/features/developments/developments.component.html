@@ -56,7 +56,7 @@
         >
           <mat-option value="">Todos</mat-option>
           <mat-option
-            *ngFor="let environment of availableEnvironments"
+            *ngFor="let environment of availableEnvironments; trackBy: trackByEnvironment"
             [value]="environment"
           >
             {{ environment }}
@@ -71,7 +71,7 @@
         <label class="filter-label">Estado:</label>
         <div class="status-chips-simple">
           <div
-            *ngFor="let status of availableStatuses"
+            *ngFor="let status of availableStatuses; trackBy: trackByStatus"
             class="status-badge-filter"
             [ngClass]="
               status.value !== 'all'
@@ -167,7 +167,8 @@
               <mat-chip
                 *ngFor="
                   let microservice of development.microservices;
-                  let i = index
+                  let i = index;
+                  trackBy: trackByMicroservice
                 "
                 [matTooltip]="
                   microservice.name + ' (' + microservice.technology + ')'
@@ -238,7 +239,7 @@
 
       <mat-header-row *matHeaderRowDef="isTablet ? displayedColumnsTablet : displayedColumns"></mat-header-row>
       <mat-row
-        *matRowDef="let row; columns: isTablet ? displayedColumnsTablet : displayedColumns"
+        *matRowDef="let row; columns: isTablet ? displayedColumnsTablet : displayedColumns; trackBy: trackByDevelopment"
         class="development-row"
       ></mat-row>
     </mat-table>
@@ -257,7 +258,7 @@
 
   <!-- Cards para móvil -->
   <div class="cards-container" *ngIf="isMobile && !loading">
-    <div class="development-card" *ngFor="let development of developments">
+    <div class="development-card" *ngFor="let development of developments; trackBy: trackByDevelopment">
       <mat-card class="development-card-content">
         <mat-card-header>
           <div class="card-header-content">
@@ -296,7 +297,7 @@
             <div class="microservices-list">
               <mat-chip-set>
                 <mat-chip
-                  *ngFor="let microservice of development.microservices"
+                  *ngFor="let microservice of development.microservices; trackBy: trackByMicroservice"
                   [matTooltip]="
                     microservice.name + ' (' + microservice.technology + ')'
                   "
@@ -388,7 +389,7 @@
       <div class="menu-label">Cambiar estado</div>
       <button
         mat-menu-item
-        *ngFor="let status of getStatusesForChange(development.status)"
+        *ngFor="let status of getStatusesForChange(development.status); trackBy: trackByEnvironment"
         (click)="changeStatus(development, status)"
         class="menu-item status-item"
       >

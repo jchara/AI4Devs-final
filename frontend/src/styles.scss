@@ -33,8 +33,15 @@
   --border-radius-lg: 12px;
   
   // Transiciones
-  --transition: all 0.3s ease;
-  --transition-fast: all 0.15s ease;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Shadows con transiciones
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -376,4 +383,36 @@ body.dark {
     background-color: var(--bg-secondary) !important;
     color: var(--text-primary) !important;
   }
+}
+
+// =============================================================================
+// OPTIMIZACIONES DE RENDIMIENTO
+// =============================================================================
+
+// Optimización de GPU acceleration para elementos con transiciones
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+// Transiciones fluidas para navegación
+.route-transition {
+  transition: var(--transition);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+// Optimización para elementos que cambian frecuentemente
+.optimized-animation {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+// Lazy loading optimization
+.lazy-content {
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
 }
