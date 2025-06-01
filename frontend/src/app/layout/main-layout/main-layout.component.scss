@@ -1,32 +1,22 @@
 .main-layout {
-  display: grid;
-  grid-template-areas: 
-    "header header"
-    "sidebar content";
-  grid-template-columns: 250px 1fr;
-  grid-template-rows: auto 1fr;
+  display: block;
   min-height: 100vh;
   background-color: var(--bg-secondary);
-  
-  @media (max-width: 768px) {
-    grid-template-areas: 
-      "header"
-      "content";
-    grid-template-columns: 1fr;
-  }
 }
 
 .main-content {
-  grid-area: content;
   overflow-y: auto;
   padding: var(--spacing-lg);
   margin-top: 64px; // Altura del header
+  margin-left: 250px; // Valor por defecto, se sobrescribe con binding
   min-height: calc(100vh - 64px);
+  transition: margin-left 0.3s ease;
   
   @media (max-width: 768px) {
-    margin-top: 0;
+    margin-top: 64px;
+    margin-left: 0 !important; // Forzar 0 en móvil
     padding: var(--spacing-md);
-    min-height: 100vh;
+    min-height: calc(100vh - 64px);
   }
 }
 
@@ -35,22 +25,6 @@
   margin: 0 auto;
   animation: fadeIn 0.3s ease-out;
   min-height: calc(100vh - 128px); // Compensar header y padding
-}
-
-// Ajustes para el header
-app-header {
-  grid-area: header;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
-
-// El sidebar se maneja completamente en su propio componente
-app-sidebar {
-  grid-area: sidebar;
-  // Sin estilos adicionales - se manejan en sidebar.component.scss
 }
 
 // Animación de entrada optimizada
@@ -72,7 +46,7 @@ app-sidebar {
 
 .main-content {
   contain: layout style paint;
-  will-change: scroll-position;
+  will-change: margin-left;
 }
 
 // Transiciones suaves para cambio de tema

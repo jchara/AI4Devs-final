@@ -1,4 +1,4 @@
-<aside class="sidebar" [class.mobile-hidden]="!isMobileMenuOpen">
+<div class="sidebar">
   <nav class="sidebar-nav">
     <!-- Items de navegación -->
     <div class="nav-items">
@@ -6,7 +6,11 @@
         routerLink="/dashboard" 
         routerLinkActive="active"
         class="nav-item"
-        title="Dashboard">
+        title="Dashboard"
+        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Dashboard' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"/>
           <rect x="14" y="3" width="7" height="7"/>
@@ -20,7 +24,11 @@
         routerLink="/desarrollos" 
         routerLinkActive="active"
         class="nav-item"
-        title="Desarrollos">
+        title="Desarrollos"
+        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Desarrollos' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
         </svg>
@@ -31,7 +39,11 @@
         routerLink="/microservicios" 
         routerLinkActive="active"
         class="nav-item"
-        title="Microservicios">
+        title="Microservicios"
+        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Microservicios' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 3v6l4-4-4-4"/>
           <path d="M12 3v6l-4-4 4-4"/>
@@ -48,7 +60,11 @@
         routerLink="/ambientes" 
         routerLinkActive="active"
         class="nav-item"
-        title="Ambientes">
+        title="Ambientes"
+        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Ambientes' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
           <path d="m3.3 7 8.7 5 8.7-5"/>
@@ -61,7 +77,11 @@
         routerLink="/jira-sync" 
         routerLinkActive="active"
         class="nav-item"
-        title="Jira Sync">
+        title="Jira Sync"
+        [matTooltip]="shouldShowTooltip(isCollapsed$ | async, isMobile$ | async) ? 'Jira Sync' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="m12 19 7-7 3 3-7 7-3-3z"/>
           <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
@@ -79,7 +99,10 @@
       </div>
     </div>
   </nav>
+</div>
 
-  <!-- Overlay para móvil -->
-  <div class="mobile-overlay" (click)="closeMobileMenu()" *ngIf="isMobileMenuOpen"></div>
-</aside>
+<!-- Overlay para móvil -->
+<div class="mobile-overlay" 
+     (click)="closeMobileMenu()" 
+     *ngIf="(isMobile$ | async) && (isMobileMenuOpen$ | async)">
+</div>

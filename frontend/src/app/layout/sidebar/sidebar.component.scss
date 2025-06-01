@@ -1,13 +1,36 @@
-.sidebar {
+:host {
+  position: fixed !important;
+  left: 0 !important;
+  top: 64px !important;
+  z-index: 900 !important;
+  height: calc(100vh - 64px) !important;
   width: 250px;
-  height: calc(100vh - 64px);
+  transition: width 0.3s ease, transform 0.3s ease;
+  
+  &.collapsed {
+    width: 60px !important;
+  }
+  
+  @media (max-width: 768px) {
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-hover);
+    
+    &:not(.mobile-hidden) {
+      transform: translateX(0);
+    }
+    
+    // En móvil no se aplica el collapsed
+    &.collapsed {
+      width: 250px !important;
+    }
+  }
+}
+
+.sidebar {
+  width: 100%;
+  height: 100%;
   background-color: var(--bg-primary);
   border-right: 1px solid var(--border-color);
-  position: fixed;
-  left: 0;
-  top: 64px;
-  z-index: 90;
-  transition: var(--transition);
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -33,15 +56,64 @@
       background: var(--text-secondary);
     }
   }
+}
+
+// Estilos para cuando el host está collapsed
+:host.collapsed {
+  .nav-text {
+    opacity: 0 !important;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+  }
   
-  @media (max-width: 768px) {
-    top: 0;
-    height: 100vh;
-    transform: translateX(-100%);
-    box-shadow: var(--shadow-hover);
+  .nav-item {
+    justify-content: center !important;
+    padding: var(--spacing-md) var(--spacing-xs) !important;
+    gap: 0 !important;
+    min-width: 48px;
     
-    &:not(.mobile-hidden) {
-      transform: translateX(0);
+    svg {
+      margin: 0;
+      flex-shrink: 0;
+    }
+    
+    &:hover {
+      transform: none !important; // Evitar desplazamiento hacia la derecha en modo colapsado
+    }
+    
+    // Ocultar el indicador activo en modo colapsado
+    &.active::after {
+      display: none;
+    }
+  }
+  
+  .nav-items {
+    padding: var(--spacing-md) var(--spacing-xs) !important;
+  }
+  
+  .sidebar-footer {
+    .version-text {
+      opacity: 0;
+    }
+  }
+}
+
+// En móvil, resetear el collapsed
+@media (max-width: 768px) {
+  :host.collapsed {
+    .nav-text {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .nav-item {
+      justify-content: flex-start;
+      padding: var(--spacing-md);
+    }
+    
+    .sidebar-footer .version-text {
+      opacity: 1;
     }
   }
 }
@@ -69,7 +141,7 @@
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     position: relative;
     min-height: 48px; // Altura mínima para touch targets
     
@@ -111,6 +183,7 @@
       font-size: 14px;
       white-space: nowrap;
       font-weight: 500;
+      transition: opacity 0.3s ease;
     }
   }
 }
@@ -128,6 +201,7 @@
       color: var(--text-secondary);
       font-size: 12px;
       font-weight: 400;
+      transition: opacity 0.3s ease;
     }
   }
 }
@@ -195,5 +269,35 @@
   .nav-item {
     padding: var(--spacing-sm) var(--spacing-md);
     min-height: 40px;
+  }
+}
+
+// Estilos personalizados para tooltips del sidebar
+::ng-deep .sidebar-tooltip {
+  .mat-mdc-tooltip {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 8px 12px !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--shadow-md) !important;
+    margin-left: 8px !important;
+  }
+  
+  .mat-mdc-tooltip-trigger {
+    pointer-events: auto !important;
+  }
+}
+
+// Ajuste específico para tooltips en sidebar colapsado
+:host.collapsed {
+  .nav-item {
+    // Asegurar que el tooltip aparezca correctamente
+    position: relative;
+    
+    &:hover {
+      z-index: 1001; // Por encima del header pero permitir tooltip
+    }
   }
 }

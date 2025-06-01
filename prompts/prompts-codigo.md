@@ -269,3 +269,12 @@ Implementa estas optimizaciones, sin perder la fluidez de las transiciones cuand
 - Material Modules Centralizados para reducir los imports
 - Cache para API endpoints y assets estáticos
 ```
+
+## Prompt 21: Ajustar header y sidebar fijos con funcionalidad de toggle - FRONTEND
+
+```
+Respuestas a las preguntas:
+1. Fixed, siempre visible incluso al hacer scroll
+2. El sidebar debe poder ocultarse en escritorio y en móviles se debe ocultar pero poder mostrarse con el botón hamburguesa cuando se necesite para navegar
+3. Mantener la altura del header de 64px
+```

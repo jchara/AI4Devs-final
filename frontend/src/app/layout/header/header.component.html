@@ -1,13 +1,20 @@
 <header class="header">
   <div class="header-content">
-    <!-- Logo y título -->
+    <!-- Botón hamburguesa y Logo/título -->
     <div class="header-brand">
-      <div class="logo">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
-          <path d="M8 12h16v2H8v-2zm0 4h16v2H8v-2zm0 4h10v2H8v-2z" fill="white"/>
+      <!-- Botón hamburguesa -->
+      <button 
+        class="sidebar-toggle"
+        (click)="toggleSidebar()"
+        [attr.aria-label]="'Alternar menú lateral'"
+        title="Alternar menú">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
-      </div>
+      </button>
+      
       <h1 class="title">DevTracker</h1>
     </div>
 

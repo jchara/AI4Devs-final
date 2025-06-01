@@ -6,7 +6,8 @@
   <app-sidebar class="gpu-accelerated"></app-sidebar>
   
   <!-- Contenido principal -->
-  <main class="main-content route-transition">
+  <main class="main-content route-transition" 
+        [style.margin-left]="contentMarginLeft$ | async">
     <div class="content-wrapper lazy-content">
       <router-outlet></router-outlet>
     </div>
