@@ -239,7 +239,7 @@
 
       <mat-header-row *matHeaderRowDef="isTablet ? displayedColumnsTablet : displayedColumns"></mat-header-row>
       <mat-row
-        *matRowDef="let row; columns: isTablet ? displayedColumnsTablet : displayedColumns; trackBy: trackByDevelopment"
+        *matRowDef="let row; columns: isTablet ? displayedColumnsTablet : displayedColumns"
         class="development-row"
       ></mat-row>
     </mat-table>
