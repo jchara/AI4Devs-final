@@ -324,7 +324,106 @@
   mat-icon { color: #F44336 !important; }
 }
 
+// Estilos mejorados para el menú de acciones
 ::ng-deep {
+  .actions-menu {
+    .mat-mdc-menu-content {
+      padding: 8px 0;
+      min-width: 180px;
+    }
+
+    // Eliminar bordes de todos los botones del menú
+    .mat-mdc-menu-item,
+    button {
+      border: none !important;
+      outline: none !important;
+    }
+
+    .menu-section {
+      padding: 4px 0;
+    }
+
+    .menu-divider {
+      margin: 8px 0;
+      border-color: var(--border-color);
+    }
+
+    .menu-label {
+      padding: 8px 16px 4px 16px;
+      font-size: 11px;
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .menu-item {
+      padding: 8px 16px;
+      min-height: 40px;
+      font-size: var(--font-size-sm);
+      transition: all 0.2s ease;
+      border: none !important;
+
+      mat-icon {
+        margin-right: 12px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--text-secondary);
+        transition: color 0.2s ease;
+      }
+
+      span {
+        color: var(--text-primary);
+        font-weight: var(--font-weight-medium);
+      }
+
+      &:hover {
+        background-color: var(--bg-secondary);
+        
+        mat-icon {
+          color: var(--color-primary);
+        }
+      }
+
+      &.status-item {
+        padding-left: 24px;
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          margin-right: 8px;
+        }
+      }
+
+      &.delete-item {
+        &:hover {
+          background-color: rgba(244, 67, 54, 0.08);
+          
+          mat-icon,
+          span {
+            color: #F44336;
+          }
+        }
+        
+        mat-icon {
+          color: #F44336;
+        }
+        
+        span {
+          color: #F44336;
+        }
+      }
+    }
+
+    &.mobile-menu {
+      .mat-mdc-menu-content {
+        min-width: 160px;
+      }
+    }
+  }
+
   .success-snackbar {
     --mdc-snackbar-container-color: #4CAF50 !important;
     --mdc-snackbar-supporting-text-color: white !important;

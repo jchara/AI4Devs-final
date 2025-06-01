@@ -370,58 +370,65 @@
 </div>
 
 <!-- Menú de acciones desktop -->
-<mat-menu #menuAcciones="matMenu">
+<mat-menu #menuAcciones="matMenu" class="actions-menu">
   <ng-template matMenuContent let-development="development">
-    <button mat-menu-item (click)="viewDetails(development)">
-      <mat-icon>visibility</mat-icon>
-      <span>Ver detalles</span>
-    </button>
+    <div class="menu-section">
+      <button mat-menu-item (click)="viewDetails(development)" class="menu-item">
+        <mat-icon>visibility</mat-icon>
+        <span>Ver detalles</span>
+      </button>
 
-    <button mat-menu-item (click)="editDevelopment(development)">
-      <mat-icon>edit</mat-icon>
-      <span>Editar</span>
-    </button>
+      <button mat-menu-item (click)="editDevelopment(development)" class="menu-item">
+        <mat-icon>edit</mat-icon>
+        <span>Editar</span>
+      </button>
+    </div>
 
-    <mat-divider></mat-divider>
+    <div class="menu-section">
+      <div class="menu-label">Cambiar estado</div>
+      <button
+        mat-menu-item
+        *ngFor="let status of getStatusesForChange(development.status)"
+        (click)="changeStatus(development, status)"
+        class="menu-item status-item"
+      >
+        <mat-icon>radio_button_unchecked</mat-icon>
+        <span>{{ status }}</span>
+      </button>
+    </div>
 
-    <div class="submenu-header">Cambiar estado</div>
-    <button
-      mat-menu-item
-      *ngFor="let status of getStatusesForChange(development.status)"
-      (click)="changeStatus(development, status)"
-    >
-      <mat-icon>swap_horiz</mat-icon>
-      <span>{{ status }}</span>
-    </button>
-
-    <mat-divider></mat-divider>
-
-    <button
-      mat-menu-item
-      (click)="deleteDevelopment(development)"
-      class="delete-option"
-    >
-      <mat-icon>delete</mat-icon>
-      <span>Eliminar</span>
-    </button>
+    <div class="menu-section">
+      <button
+        mat-menu-item
+        (click)="deleteDevelopment(development)"
+        class="menu-item delete-item"
+      >
+        <mat-icon>delete_outline</mat-icon>
+        <span>Eliminar</span>
+      </button>
+    </div>
   </ng-template>
 </mat-menu>
 
 <!-- Menú de acciones móvil -->
-<mat-menu #menuAccionesMobile="matMenu">
+<mat-menu #menuAccionesMobile="matMenu" class="actions-menu mobile-menu">
   <ng-template matMenuContent let-development="development">
-    <button mat-menu-item (click)="editDevelopment(development)">
-      <mat-icon>edit</mat-icon>
-      <span>Editar</span>
-    </button>
+    <div class="menu-section">
+      <button mat-menu-item (click)="editDevelopment(development)" class="menu-item">
+        <mat-icon>edit</mat-icon>
+        <span>Editar</span>
+      </button>
+    </div>
 
-    <button
-      mat-menu-item
-      (click)="deleteDevelopment(development)"
-      class="delete-option"
-    >
-      <mat-icon>delete</mat-icon>
-      <span>Eliminar</span>
-    </button>
+    <div class="menu-section">
+      <button
+        mat-menu-item
+        (click)="deleteDevelopment(development)"
+        class="menu-item delete-item"
+      >
+        <mat-icon>delete_outline</mat-icon>
+        <span>Eliminar</span>
+      </button>
+    </div>
   </ng-template>
 </mat-menu>
