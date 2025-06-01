@@ -306,6 +306,10 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     this.environmentFilter.setValue('');
   }
 
+  selectStatusFilter(statusValue: string): void {
+    this.statusFilter.setValue(statusValue);
+  }
+
   onPageChange(): void {
     // La paginación se maneja automáticamente por MatTableDataSource
   }

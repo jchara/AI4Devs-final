@@ -158,5 +158,31 @@ Adicionalmente:
 En @development.model.ts del front quite el estado Rechazado para desarrollos, verifica y actualiza la app para que no genere error
 ```
 
+## Prompt 10: Ajustes de UX en vista de desarrollos - FRONTEND
 
+```
+En el componente @developments.component.html se debe ajustar lo siguiente:
+- El filtro de ambiente dejarlo al lado del input de buscar desarrollo
+- El mat-chip-listbox no muestra los colores correspondientes de los estados.
+```
 
+## Prompt 11: Unificar estilos con Dashboard - FRONTEND
+
+```
+En el componente @developments.component.html el numero de desarrollos debe tener el mismo estilo que tiene la card con totales en el Dashboard
+```
+
+## Prompt 12: Arreglar modo oscuro en tabla de desarrollos - FRONTEND
+
+```
+La tabla de @developments.component.html se ve blanca en modo oscuro y el desplegable de acciones también, no debe ser asi, como desarrollador senior en angular analiza y realiza el ajuste correspondiente.
+```
+
+## Prompt 13: Centralización y optimización de estilos CSS - FRONTEND
+
+```
+@frontend como desarrollador senior en angular y experto en ux/ui y css, analiza el proyecto frontend y verifica si se pueden centralizar los estilos y evitar redundancias o duplicidad.
+
+Ten cuenta buenas prácticas tanto de diseño como de seguridad.
+Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero
+```

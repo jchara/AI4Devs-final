@@ -1,0 +1,286 @@
+// =============================================================================
+// COMPONENTS - Componentes base reutilizables
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// STATUS BADGES
+// -----------------------------------------------------------------------------
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--badge-font-weight);
+  text-transform: none;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  max-width: 120px;
+  transition: var(--transition);
+
+  // Status variants
+  &--desarrollo {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #2196F3;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+  }
+
+  &--archivado {
+    background-color: rgba(158, 158, 158, 0.1);
+    color: #9E9E9E;
+    border: 1px solid rgba(158, 158, 158, 0.3);
+  }
+
+  &--completado {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+}
+
+// Legacy support - mantener compatibilidad temporal
+.badge-desarrollo { @extend .status-badge--desarrollo; }
+.badge-archivado { @extend .status-badge--archivado; }
+.badge-completado { @extend .status-badge--completado; }
+
+// -----------------------------------------------------------------------------
+// ENVIRONMENT BADGES
+// -----------------------------------------------------------------------------
+.environment-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: var(--transition);
+
+  // Environment variants
+  &--development {
+    background-color: rgba(102, 198, 234, 0.1);
+    color: #66C6EA;
+    border: 1px solid rgba(102, 198, 234, 0.3);
+  }
+
+  &--testing {
+    background-color: rgba(125, 43, 227, 0.1);
+    color: #7D2BE3;
+    border: 1px solid rgba(125, 43, 227, 0.3);
+  }
+
+  &--staging {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #FF9800;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+  }
+
+  &--production {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+
+  &--qa {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #FF9800;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+  }
+
+  &--local {
+    background-color: rgba(102, 198, 234, 0.1);
+    color: #66C6EA;
+    border: 1px solid rgba(102, 198, 234, 0.3);
+  }
+}
+
+// Legacy support - mantener compatibilidad temporal
+.ambiente-development { @extend .environment-badge--development; }
+.ambiente-testing { @extend .environment-badge--testing; }
+.ambiente-staging { @extend .environment-badge--staging; }
+.ambiente-production { @extend .environment-badge--production; }
+.ambiente-qa { @extend .environment-badge--qa; }
+.ambiente-local { @extend .environment-badge--local; }
+.ambiente-producción { @extend .environment-badge--production; }
+
+// -----------------------------------------------------------------------------
+// BUTTONS BASE
+// -----------------------------------------------------------------------------
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// CARD COMPONENTS
+// -----------------------------------------------------------------------------
+.card-base {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// TABLE COMPONENTS
+// -----------------------------------------------------------------------------
+.table-base {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th, td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  th {
+    background-color: var(--bg-secondary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  td {
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+  }
+  
+  tr:hover {
+    background-color: var(--bg-secondary);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// DATA DISPLAY COMPONENTS
+// -----------------------------------------------------------------------------
+.name-cell {
+  &__title {
+    margin: 0 0 4px 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    display: block;
+  }
+
+  &__version {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+    display: block;
+  }
+}
+
+.date-cell {
+  &__primary {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+  }
+
+  &__secondary {
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+  }
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+// -----------------------------------------------------------------------------
+// STATUS FILTER CHIPS - Exact copy of badges for consistency
+// -----------------------------------------------------------------------------
+.status-chips-simple {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.status-badge-filter {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--badge-font-weight);
+  text-transform: none;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  max-width: 120px;
+  transition: var(--transition);
+  cursor: pointer;
+  user-select: none;
+  
+  // Interactive states
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.selected {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .chip-count {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+    margin-left: var(--spacing-xs);
+  }
+}
+
+// All filter chip
+.status-badge-filter.status-chip-all {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  
+  &:hover {
+    background-color: rgba(125, 43, 227, 0.1);
+    color: var(--color-primary);
+    border-color: rgba(125, 43, 227, 0.3);
+  }
+  
+  &.selected {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+} 

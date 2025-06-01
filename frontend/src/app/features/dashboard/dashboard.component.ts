@@ -75,6 +75,19 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  getStatusBadgeClass(status: DevelopmentStatus): string {
+    switch (status) {
+      case DevelopmentStatus.DEVELOPMENT:
+        return 'badge-desarrollo';
+      case DevelopmentStatus.ARCHIVED:
+        return 'badge-archivado';
+      case DevelopmentStatus.COMPLETED:
+        return 'badge-completado';
+      default:
+        return '';
+    }
+  }
+
   getEnvironmentClass(environment: Environment): string {
     switch (environment) {
       case Environment.DEVELOPMENT:
@@ -85,6 +98,21 @@ export class DashboardComponent implements OnInit {
         return 'staging';
       case Environment.PRODUCTION:
         return 'production';
+      default:
+        return '';
+    }
+  }
+
+  getEnvironmentBadgeClass(environment: Environment): string {
+    switch (environment) {
+      case Environment.DEVELOPMENT:
+        return 'ambiente-development';
+      case Environment.TESTING:
+        return 'ambiente-testing';
+      case Environment.STAGING:
+        return 'ambiente-staging';
+      case Environment.PRODUCTION:
+        return 'ambiente-production';
       default:
         return '';
     }

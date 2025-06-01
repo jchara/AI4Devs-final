@@ -1,95 +1,33 @@
-.dashboard {
-  padding: var(--spacing-lg);
-  max-width: 1400px;
-  margin: 0 auto;
-}
+// =============================================================================
+// DASHBOARD COMPONENT - Estilos específicos del componente
+// =============================================================================
 
-.dashboard-header {
-  margin-bottom: var(--spacing-xl);
-  
-  .dashboard-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-xs) 0;
-    letter-spacing: -0.025em;
-  }
-  
-  .dashboard-subtitle {
-    font-size: 16px;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-}
+// NOTA: Los estilos base (.dashboard, .page-header, .badges, etc.) 
+// ahora están centralizados en src/styles/
 
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
-  }
-}
+// -----------------------------------------------------------------------------
+// ESTILOS ESPECÍFICOS DEL DASHBOARD
+// -----------------------------------------------------------------------------
 
-.dashboard-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: var(--spacing-xl);
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-}
-
-.content-section {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  margin-bottom: var(--spacing-lg);
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.section-header {
+// Desarrollo info legacy - mantener para compatibilidad temporal
+.development-info {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-color);
+  flex-direction: column;
+  gap: 2px;
   
-  .section-title {
-    font-size: 18px;
-    font-weight: 600;
+  .development-name {
+    font-weight: var(--font-weight-medium);
     color: var(--text-primary);
-    margin: 0;
+  }
+  
+  .development-version {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-family: monospace;
   }
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 var(--spacing-md) 0;
-  padding: var(--spacing-lg) var(--spacing-lg) 0;
-}
-
-// Tabla de desarrollos
-.table-container {
-  overflow-x: auto;
-}
-
+// Legacy table styles - aplicando estilos directamente
 .developments-table {
   width: 100%;
   border-collapse: collapse;
@@ -102,16 +40,16 @@
   
   th {
     background-color: var(--bg-secondary);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--text-secondary);
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
   
   td {
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: var(--font-size-base);
   }
   
   tr:hover {
@@ -119,28 +57,12 @@
   }
 }
 
-.development-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  
-  .development-name {
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-  
-  .development-version {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-family: monospace;
-  }
-}
-
+// Legacy ambiente badge styles - mantener temporalmente
 .ambiente-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 500;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   
   &.development {
@@ -164,31 +86,32 @@
   }
 }
 
+// Legacy name cell - aplicando estilos directamente
+.name-cell {
+  .name-title {
+    margin: 0 0 4px 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    display: block;
+  }
+
+  .name-version {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+    display: block;
+  }
+}
+
+// Actions legacy
 .actions {
   display: flex;
   gap: var(--spacing-xs);
 }
 
-.btn-icon {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: var(--border-radius);
-  background-color: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-  }
-}
-
-// Sidebar content
+// Sidebar content específico
 .sidebar-content {
   display: flex;
   flex-direction: column;
@@ -247,14 +170,14 @@
   flex: 1;
   
   .activity-description {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-primary);
     margin: 0 0 2px 0;
-    line-height: 1.4;
+    line-height: var(--line-height-normal);
   }
   
   .activity-time {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     color: var(--text-secondary);
   }
 }
@@ -282,49 +205,21 @@
   gap: 2px;
   
   .deployment-name {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     color: var(--text-primary);
   }
   
   .deployment-date {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     color: var(--text-secondary);
   }
 }
 
-// Responsive
+// -----------------------------------------------------------------------------
+// RESPONSIVE ESPECÍFICO DEL DASHBOARD
+// -----------------------------------------------------------------------------
 @media (max-width: 768px) {
-  .dashboard {
-    padding: var(--spacing-md);
-  }
-  
-  .dashboard-header {
-    margin-bottom: var(--spacing-lg);
-    
-    .dashboard-title {
-      font-size: 24px;
-    }
-    
-    .dashboard-subtitle {
-      font-size: 14px;
-    }
-  }
-  
-  .section-header {
-    padding: var(--spacing-md);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-  }
-  
-  .developments-table {
-    th, td {
-      padding: var(--spacing-sm);
-      font-size: 12px;
-    }
-  }
-  
   .activity-list,
   .deployment-list {
     padding: var(--spacing-md);

@@ -1,0 +1,15 @@
+// =============================================================================
+// DESIGN SYSTEM INDEX - Punto de entrada para todos los estilos centralizados
+// =============================================================================
+
+// 1. Design Tokens - Variables y tokens base
+@use 'design-tokens';
+
+// 2. Components - Componentes reutilizables (badges, botones, etc.)
+@use 'components';
+
+// 3. Layout - Patrones de layout y contenedores
+@use 'layout';
+
+// 4. Utilities - Clases de utilidad (solo las esenciales)
+@use 'utilities'; 

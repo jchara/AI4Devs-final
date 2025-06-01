@@ -44,8 +44,8 @@ export class ThemeService {
     const root = document.documentElement;
     
     if (theme === 'dark') {
-      root.style.setProperty('--bg-primary', '#121212');
-      root.style.setProperty('--bg-secondary', '#1E1E1E');
+      root.style.setProperty('--bg-primary', '#232323');
+      root.style.setProperty('--bg-secondary', '#292929');
       root.style.setProperty('--bg-tertiary', '#2D2D2D');
       root.style.setProperty('--text-primary', '#FFFFFF');
       root.style.setProperty('--text-secondary', '#888888');

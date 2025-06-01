@@ -1,6 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
+// =============================================================================
+// DESIGN SYSTEM - Sistema de diseño centralizado
+// =============================================================================
+@use 'styles/index';
+
 // Variables CSS por defecto (serán sobrescritas por el ThemeService)
 :root {
   // Colores tema claro
@@ -249,4 +254,126 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+// Angular Material overrides para modo oscuro
+body.dark {
+  // Tabla
+  .mat-mdc-table {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-header-row {
+    background-color: var(--bg-secondary) !important;
+  }
+
+  .mat-mdc-header-cell {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-bottom-color: var(--border-color) !important;
+  }
+
+  .mat-mdc-row {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-bottom-color: var(--border-color) !important;
+
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--text-primary) !important;
+    border-bottom-color: var(--border-color) !important;
+  }
+
+  // Paginador
+  .mat-mdc-paginator {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-top-color: var(--border-color) !important;
+  }
+
+  .mat-mdc-paginator-range-label {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-icon-button {
+    color: var(--text-primary) !important;
+  }
+
+  // Menús
+  .mat-mdc-menu-panel {
+    background-color: var(--bg-primary) !important;
+    border: 1px solid var(--border-color) !important;
+  }
+
+  .mat-mdc-menu-item {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+    }
+
+    &:focus {
+      background-color: var(--bg-secondary) !important;
+    }
+  }
+
+  .mat-mdc-menu-item .mat-icon {
+    color: var(--text-primary) !important;
+  }
+
+  // Dividers en menús
+  .mat-divider {
+    border-top-color: var(--border-color) !important;
+  }
+
+  // Form fields
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--bg-primary) !important;
+    }
+
+    .mat-mdc-form-field-label {
+      color: var(--text-secondary) !important;
+    }
+
+    .mat-mdc-form-field-input-control {
+      color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-outline {
+      color: var(--border-color) !important;
+    }
+  }
+
+  // Chips
+  .mat-mdc-chip {
+    color: var(--text-primary) !important;
+  }
+
+  // Cards
+  .mat-mdc-card {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+  }
+
+  // Botones
+  .mat-mdc-button:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-icon-button:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+    color: var(--text-primary) !important;
+  }
+
+  // Snackbar
+  .mat-mdc-snack-bar-container {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+  }
 }

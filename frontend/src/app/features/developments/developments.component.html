@@ -5,9 +5,7 @@
       <div class="title-section">
         <h1 class="page-title">
           Desarrollos 
-          <div class="count-chip">
-            <mat-chip>{{ totalElements }}</mat-chip>
-          </div>
+          <span class="count-number">{{ totalElements }}</span>
         </h1>
         <p class="page-subtitle">Gestiona y supervisa todos los desarrollos del sistema</p>
       </div>
@@ -25,9 +23,10 @@
     </div>
   </div>
 
-  <!-- Barra de búsqueda y filtros -->
+  <!-- Sección de filtros -->
   <div class="filters-section">
-    <div class="search-container">
+    <!-- Barra de búsqueda y filtro de ambiente -->
+    <div class="search-and-environment">
       <mat-form-field class="search-field" appearance="outline">
         <mat-label>Buscar desarrollos</mat-label>
         <input 
@@ -43,34 +42,33 @@
           <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="environment-select">
+        <mat-label>Ambiente</mat-label>
+        <mat-select [formControl]="environmentFilter" placeholder="Todos los ambientes">
+          <mat-option value="">Todos</mat-option>
+          <mat-option *ngFor="let environment of availableEnvironments" [value]="environment">
+            {{ environment }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
-    <!-- Filtros rápidos -->
-    <div class="quick-filters" [class.mobile-filters]="isMobile">
+    <!-- Filtros rápidos de estado -->
+    <div class="status-filters-container">
       <div class="filter-group">
         <label class="filter-label">Estado:</label>
-        <mat-chip-listbox [formControl]="statusFilter" class="status-chips">
-          <mat-chip 
+        <div class="status-chips-simple">
+          <div 
             *ngFor="let status of availableStatuses" 
-            [value]="status.value"
-            [class]="'chip-' + status.value"
-            selected="false">
+            class="status-badge-filter"
+            [ngClass]="status.value !== 'all' ? 'status-badge ' + getStatusBadgeClass(status.value) : 'status-chip-all'"
+            [class.selected]="statusFilter.value === status.value"
+            (click)="selectStatusFilter(status.value)">
             {{ status.label }}
             <span class="chip-count" *ngIf="status.count > 0">({{ status.count }})</span>
-          </mat-chip>
-        </mat-chip-listbox>
-      </div>
-
-      <div class="filter-group" *ngIf="!isMobile">
-        <label class="filter-label">Ambiente:</label>
-        <mat-form-field appearance="outline" class="environment-select">
-          <mat-select [formControl]="environmentFilter" placeholder="Todos los ambientes">
-            <mat-option value="">Todos</mat-option>
-            <mat-option *ngFor="let environment of availableEnvironments" [value]="environment">
-              {{ environment }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+          </div>
+        </div>
       </div>
 
       <div class="filter-actions">
