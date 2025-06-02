@@ -408,3 +408,82 @@ body.dark {
   content-visibility: auto;
   contain-intrinsic-size: 300px;
 }
+
+// =============================================================================
+// NOTIFICATION STYLES (SNACKBAR)
+// =============================================================================
+
+// Success notifications
+.success-snackbar {
+  .mat-mdc-snack-bar-container {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
+  }
+
+  .mdc-snackbar__action {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+}
+
+// Error notifications
+.error-snackbar {
+  .mat-mdc-snack-bar-container {
+    background-color: #F44336 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3) !important;
+  }
+
+  .mdc-snackbar__action {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+}
+
+// Warning notifications
+.warning-snackbar {
+  .mat-mdc-snack-bar-container {
+    background-color: #FF9800 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3) !important;
+  }
+
+  .mdc-snackbar__action {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+}
+
+// Info notifications
+.info-snackbar {
+  .mat-mdc-snack-bar-container {
+    background-color: var(--color-accent) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(102, 198, 234, 0.3) !important;
+  }
+
+  .mdc-snackbar__action {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+}
+
+// Modo oscuro para notificaciones
+body.dark {
+  .success-snackbar .mat-mdc-snack-bar-container {
+    background-color: #388E3C !important;
+  }
+
+  .error-snackbar .mat-mdc-snack-bar-container {
+    background-color: #D32F2F !important;
+  }
+
+  .warning-snackbar .mat-mdc-snack-bar-container {
+    background-color: #F57C00 !important;
+  }
+
+  .info-snackbar .mat-mdc-snack-bar-container {
+    background-color: #0288D1 !important;
+  }
+}
