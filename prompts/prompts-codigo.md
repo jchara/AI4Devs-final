@@ -458,3 +458,40 @@ Como desarrollador backend, analiza el proyecto @backend y verifica que endpoint
 ```
 De acuerdo al análisis, agregar Swagger a todos los módulos que falten, antes de hacer cualquier cambio haz un análisis de lo que debes hacer y si tienes alguna pregunta hazla primero
 ```
+
+## Prompt 34: Análisis de endpoints para reemplazar mocks - FULLSTACK
+
+```
+Como desarrollador senior full stack, analiza los proyectos @backend  y @frontend  y dime que endpoints se pueden implementar en el front y quitar los mocks
+
+no hagas código, solo dame la lista de los endpoints, y si es posible los curl correspondientes
+```
+
+## Prompt 35: Despliegue en Railway con Semillas Automáticas - BACKEND
+
+```
+Como desarrollador senior full stack con conocimientos de infraestructura y despliegue en
+railway, crea la configuración correspondiente en el archivo railway.json y ajusta ajusta los scripts del package.json para usar flags de Node.js y que las semillas se ejecuten automáticamente en producción para poblar las tablas.
+
+Crear variable de entorno FIRST_DEPLOY en el archivo de @database.config.ts para controlar
+que solo se ejecute cuando sea true
+```
+
+## Prompt 36: Integración completa de endpoints backend-frontend - FULLSTACK
+
+```
+Como desarrollador fullstack senior de Angular y Nestjs, realiza la integración de los endpoints que estén listos para integrarse y reemplazar los mocks, hazlo uno por uno y ve realizando las pruebas correspondientes.
+
+Analiza la estructura de respuesta de los endpoints y adapta al front, sin modificar los apartados gráficos que ya están creados.
+
+Antes de realizar cualquier modificación dame el plan de implementación y si tienes preguntas, hazlas primero.
+
+Para dar respuesta a tus preguntas,
+
+1. Crea un enum en el front para traducir los estados que llegan desde el back
+2. Si obtener la lista de microservicios desde el endpoint.
+3. Ajusta el front para que maneje los ids como llegan desde el back y haz lo mismo con el title y name
+4. Si hay campos que sobran que se envían desde el back no los tengas en cuenta por el momento, después se crea una vista con los detalles de cada desarrollo donde se van a utilizar
+5. Si el back esta corriendo en  http://localhost:3000, pero utiliza los archivos de environments.ts del front para obtener la url correspondiente
+6. Si,  implementar notificaciones/toasts para errores HTTP (con diseño minimalista y acorde las librerías y estilos del proyecto del front)
+```
