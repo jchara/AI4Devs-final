@@ -277,3 +277,184 @@ Como experto desarrollador front senior en angular, analiza la estructura de los
 1. Header siempre visible incluso al hacer scroll
 2. El sidebar debe poder ocultarse, ten presente diseño responsivo
 ```
+
+## Prompt 22: Análisis arquitectónico frontend y diseño de servicios backend - FULLSTACK
+
+```
+Ahora como experto desarrollador full stack angular y nest, con amplio conocimiento en arquitectura de software y base de datos, analiza el proyecto de @frontend y dime que servicios se deben implementar en el @backend con la creación de las tablas correspondientes.
+
+Si tienes alguna pregunta, hazla primero.
+```
+
+## Prompt 23: Definición de arquitectura backend con PostgreSQL - BACKEND
+
+```
+Para la definición de arquitectura ten presente lo siguiente:
+1. La base de datos debe ser PostgreSQL
+2. En el momento no vamos a implementar autenticación, pero si en otra iteración así que deja la arquitectura lista para esto.
+3. como es un desarrollo pequeño utilicemos métricas en tiempo real, aunque abierto a pasar a cacheado en un futuro
+4. No se necesitan notificaciones
+6. utilizar arquitecturas CRUD simple
+```
+
+## Prompt 24: Ruta de implementación de servicios backend con TypeORM y PostgreSQL - BACKEND
+
+```
+Como experto en arquitectura de software y desarrollador backend senior en NestJS y TypeORM, crea una ruta de implementación para la arquitectura y desarrollo del backend siguiendo estas especificaciones:
+
+**Configuración base:**
+- TypeORM con PostgreSQL
+- Estructura modular con NestJS
+- Variables de entorno con @nestjs/config
+- Preparación para autenticación futura (sin implementar)
+
+**Entidades a crear:**
+- Environment (tabla configurable de ambientes)
+- Microservice (gestión de microservicios)
+- Development (desarrollos principales)
+- DevelopmentMicroservice (relación Many-to-Many)
+- RecentActivity (actividades del sistema)
+- UpcomingDeployment (próximos despliegues)
+
+**Módulos a implementar:**
+1. EnvironmentModule - CRUD de ambientes
+2. MicroserviceModule - CRUD de microservicios  
+3. DevelopmentModule - CRUD de desarrollos + métricas
+4. ActivityModule - Gestión de actividades
+5. DeploymentModule - Gestión de despliegues
+
+**Endpoints requeridos:**
+- GET /api/developments (con filtros y paginación)
+- GET /api/developments/metrics (métricas dashboard)
+- GET /api/developments/chart-data (datos gráfico)
+- CRUD completo para todas las entidades
+- Endpoints específicos para cambio de estados
+
+**Técnicas a aplicar:**
+- DTOs para validación de entrada
+- Transformación de datos en responses
+- Manejo de errores con filters
+- Documentación con Swagger
+- Métricas calculadas en tiempo real
+- Preparación para autenticación (guards, decorators)
+```
+
+## Prompt 25: Implementación de servicios backend con TypeORM y PostgreSQL - BACKEND
+
+```
+De acuerdo al plan de implementación que se creó, ejecuta las siguientes fases:
+
+**FASE 1: Configuración Base**
+- Instalar dependencias: TypeORM, PostgreSQL, @nestjs/config
+- Configurar app.module.ts con TypeORM async
+- Crear estructura de carpetas modular
+- Configurar variables de entorno
+
+**FASE 2: Entidades de Base de Datos**
+- Environment.entity.ts - Tabla configurable de ambientes
+- Microservice.entity.ts - Gestión de microservicios
+- Development.entity.ts - Desarrollos principales
+- DevelopmentMicroservice.entity.ts - Relación Many-to-Many
+- RecentActivity.entity.ts - Actividades del sistema
+- UpcomingDeployment.entity.ts - Próximos despliegues
+
+**FASE 3: Módulos y Servicios**
+- EnvironmentModule - CRUD básico
+- MicroserviceModule - CRUD básico
+- DevelopmentModule - CRUD + métricas + filtros
+- ActivityModule - Gestión de actividades
+- DeploymentModule - Gestión de despliegues
+
+**FASE 4: Controllers y DTOs**
+- Crear DTOs para validación de entrada
+- Implementar Controllers con endpoints REST
+- Configurar filtros de error globales
+- Preparar guards para autenticación futura
+
+**FASE 5: Seeds y Configuración**
+- Crear seeds para ambientes por defecto
+- Configurar Swagger para documentación
+- Tests básicos de endpoints
+- Verificar integración con frontend
+
+**Consideraciones:**
+- El proyecto de back está en el directorio /backend
+- Haz una verificación de que el proyecto funcione en cada una de las fases
+- Realiza las preguntas correspondientes si tienes, por cada una de las fases de ser necesario
+```
+
+## Prompt 27: Análisis de error de conexión a base de datos - BACKEND
+
+```
+Al ejecutar el proyecto @backend me sale este error de conexión de base de datos:
+ERROR [TypeOrmModule] Unable to connect to the database. Retrying (1)...
+
+Es posible que la configuración esté diferente en el archivo de variables de entorno.
+
+Analiza la configuración y verifica diferencias con las variables configuradas en el archivo de variables de entorno y el archivo de docker compose
+
+Si es necesario realiza los ajustes, si tienes alguna consulta, pregunta primero antes de hacer cualquier cambio
+```
+
+## Prompt 28: Creación de nuevas entidades y ajustes de relaciones - BACKEND
+
+```
+Como experto en arquitectura y backend con nestjs realizar los siguientes cambios y ajustes en la implementación @backend
+
+- Crear la tabla users con id, nombre, correo
+- Crear la tabla teams con id, nombre, descripción
+- Crear la tabla deployments_type  con id, nombre y descripción
+- ajusta las entidades actuales para crear las relaciones correspondientes
+- ajusta los seeds
+- ajusta los endpoints de ser necesarios
+
+Analiza el código en general y verifica que se debe actualizar con estos cambios.
+
+Si tienes preguntas, realizarlas antes de hacer cambios en el código e indícame los puntos que vas a seguir.
+```
+
+## Prompt 29: Respuestas sobre ajuste de entidades - BACKEND
+
+```
+Respondiendo a tus preguntas:
+1.
+- si la relación de Develoment debe cambiarse a users.id
+- si la relación de RecentActivity  debe cambiarse a users.id
+-. si el campo deployedBy en UpcomingDeployment debe ser una FK hacia users con rol cloud
+2.
+- si, el campo team (string) en Development debe cambiar a una FK hacia teams.id
+- El campo team en Microservice (actualmente comentado)  debe eliminarse
+- si, Los users pertenecen a un team 
+3.
+-si, el enum actual DeploymentType debe reemplazarse por una FK hacia deployment_types
+- si, mantener los tipos actuales 
+4.
+- No necesito endpoinds de usuarios, pero en los seed crea el usuario (JCC desarrollador, JLL cloud)
+- si, ten  hasheo en el campo de contraseña, se utilizara en próximas iteraciones cuando se desee implementar el login.
+
+Adicionalmente crea la tabla rol, con id, nombre y descripción (desarrollador, QA y cloud), asocia a la tabla user
+```
+
+## Prompt 31: Reorganización arquitectural por dominios - BACKEND
+
+```
+Como desarrollador senior y arquitecto, ayúdame a reajustar la arquitectura de @backend  teniendo en cuenta los siguientes puntos:
+
+- Ajustar la estructura por agrupación de dominios
+- No utilizar base entity
+- Implementar barrel exports
+- Mantener DTOs por carpetas separadas
+- Implementar patron repository
+```
+
+## Prompt 32: Análisis de endpoints del proyecto backend y verificación de integración - BACKEND
+
+```
+Como desarrollador backend, analiza el proyecto @backend y verifica que endpoints hay y cuales tienen integración y cuales no
+```
+
+## Prompt 33: Implementación de documentación Swagger en módulos faltantes - BACKEND
+
+```
+De acuerdo al análisis, agregar Swagger a todos los módulos que falten, antes de hacer cualquier cambio haz un análisis de lo que debes hacer y si tienes alguna pregunta hazla primero
+```

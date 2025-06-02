@@ -1,0 +1,1 @@
+export { RecentActivity, ActivityType } from './recent-activity.entity'; 
