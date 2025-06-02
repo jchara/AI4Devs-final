@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'backend-jcc.railway.internal',
+  apiUrl: 'https://backend-jcc-production.up.railway.app',
   name: 'production',
 };
