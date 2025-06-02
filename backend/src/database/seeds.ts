@@ -251,7 +251,7 @@ async function runSeeds() {
           progress: 75,
           assignedToId: users[0].id, // JCC
           teamId: teams[0].id, // Backend Team
-          repository: 'https://github.com/company/auth-upgrade',
+          jiraUrl: 'https://company.atlassian.net/browse/AUTH-2024',
           branch: 'feature/oauth2-implementation',
           startDate: new Date('2024-12-01'),
           estimatedDate: new Date('2025-01-15'),
@@ -266,7 +266,7 @@ async function runSeeds() {
           progress: 90,
           assignedToId: users[0].id, // JCC
           teamId: teams[0].id, // Backend Team
-          repository: 'https://github.com/company/db-optimization',
+          jiraUrl: 'https://company.atlassian.net/browse/PERF-2024',
           branch: 'feature/query-optimization',
           startDate: new Date('2024-11-15'),
           estimatedDate: new Date('2024-12-30'),
@@ -281,7 +281,7 @@ async function runSeeds() {
           progress: 25,
           assignedToId: users[0].id, // JCC
           teamId: teams[0].id, // Backend Team
-          repository: 'https://github.com/company/push-notifications',
+          jiraUrl: 'https://company.atlassian.net/browse/NOTIF-2025',
           branch: 'feature/push-api',
           startDate: new Date('2025-01-10'),
           estimatedDate: new Date('2025-02-28'),
@@ -296,7 +296,7 @@ async function runSeeds() {
           progress: 100,
           assignedToId: users[2].id, // Maria QA
           teamId: teams[1].id, // Frontend Team
-          repository: 'https://github.com/company/monitoring-dashboard',
+          jiraUrl: 'https://company.atlassian.net/browse/DASH-2024',
           branch: 'main',
           startDate: new Date('2024-10-01'),
           estimatedDate: new Date('2024-11-30'),

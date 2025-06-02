@@ -502,3 +502,9 @@ Para dar respuesta a tus preguntas,
 Analiza si la configuración environment de producción se está ejecutando correctamente, revisa la configuración actual de los dos archivos de environment (dev y prod) y el archivo de angular.json 
 para ver si tienen la configuración del reemplazo de archivos de environment
 ```
+
+## Prompt 38: Cambiar repository de GitHub por URL de tarea de Jira - BACKEND
+
+```
+Necesito Ajustar la entidad de Development para cambiar el campo repository: por jiraUrl, al realizar este cambio, ajusta también el repositorio y las semillas
+```

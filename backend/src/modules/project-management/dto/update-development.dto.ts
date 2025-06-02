@@ -82,12 +82,12 @@ export class UpdateDevelopmentDto {
   teamId?: number;
 
   @ApiPropertyOptional({
-    description: 'URL del repositorio',
-    example: 'https://github.com/empresa/proyecto-auth-v2',
+    description: 'URL de la tarea de Jira',
+    example: 'https://company.atlassian.net/browse/AUTH-2024',
   })
   @IsOptional()
   @IsString()
-  repository?: string;
+  jiraUrl?: string;
 
   @ApiPropertyOptional({
     description: 'Rama de desarrollo',

@@ -57,7 +57,7 @@ export class Development {
   progress: number;
 
   @Column({ length: 255, nullable: true })
-  repository: string;
+  jiraUrl: string;
 
   @Column({ length: 100, nullable: true })
   branch: string;
