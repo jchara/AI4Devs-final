@@ -495,3 +495,10 @@ Para dar respuesta a tus preguntas,
 5. Si el back esta corriendo en  http://localhost:3000, pero utiliza los archivos de environments.ts del front para obtener la url correspondiente
 6. Si,  implementar notificaciones/toasts para errores HTTP (con diseño minimalista y acorde las librerías y estilos del proyecto del front)
 ```
+
+## Prompt 37: Verificar configuración de environments de producción en Angular - FRONTEND
+
+```
+Analiza si la configuración environment de producción se está ejecutando correctamente, revisa la configuración actual de los dos archivos de environment (dev y prod) y el archivo de angular.json 
+para ver si tienen la configuración del reemplazo de archivos de environment
+```
