@@ -18,6 +18,9 @@ import { DevelopmentRepository, MicroserviceRepository, DevelopmentMicroserviceR
 import { EnvironmentRepository, DeploymentTypeRepository, UpcomingDeploymentRepository } from '../modules/infrastructure';
 import { ActivityRepository } from '../modules/activity';
 
+// Importar el servicio de usuarios para hasheo correcto
+import { UserService } from '../modules/identity/services/user.service';
+
 // Enums y tipos
 import { DevelopmentStatus, DevelopmentPriority } from '../modules/project-management/entities/development.entity';
 import { ActivityType } from '../modules/activity/entities/recent-activity.entity';
@@ -26,10 +29,11 @@ import { DeploymentStatus } from '../modules/infrastructure/entities/upcoming-de
 async function runSeeds() {
   const app = await NestFactory.createApplicationContext(AppModule);
 
-  // Obtener repositorios
+  // Obtener repositorios y servicios
   const roleRepository = app.get(RoleRepository);
   const teamRepository = app.get(TeamRepository);
   const userRepository = app.get(UserRepository);
+  const userService = app.get(UserService); // Servicio para hashear contraseñas
   const environmentRepository = app.get(EnvironmentRepository);
   const microserviceRepository = app.get(MicroserviceRepository);
   const developmentRepository = app.get(DevelopmentRepository);
@@ -99,21 +103,21 @@ async function runSeeds() {
     
     if (users.length === 0) {
       users = await Promise.all([
-        userRepository.create({
+        userService.create({
           name: 'JCC',
           email: 'jcc@company.com',
-          password: 'password123', // Se hasheará automáticamente
+          password: 'password123', // Se hasheará automáticamente por UserService
           roleId: roles[0].id, // desarrollador
           teamId: teams[0].id, // Backend Team
         }),
-        userRepository.create({
+        userService.create({
           name: 'JLL',
           email: 'jll@company.com',
-          password: 'password123', // Se hasheará automáticamente
+          password: 'password123', // Se hasheará automáticamente por UserService
           roleId: roles[2].id, // cloud
           teamId: teams[2].id, // DevOps Team
         }),
-        userRepository.create({
+        userService.create({
           name: 'Maria QA',
           email: 'maria@company.com',
           password: 'password123',
