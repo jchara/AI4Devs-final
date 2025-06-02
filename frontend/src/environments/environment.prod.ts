@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'backend-jcc',
+  apiUrl: process.env['API_URL'],
   name: 'production',
 };
