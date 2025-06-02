@@ -86,16 +86,18 @@ export enum BackendDevelopmentPriority {
 // =============================================================================
 
 export const StatusTranslationMap = {
-  [BackendDevelopmentStatus.PLANNING]: 'En Desarrollo',
+  [BackendDevelopmentStatus.PLANNING]: 'En Planificación',
   [BackendDevelopmentStatus.IN_PROGRESS]: 'En Desarrollo',
-  [BackendDevelopmentStatus.TESTING]: 'En Desarrollo',
+  [BackendDevelopmentStatus.TESTING]: 'En Pruebas',
   [BackendDevelopmentStatus.COMPLETED]: 'Completado',
   [BackendDevelopmentStatus.CANCELLED]: 'Archivado'
 } as const;
 
 // Mapa inverso para cuando necesitemos enviar datos al backend
 export const StatusToBackendMap = {
+  'En Planificación': BackendDevelopmentStatus.PLANNING,
   'En Desarrollo': BackendDevelopmentStatus.IN_PROGRESS,
+  'En Pruebas': BackendDevelopmentStatus.TESTING,
   'Completado': BackendDevelopmentStatus.COMPLETED,
   'Archivado': BackendDevelopmentStatus.CANCELLED
 } as const; 

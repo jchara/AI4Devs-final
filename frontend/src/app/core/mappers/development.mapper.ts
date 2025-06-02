@@ -25,14 +25,14 @@ export class DevelopmentMapper {
   static mapDevelopmentFromBackend(backendDev: BackendDevelopmentResponse, microservices: Microservice[] = []): Development {
     return {
       id: backendDev.id.toString(),
-      name: backendDev.title,
+      title: backendDev.title,
       description: backendDev.description,
       status: StatusTranslationMap[backendDev.status] as DevelopmentStatus,
       environment: this.mapEnvironmentFromId(backendDev.environmentId),
       createdDate: new Date(backendDev.createdAt),
       updatedDate: new Date(backendDev.updatedAt),
       microservices: microservices,
-      version: `v${backendDev.progress}%` // Temporal hasta tener versión real
+      progress: `${backendDev.progress}%`
     };
   }
 
@@ -42,7 +42,7 @@ export class DevelopmentMapper {
   static mapDevelopmentToBackend(frontendDev: Partial<Development>): Partial<BackendDevelopmentResponse> {
     const backendData: any = {};
     
-    if (frontendDev.name) backendData.title = frontendDev.name;
+    if (frontendDev.title) backendData.title = frontendDev.title;
     if (frontendDev.description) backendData.description = frontendDev.description;
     if (frontendDev.status) {
       backendData.status = StatusToBackendMap[frontendDev.status];

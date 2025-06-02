@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
@@ -7,11 +14,22 @@ import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, combineLatest } from 'rxjs';
-import { takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
+import {
+  takeUntil,
+  debounceTime,
+  distinctUntilChanged,
+  startWith,
+} from 'rxjs/operators';
 
 import { MaterialModule } from '../../shared/material.module';
+import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
 import { DevelopmentService } from './services/development.service';
-import { Development, DevelopmentStatus, Environment, Microservice } from './models/development.model';
+import {
+  Development,
+  DevelopmentStatus,
+  Environment,
+  Microservice,
+} from './models/development.model';
 
 interface StatusOption {
   value: string;
@@ -22,14 +40,10 @@ interface StatusOption {
 @Component({
   selector: 'app-developments',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MaterialModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MaterialModule],
   templateUrl: './developments.component.html',
   styleUrl: './developments.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevelopmentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -44,8 +58,24 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   // UI
   isMobile = false;
   isTablet = false;
-  displayedColumns: string[] = ['status', 'name', 'description', 'microservices', 'environment', 'createdDate', 'updatedDate', 'actions'];
-  displayedColumnsTablet: string[] = ['status', 'name', 'microservices', 'environment', 'updatedDate', 'actions'];
+  displayedColumns: string[] = [
+    'status',
+    'title',
+    'description',
+    'microservices',
+    'environment',
+    'createdDate',
+    'updatedDate',
+    'actions',
+  ];
+  displayedColumnsTablet: string[] = [
+    'status',
+    'title',
+    'microservices',
+    'environment',
+    'updatedDate',
+    'actions',
+  ];
 
   // Filtros
   searchControl = new FormControl('');
@@ -55,16 +85,18 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   // Opciones para filtros
   availableStatuses: StatusOption[] = [
     { value: 'all', label: 'Todos', count: 0 },
-    { value: 'En Desarrollo', label: 'En Desarrollo', count: 0 },
-    { value: 'Archivado', label: 'Archivado', count: 0 },
-    { value: 'Completado', label: 'Completado', count: 0 }
+    { value: DevelopmentStatus.PLANNING, label: DevelopmentStatus.PLANNING, count: 0 },
+    { value: DevelopmentStatus.DEVELOPMENT, label: DevelopmentStatus.DEVELOPMENT, count: 0 },
+    { value: DevelopmentStatus.TESTING, label: DevelopmentStatus.TESTING, count: 0 },
+    { value: DevelopmentStatus.COMPLETED, label: DevelopmentStatus.COMPLETED, count: 0 },
+    { value: DevelopmentStatus.ARCHIVED, label: DevelopmentStatus.ARCHIVED, count: 0 },
   ];
 
   availableEnvironments: string[] = [
     Environment.DEVELOPMENT,
     Environment.TESTING,
     Environment.STAGING,
-    Environment.PRODUCTION
+    Environment.PRODUCTION,
   ];
 
   private destroy$ = new Subject<void>();
@@ -73,7 +105,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     private developmentService: DevelopmentService,
     private breakpointObserver: BreakpointObserver,
     private snackBar: MatSnackBar,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private badgeUtils: BadgeUtilsService
   ) {}
 
   ngOnInit(): void {
@@ -109,13 +142,16 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     this.breakpointObserver
       .observe([Breakpoints.Handset, Breakpoints.Tablet])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(result => {
-        const breakpoints = this.breakpointObserver.isMatched(Breakpoints.Handset);
-        const isTabletBreakpoint = this.breakpointObserver.isMatched(Breakpoints.Tablet) && !breakpoints;
-        
+      .subscribe((result) => {
+        const breakpoints = this.breakpointObserver.isMatched(
+          Breakpoints.Handset
+        );
+        const isTabletBreakpoint =
+          this.breakpointObserver.isMatched(Breakpoints.Tablet) && !breakpoints;
+
         this.isMobile = breakpoints;
         this.isTablet = isTabletBreakpoint;
-        
+
         // Trigger change detection manualmente con OnPush
         this.changeDetectorRef.markForCheck();
       });
@@ -130,20 +166,21 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       ),
       this.statusFilter.valueChanges.pipe(startWith('all')),
-      this.environmentFilter.valueChanges.pipe(startWith(''))
+      this.environmentFilter.valueChanges.pipe(startWith('')),
     ])
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(() => {
-      this.applyFilters();
-      this.changeDetectorRef.markForCheck();
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.applyFilters();
+        this.changeDetectorRef.markForCheck();
+      });
   }
 
   private loadDevelopments(): void {
     this.loading = true;
     this.changeDetectorRef.markForCheck();
-    
-    this.developmentService.getDevelopments()
+
+    this.developmentService
+      .getDevelopments()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (developments) => {
@@ -158,7 +195,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
           this.showErrorMessage('Error al cargar los desarrollos');
           this.loading = false;
           this.changeDetectorRef.markForCheck();
-        }
+        },
       });
   }
 
@@ -168,7 +205,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       return acc;
     }, {} as Record<string, number>);
 
-    this.availableStatuses.forEach(status => {
+    this.availableStatuses.forEach((status) => {
       if (status.value === 'all') {
         status.count = this.developments.length;
       } else {
@@ -189,23 +226,28 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     // Filtro de búsqueda
     const searchTerm = (this.searchControl.value || '').toLowerCase().trim();
     if (searchTerm) {
-      filteredData = filteredData.filter(dev =>
-        dev.name.toLowerCase().includes(searchTerm) ||
-        dev.description?.toLowerCase().includes(searchTerm) ||
-        dev.microservices.some(ms => ms.name.toLowerCase().includes(searchTerm))
+      filteredData = filteredData.filter(
+        (dev) =>
+          dev.title.toLowerCase().includes(searchTerm) ||
+          dev.description?.toLowerCase().includes(searchTerm) ||
+          dev.microservices.some((ms) =>
+            ms.name.toLowerCase().includes(searchTerm)
+          )
       );
     }
 
     // Filtro de estado
     const statusValue = this.statusFilter.value;
     if (statusValue && statusValue !== 'all') {
-      filteredData = filteredData.filter(dev => dev.status === statusValue);
+      filteredData = filteredData.filter((dev) => dev.status === statusValue);
     }
 
     // Filtro de ambiente
     const environmentValue = this.environmentFilter.value;
     if (environmentValue) {
-      filteredData = filteredData.filter(dev => dev.environment === environmentValue);
+      filteredData = filteredData.filter(
+        (dev) => dev.environment === environmentValue
+      );
     }
 
     this.dataSource.data = filteredData;
@@ -217,33 +259,17 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Métodos de utilidad
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'En Desarrollo':
-        return 'badge-desarrollo';
-      case 'Archivado':
-        return 'badge-archivado';
-      case 'Completado':
-        return 'badge-completado';
-      default:
-        return '';
-    }
+  // Métodos de utilidad - usando servicio centralizado
+  getStatusBadgeClass(status: DevelopmentStatus | string): string {
+    return this.badgeUtils.getStatusBadgeClass(status);
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return this.badgeUtils.formatDate(date);
   }
 
   truncateText(text: string, maxLength: number): string {
-    if (!text) return '';
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    return this.badgeUtils.truncateText(text, maxLength);
   }
 
   // Métodos de acción
@@ -254,25 +280,28 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
 
   viewDetails(development: Development): void {
     // TODO: Implementar modal de detalles
-    this.showSuccessMessage(`Ver detalles de: ${development.name}`);
+    this.showSuccessMessage(`Ver detalles de: ${development.title}`);
   }
 
   editDevelopment(development: Development): void {
     // TODO: Implementar modal de edición
-    this.showSuccessMessage(`Editar: ${development.name}`);
+    this.showSuccessMessage(`Editar: ${development.title}`);
   }
 
   deleteDevelopment(development: Development): void {
     // TODO: Implementar confirmación de eliminación
-    this.showSuccessMessage(`Eliminar: ${development.name}`);
+    this.showSuccessMessage(`Eliminar: ${development.title}`);
   }
 
   changeStatus(development: Development, newStatus: string): void {
-    this.developmentService.changeStatus(development.id, newStatus as DevelopmentStatus)
+    this.developmentService
+      .changeStatus(development.id, newStatus as DevelopmentStatus)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updatedDev) => {
-          const index = this.developments.findIndex(d => d.id === updatedDev.id);
+          const index = this.developments.findIndex(
+            (d) => d.id === updatedDev.id
+          );
           if (index !== -1) {
             this.developments[index] = updatedDev;
             this.updateStatusCounts();
@@ -285,17 +314,19 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
           console.error('Error changing status:', error);
           this.showErrorMessage('Error al cambiar el estado');
           this.changeDetectorRef.markForCheck();
-        }
+        },
       });
   }
 
   getStatusesForChange(currentStatus: string): string[] {
     const allStatuses = [
+      DevelopmentStatus.PLANNING,
       DevelopmentStatus.DEVELOPMENT,
       DevelopmentStatus.ARCHIVED,
-      DevelopmentStatus.COMPLETED
+      DevelopmentStatus.COMPLETED,
+      DevelopmentStatus.TESTING,
     ];
-    return allStatuses.filter(status => status !== currentStatus);
+    return allStatuses.filter((status) => status !== currentStatus);
   }
 
   clearFilters(): void {
@@ -318,14 +349,14 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   private showSuccessMessage(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 3000,
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
     });
   }
 
   private showErrorMessage(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 5000,
-      panelClass: ['error-snackbar']
+      panelClass: ['error-snackbar'],
     });
   }
 }

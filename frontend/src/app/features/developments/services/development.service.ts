@@ -287,14 +287,14 @@ export class DevelopmentService {
     return [
       {
         id: '1',
-        name: 'API de Autenticación',
+        title: 'Demo',
         status: DevelopmentStatus.DEVELOPMENT,
         environment: Environment.TESTING,
         createdDate: new Date('2024-01-10'),
         updatedDate: new Date('2024-01-25'),
-        description: 'Sistema de autenticación con JWT',
-        microservices: [{ id: '1', name: 'Auth Service' }],
-        version: 'v1.2.0'
+        description: 'Sin descripción',
+        microservices: [{ id: '1', name: 'Demo' }],
+        progress: '0%'
       }
     ];
   }
@@ -316,10 +316,10 @@ export class DevelopmentService {
 
   private getFallbackMetrics(): DevelopmentMetrics {
     return {
-      total: 24,
-      inDevelopment: 8,
-      archived: 12,
-      completed: 4
+      total: 0,
+      inDevelopment: 0,
+      archived: 0,
+      completed: 0
     };
   }
 
@@ -327,8 +327,8 @@ export class DevelopmentService {
     return [
       {
         id: '1',
-        type: ActivityType.DEPLOYMENT,
-        description: 'Sistema fallback cargado',
+        type: ActivityType.COMPLETED,
+        description: 'Sin actividad',
         date: new Date(),
         developmentId: '1'
       }
@@ -339,9 +339,9 @@ export class DevelopmentService {
     return [
       {
         id: '1',
-        name: 'Próximos despliegues',
+        name: 'Sin despliegues',
         environment: Environment.PRODUCTION,
-        scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        scheduledDate: new Date(),
         status: DeploymentStatus.SCHEDULED
       }
     ];
@@ -349,10 +349,10 @@ export class DevelopmentService {
 
   private getFallbackChartData(): ChartData[] {
     return [
-      { environment: 'Local', count: 8, color: '#66C6EA' },
-      { environment: 'Testing', count: 5, color: '#7D2BE3' },
-      { environment: 'QA', count: 3, color: '#FF9800' },
-      { environment: 'Production', count: 12, color: '#4CAF50' }
+      { environment: 'Local', count: 0, color: '#66C6EA' },
+      { environment: 'Testing', count: 0, color: '#7D2BE3' },
+      { environment: 'QA', count: 0, color: '#FF9800' },
+      { environment: 'Production', count: 0, color: '#4CAF50' }
     ];
   }
 

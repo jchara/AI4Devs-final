@@ -6,14 +6,14 @@ export interface Microservice {
 
 export interface Development {
   id: string;
-  name: string;
+  title: string;
   status: DevelopmentStatus;
   environment: Environment;
   createdDate: Date;
   updatedDate: Date;
   description?: string;
   microservices: Microservice[];
-  version?: string;
+  progress?: string;
 }
 
 export interface DevelopmentMetrics {
@@ -73,7 +73,9 @@ export interface PaginatedResponse<T> {
 }
 
 export enum DevelopmentStatus {
+  PLANNING = 'En Planificación',
   DEVELOPMENT = 'En Desarrollo',
+  TESTING = 'En Pruebas',
   ARCHIVED = 'Archivado',
   COMPLETED = 'Completado'
 }

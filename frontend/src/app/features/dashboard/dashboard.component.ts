@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DevelopmentService } from '../developments/services/development.service';
+import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { DevelopmentChartComponent } from '../../shared/components/development-chart/development-chart.component';
 import { 
@@ -35,7 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private developmentService: DevelopmentService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private badgeUtils: BadgeUtilsService
   ) { }
 
   ngOnInit(): void {
@@ -119,61 +121,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Métodos de utilidad - usando servicio centralizado
   getStatusBadgeClass(status: DevelopmentStatus): string {
-    switch (status) {
-      case DevelopmentStatus.DEVELOPMENT:
-        return 'badge-desarrollo';
-      case DevelopmentStatus.ARCHIVED:
-        return 'badge-archivado';
-      case DevelopmentStatus.COMPLETED:
-        return 'badge-completado';
-      default:
-        return '';
-    }
-  }
-
-  getEnvironmentClass(environment: Environment): string {
-    switch (environment) {
-      case Environment.DEVELOPMENT:
-        return 'development';
-      case Environment.TESTING:
-        return 'testing';
-      case Environment.STAGING:
-        return 'staging';
-      case Environment.PRODUCTION:
-        return 'production';
-      default:
-        return '';
-    }
+    return this.badgeUtils.getStatusBadgeClass(status);
   }
 
   getEnvironmentBadgeClass(environment: Environment): string {
-    switch (environment) {
-      case Environment.DEVELOPMENT:
-        return 'ambiente-development';
-      case Environment.TESTING:
-        return 'ambiente-testing';
-      case Environment.STAGING:
-        return 'ambiente-staging';
-      case Environment.PRODUCTION:
-        return 'ambiente-production';
-      default:
-        return '';
-    }
+    return this.badgeUtils.getEnvironmentBadgeClass(environment);
+  }
+
+  getEnvironmentClass(environment: Environment): string {
+    return this.badgeUtils.getEnvironmentClass(environment);
   }
 
   getActivityTypeClass(type: ActivityType): string {
-    switch (type) {
-      case ActivityType.DEPLOYMENT:
-        return 'deployment';
-      case ActivityType.UPDATE:
-        return 'update';
-      case ActivityType.REVIEW:
-        return 'review';
-      case ActivityType.COMPLETED:
-        return 'completed';
-      default:
-        return '';
-    }
+    return this.badgeUtils.getActivityTypeClass(type);
   }
 }

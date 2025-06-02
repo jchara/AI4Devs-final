@@ -20,9 +20,9 @@
 
   // Status variants
   &--desarrollo {
-    background-color: rgba(33, 150, 243, 0.1);
-    color: #2196F3;
-    border: 1px solid rgba(33, 150, 243, 0.3);
+    background-color: rgba(125, 43, 227, 0.1);
+    color: #7D2BE3;
+    border: 1px solid rgba(125, 43, 227, 0.3);
   }
 
   &--archivado {
@@ -36,12 +36,26 @@
     color: #4CAF50;
     border: 1px solid rgba(76, 175, 80, 0.3);
   }
+
+  &--planificacion {
+    background-color: rgba(103, 58, 183, 0.1);
+    color: #673AB7;
+    border: 1px solid rgba(103, 58, 183, 0.3);
+  }
+
+  &--pruebas {
+    background-color: rgba(156, 39, 176, 0.1);
+    color: #9C27B0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+  }
 }
 
 // Legacy support - mantener compatibilidad temporal
 .badge-desarrollo { @extend .status-badge--desarrollo; }
 .badge-archivado { @extend .status-badge--archivado; }
 .badge-completado { @extend .status-badge--completado; }
+.badge-planificacion { @extend .status-badge--planificacion; }
+.badge-pruebas { @extend .status-badge--pruebas; }
 
 // -----------------------------------------------------------------------------
 // ENVIRONMENT BADGES

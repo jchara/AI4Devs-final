@@ -131,15 +131,15 @@
         </mat-cell>
       </ng-container>
 
-      <!-- Columna Nombre -->
-      <ng-container matColumnDef="name">
+      <!-- Columna Título-->
+      <ng-container matColumnDef="title">
         <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Nombre</mat-header-cell
+          >Título</mat-header-cell
         >
         <mat-cell *matCellDef="let development">
           <div class="name-cell">
-            <h4 class="name-title">{{ development.name }}</h4>
-            <p class="name-version">{{ development.version }}</p>
+            <h4 class="name-title">{{ development.title }}</h4>
+            <p class="name-version">{{ development.progress }}</p>
           </div>
         </mat-cell>
       </ng-container>
@@ -263,8 +263,8 @@
         <mat-card-header>
           <div class="card-header-content">
             <div class="card-title-section">
-              <mat-card-title>{{ development.name }}</mat-card-title>
-              <mat-card-subtitle>{{ development.version }}</mat-card-subtitle>
+              <mat-card-title>{{ development.title }}</mat-card-title>
+              <mat-card-subtitle>{{ development.progress }}</mat-card-subtitle>
             </div>
             <span
               class="status-badge"
