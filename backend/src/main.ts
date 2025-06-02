@@ -1,7 +1,18 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { webcrypto } from 'crypto';
+
+// Polyfill para crypto en entornos que no lo tienen disponible globalmente
+if (!globalThis.crypto) {
+  Object.defineProperty(globalThis, 'crypto', {
+    value: webcrypto,
+    writable: false,
+    configurable: true,
+  });
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

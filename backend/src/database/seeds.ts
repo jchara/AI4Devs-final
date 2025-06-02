@@ -1,5 +1,16 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
+import { webcrypto } from 'crypto';
+
+// Polyfill para crypto en entornos que no lo tienen disponible globalmente
+if (!globalThis.crypto) {
+  Object.defineProperty(globalThis, 'crypto', {
+    value: webcrypto,
+    writable: false,
+    configurable: true,
+  });
+}
 
 // Nuevos repositorios de dominio
 import { UserRepository, RoleRepository, TeamRepository } from '../modules/identity';
