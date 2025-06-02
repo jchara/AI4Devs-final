@@ -1,69 +1,13 @@
-# DevTracker Frontend - Angular 19
+# DevTracker Frontend
 
-> Sistema de seguimiento de desarrollos de microservicios con optimizaciones avanzadas de rendimiento
-
-## 🚀 Características
-
-- **Angular 19** con arquitectura standalone components
-- **OnPush Change Detection** en todos los componentes
-- **PWA Ready** con Service Worker optimizado
-- **Bundle Size Optimizado**: Initial < 500KB, Lazy < 1MB
-- **Material Design** con tema claro/oscuro
-- **Responsive Design** mobile-first
-- **Optimizaciones de Rendimiento** avanzadas
-
-## 📊 Métricas de Rendimiento
-
-| Métrica | Target | Actual |
-|---------|---------|---------|
-| First Contentful Paint | < 1.5s | ~0.5s |
-| Time to Interactive | < 3.5s | ~0.7s |
-| Initial Bundle | < 500KB | 380KB |
-| Development Component | < 1MB | 459KB |
-
-## 📚 Documentación
-
-- **[📋 Guía Completa de Optimización](./PERFORMANCE_GUIDE.md)** - Documentación técnica detallada
-- **[⚡ Referencia Rápida](./QUICK_REFERENCE.md)** - Guía de consulta rápida para desarrollo
-
-## 🛠️ Comandos de Desarrollo
-
-### Servidor de desarrollo
-```bash
-ng serve
-```
-Navega a `http://localhost:4200/`. La aplicación se recarga automáticamente.
-
-### Build de producción optimizado
-```bash
-ng build --configuration production
-```
-Genera build optimizado en `dist/` con todas las optimizaciones aplicadas.
-
-### Análisis de bundle
-```bash
-ng build --stats-json
-npx webpack-bundle-analyzer dist/frontend/stats.json
-```
-
-### Tests
-```bash
-ng test        # Unit tests
-ng e2e         # End-to-end tests
-```
-
-## 🎯 Generación de Código
-
-### Nuevo componente (con optimizaciones)
-```bash
-ng generate component feature/component-name --standalone
-```
-
-**⚠️ IMPORTANTE**: Todo componente nuevo debe implementar las [optimizaciones obligatorias](./QUICK_REFERENCE.md#checklist-nuevo-componente).
+Aplicación web para el sistema de seguimiento de desarrollos DevTracker, construida con **Angular 19**, **Material Design** y **arquitectura modular**.
 
 ## 🏗️ Arquitectura
 
-### Estructura del proyecto
+Este frontend implementa una **arquitectura modular** con **componentes standalone** para máxima escalabilidad y mantenibilidad.
+
+### 📂 Estructura del Proyecto
+
 ```
 src/
 ├── app/
@@ -78,13 +22,56 @@ src/
 └── styles/                   # Estilos globales y design system
 ```
 
-### Patrones implementados
+## 🚀 Características
 
-- **OnPush Strategy**: Todos los componentes usan `ChangeDetectionStrategy.OnPush`
-- **TrackBy Functions**: Todas las listas implementan trackBy para optimización
-- **Unsubscribe Pattern**: `takeUntil(destroy$)` en todas las subscripciones
-- **Material Module**: Imports centralizados para evitar duplicación
-- **Lazy Loading**: Componentes cargados bajo demanda con preloading
+- **Angular 19** con arquitectura standalone components
+- **OnPush Change Detection** en todos los componentes
+- **PWA Ready** con Service Worker optimizado
+- **Material Design** con tema claro/oscuro
+- **Responsive Design** mobile-first
+- **Optimizaciones de Rendimiento** avanzadas
+
+## 📋 Requisitos Previos
+
+- Node.js 20.10.0
+- npm 10.2.0
+- Angular CLI 19.2.1
+
+## 🛠️ Instalación
+
+1. **Clonar el repositorio**
+```bash
+git clone <repository-url>
+cd frontend
+```
+
+2. **Instalar dependencias**
+```bash
+npm install
+```
+
+## 🚀 Ejecución
+
+### Desarrollo
+```bash
+ng serve
+```
+Navega a `http://localhost:4200/`. La aplicación se recarga automáticamente.
+
+### Producción
+```bash
+ng build --configuration production
+npm run start:prod
+```
+
+## 🔧 Scripts Disponibles
+
+- `ng serve` - Iniciar servidor de desarrollo
+- `ng build` - Compilar aplicación
+- `ng test` - Ejecutar tests unitarios
+- `ng e2e` - Ejecutar tests end-to-end
+- `ng lint` - Ejecutar linter
+- `npm run start:prod` - Iniciar en modo producción
 
 ## 🎨 Theming
 
@@ -112,25 +99,6 @@ El sistema soporta cambio dinámico de tema mediante:
 ### Instalación PWA
 La aplicación es instalable como PWA desde el navegador.
 
-## 📈 Optimizaciones Implementadas
-
-### Bundle Optimization
-- ✅ PreloadAllModules strategy
-- ✅ Material Module centralizado
-- ✅ Eliminación de delays artificiales
-- ✅ Tree-shaking optimizado
-
-### Runtime Performance
-- ✅ OnPush Change Detection
-- ✅ TrackBy functions
-- ✅ GPU acceleration CSS
-- ✅ Content visibility optimizations
-
-### Memory Management
-- ✅ Automatic unsubscribe pattern
-- ✅ Component lifecycle optimization
-- ✅ Observable cleanup
-
 ## 🚨 Reglas de Desarrollo
 
 ### Obligatorias para cada componente:
@@ -140,17 +108,35 @@ La aplicación es instalable como PWA desde el navegador.
 4. Máximo 5 imports por componente
 5. MaterialModule en lugar de imports individuales
 
-Ver [Referencia Rápida](./QUICK_REFERENCE.md) para detalles completos.
+## 🤝 Contribución
 
-## 🔗 Enlaces Útiles
+1. Fork el proyecto
+2. Crear rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios siguiendo [Conventional Commits](https://www.conventionalcommits.org/)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir Pull Request
 
-- [Angular CLI Reference](https://angular.dev/tools/cli)
-- [Angular Performance Guide](https://angular.io/guide/performance)
-- [Material Design Components](https://material.angular.io/)
-- [PWA Configuration](https://angular.io/guide/service-worker-config)
+### Formato de Commits
+```bash
+feat(component): add new dashboard widget
+fix(service): resolve data loading issue
+docs(readme): update documentation
+refactor(module): simplify component logic
+```
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 🆘 Soporte
+
+Para soporte y preguntas:
+- Crear un issue en GitHub
+- Contactar al equipo de desarrollo
+- Revisar la documentación técnica
 
 ---
 
-**Versión**: 1.0.0  
-**Angular**: 19.2.1  
-**Node**: 20+
+**DevTracker Frontend** - Sistema empresarial de seguimiento de desarrollos
+
+*Construido con ❤️ usando Angular 19, Material Design y principios de arquitectura modular*

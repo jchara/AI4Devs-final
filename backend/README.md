@@ -48,9 +48,10 @@ src/modules/
 
 ## 📋 Requisitos Previos
 
-- Node.js 18+ 
+- Node.js 20.10.0
+- npm 10.2.0
 - PostgreSQL 12+
-- npm o yarn
+- NestJS CLI 10.0.0
 
 ## 🛠️ Instalación
 
@@ -362,17 +363,6 @@ Cada dominio agrupa entidades relacionadas:
 
 ## 🚀 Despliegue
 
-### Docker (Recomendado)
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY dist ./dist
-EXPOSE 3000
-CMD ["node", "dist/main"]
-```
-
 ### Variables de Entorno Producción
 ```env
 NODE_ENV=production
@@ -383,67 +373,6 @@ DB_PASSWORD=your-secure-password
 DB_NAME=devtracker_prod
 PORT=3000
 CORS_ORIGIN=https://your-frontend-domain.com
-```
-
-## 📊 Métricas y Monitoreo
-
-El sistema proporciona métricas en tiempo real:
-
-### Dashboard Metrics
-```json
-{
-  "totalDevelopments": 45,
-  "byStatus": {
-    "planning": 12,
-    "in_progress": 18,
-    "testing": 8,
-    "completed": 7
-  },
-  "byPriority": {
-    "low": 10,
-    "medium": 20,
-    "high": 12,
-    "critical": 3
-  },
-  "averageProgress": 68.5,
-  "completedThisMonth": 7,
-  "overdue": 3
-}
-```
-
-### User Statistics
-```json
-{
-  "totalUsers": 15,
-  "activeUsers": 14,
-  "usersByRole": [
-    { "roleName": "desarrollador", "count": 8 },
-    { "roleName": "QA", "count": 4 },
-    { "roleName": "cloud", "count": 3 }
-  ],
-  "usersByTeam": [
-    { "teamName": "Backend Team", "count": 5 },
-    { "teamName": "Frontend Team", "count": 4 },
-    { "teamName": "DevOps Team", "count": 3 },
-    { "teamName": "QA Team", "count": 3 }
-  ]
-}
-```
-
-## 🔄 Migración desde Arquitectura Anterior
-
-Si estás migrando desde la estructura anterior:
-
-### ✅ Estructura Nueva vs Anterior
-```bash
-# ❌ Estructura anterior (eliminada)
-src/modules/user/          → src/modules/identity/
-src/modules/role/          → src/modules/identity/
-src/modules/team/          → src/modules/identity/
-src/modules/development/   → src/modules/project-management/
-src/modules/microservice/  → src/modules/project-management/
-src/modules/environment/   → src/modules/infrastructure/
-src/modules/deployment/    → src/modules/infrastructure/
 ```
 
 ### 🔧 Pasos de Migración
