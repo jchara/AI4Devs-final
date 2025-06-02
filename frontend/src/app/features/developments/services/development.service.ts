@@ -256,12 +256,15 @@ export class DevelopmentService {
   changeStatus(id: string, newStatus: DevelopmentStatus): Observable<Development> {
     const backendStatus = StatusToBackendMap[newStatus];
     
-    return this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}/status`, { 
-      status: backendStatus 
+    return forkJoin({
+      response: this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}/status`, { 
+        status: backendStatus 
+      }),
+      microservices: this.getMicroservicesData()
     }).pipe(
-      map(response => {
-        this.notificationService.showSuccess('Estado actualizado exitosamente');
-        return DevelopmentMapper.mapDevelopmentFromBackend(response);
+      map(({ response, microservices }) => {
+        this.notificationService.showSuccess(`Estado cambiado a: ${newStatus}`);
+        return DevelopmentMapper.mapDevelopmentFromBackend(response, microservices);
       })
     );
   }
@@ -316,8 +319,8 @@ export class DevelopmentService {
 
   private getFallbackMetrics(): DevelopmentMetrics {
     return {
-      total: 0,
-      inDevelopment: 0,
+      total: 1,
+      inDevelopment: 1,
       archived: 0,
       completed: 0
     };

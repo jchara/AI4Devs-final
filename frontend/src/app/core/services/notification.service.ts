@@ -6,6 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class NotificationService {
 
+  private readonly horizontalPosition: 'center' | 'end' = 'center';
+  private readonly verticalPosition: 'top' | 'bottom' = 'bottom';
+
   constructor(private snackBar: MatSnackBar) {}
 
   /**
@@ -15,8 +18,8 @@ export class NotificationService {
     this.snackBar.open(message, '✓', {
       duration,
       panelClass: ['success-snackbar'],
-      horizontalPosition: 'end',
-      verticalPosition: 'top'
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition
     });
   }
 
@@ -27,8 +30,8 @@ export class NotificationService {
     this.snackBar.open(message, '✕', {
       duration,
       panelClass: ['error-snackbar'],
-      horizontalPosition: 'end',
-      verticalPosition: 'top'
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition
     });
   }
 
@@ -39,8 +42,8 @@ export class NotificationService {
     this.snackBar.open(message, '⚠', {
       duration,
       panelClass: ['warning-snackbar'],
-      horizontalPosition: 'end',
-      verticalPosition: 'top'
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition
     });
   }
 
@@ -51,8 +54,8 @@ export class NotificationService {
     this.snackBar.open(message, 'ℹ', {
       duration,
       panelClass: ['info-snackbar'],
-      horizontalPosition: 'end',
-      verticalPosition: 'top'
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition
     });
   }
 } 

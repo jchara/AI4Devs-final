@@ -23,6 +23,7 @@ import {
 
 import { MaterialModule } from '../../shared/material.module';
 import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { DevelopmentService } from './services/development.service';
 import {
   Development,
@@ -106,7 +107,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver,
     private snackBar: MatSnackBar,
     private changeDetectorRef: ChangeDetectorRef,
-    private badgeUtils: BadgeUtilsService
+    private badgeUtils: BadgeUtilsService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -192,7 +194,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading developments:', error);
-          this.showErrorMessage('Error al cargar los desarrollos');
+          this.notificationService.showError('Error al cargar los desarrollos');
           this.loading = false;
           this.changeDetectorRef.markForCheck();
         },
@@ -275,22 +277,22 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   // Métodos de acción
   newDevelopment(): void {
     // TODO: Implementar modal de creación
-    this.showSuccessMessage('Funcionalidad en desarrollo');
+    this.notificationService.showInfo('Funcionalidad en desarrollo');
   }
 
   viewDetails(development: Development): void {
     // TODO: Implementar modal de detalles
-    this.showSuccessMessage(`Ver detalles de: ${development.title}`);
+    this.notificationService.showSuccess(`Ver detalles de: ${development.title}`);
   }
 
   editDevelopment(development: Development): void {
     // TODO: Implementar modal de edición
-    this.showSuccessMessage(`Editar: ${development.title}`);
+    this.notificationService.showInfo(`Editar: ${development.title}`);
   }
 
   deleteDevelopment(development: Development): void {
     // TODO: Implementar confirmación de eliminación
-    this.showSuccessMessage(`Eliminar: ${development.title}`);
+    this.notificationService.showWarning(`Eliminar: ${development.title}`);
   }
 
   changeStatus(development: Development, newStatus: string): void {
@@ -307,12 +309,11 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
             this.updateStatusCounts();
             this.applyFilters();
           }
-          this.showSuccessMessage(`Estado cambiado a: ${newStatus}`);
           this.changeDetectorRef.markForCheck();
         },
         error: (error) => {
           console.error('Error changing status:', error);
-          this.showErrorMessage('Error al cambiar el estado');
+          this.notificationService.showError('Error al cambiar el estado');
           this.changeDetectorRef.markForCheck();
         },
       });
@@ -344,19 +345,5 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   onPageChange(): void {
     // La paginación se maneja automáticamente por MatTableDataSource
     this.changeDetectorRef.markForCheck();
-  }
-
-  private showSuccessMessage(message: string): void {
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar'],
-    });
-  }
-
-  private showErrorMessage(message: string): void {
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar'],
-    });
   }
 }

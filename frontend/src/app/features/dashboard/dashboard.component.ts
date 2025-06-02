@@ -1,21 +1,22 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DevelopmentService } from '../developments/services/development.service';
-import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
-import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
+import { NotificationService } from '../../core/services/notification.service';
 import { DevelopmentChartComponent } from '../../shared/components/development-chart/development-chart.component';
-import { 
-  Development, 
-  DevelopmentMetrics, 
-  RecentActivity, 
-  UpcomingDeployment, 
+import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
+import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
+import {
+  ActivityType,
   ChartData,
+  Development,
+  DevelopmentMetrics,
   DevelopmentStatus,
   Environment,
-  ActivityType
+  RecentActivity,
+  UpcomingDeployment
 } from '../developments/models/development.model';
+import { DevelopmentService } from '../developments/services/development.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,7 +38,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private developmentService: DevelopmentService,
     private changeDetectorRef: ChangeDetectorRef,
-    private badgeUtils: BadgeUtilsService
+    private badgeUtils: BadgeUtilsService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
