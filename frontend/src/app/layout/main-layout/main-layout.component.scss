@@ -6,7 +6,7 @@
 
 .main-content {
   overflow-y: auto;
-  padding: var(--spacing-lg);
+  // padding: var(--spacing-lg);
   margin-top: 64px; // Altura del header
   margin-left: 250px; // Valor por defecto, se sobrescribe con binding
   min-height: calc(100vh - 64px);

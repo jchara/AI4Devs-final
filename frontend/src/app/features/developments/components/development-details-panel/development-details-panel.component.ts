@@ -81,34 +81,46 @@ import { BadgeUtilsService } from '../../../../shared/services/badge-utils.servi
 })
 export class DevelopmentDetailsPanelComponent implements OnDestroy {
   @Input() development!: Development;
+  private _isOpen = false;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
     if (value) {
-      this.disableBodyScroll();
-      setTimeout(() => {
-        // Hace scroll al top del panel de detalles
+      // Bloquea el scroll del body
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      
+      // Asegura que el panel empiece desde arriba
+      requestAnimationFrame(() => {
         const panel = document.querySelector('.details-panel');
+        const scrollableContent = document.querySelector('.scrollable-content');
+        
         if (panel) {
           panel.scrollTop = 0;
         }
-        // Lleva la ventana al top (opcional, mejora UX en desktop)
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 0);
+        
+        if (scrollableContent) {
+          scrollableContent.scrollTop = 0;
+        }
+      });
     } else {
-      this.enableBodyScroll();
+      // Restaura el scroll del body
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     }
   }
+
   get isOpen(): boolean {
     return this._isOpen;
   }
-  private _isOpen = false;
 
   @Output() closePanel = new EventEmitter<void>();
   @Output() editDevelopment = new EventEmitter<void>();
   @Output() changeStatus = new EventEmitter<void>();
 
   isMobile = window.innerWidth <= 768;
-  private initialScrollPosition = 0;
 
   constructor(private badgeUtils: BadgeUtilsService) {}
 
@@ -125,27 +137,11 @@ export class DevelopmentDetailsPanelComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.enableBodyScroll();
-  }
-
-  private disableBodyScroll() {
-    // Guarda la posición actual del scroll
-    this.initialScrollPosition = window.scrollY;
-    // Bloquea el scroll del body
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.top = `-${this.initialScrollPosition}px`;
-    document.body.style.overflow = 'hidden';
-  }
-
-  private enableBodyScroll() {
-    // Restaura el scroll del body
-    document.body.style.position = '';
-    document.body.style.width = '';
-    document.body.style.top = '';
-    document.body.style.overflow = '';
-    // Restaura la posición del scroll
-    window.scrollTo(0, this.initialScrollPosition);
+    if (this._isOpen) {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
   }
 
   getStatusBadgeClass(status: DevelopmentStatus | string): string {
