@@ -23,7 +23,12 @@ DevTracker - Sistema de Seguimiento de Desarrollos en Microservicios
 DevTracker es una aplicación web full-stack diseñada para resolver el problema común de los desarrolladores junior en entornos de microservicios: el seguimiento manual de desarrollos a través de hojas de cálculo. La aplicación centraliza toda la información relacionada con los desarrollos, desde su concepción hasta su despliegue en producción, eliminando la dependencia de hojas de cálculo manuales y reduciendo significativamente los errores en los despliegues.
 
 ### **0.4. URL del proyecto:**
-[Pendiente]
+
+#### Frontend
+- https://frontend-jcc-production.up.railway.app
+
+#### Backend
+- https://backend-jcc-production.up.railway.app
 
 ### **0.5. URL o archivo comprimido del repositorio**
 https://github.com/jchara/AI4Devs-final.git
@@ -236,11 +241,13 @@ El objetivo principal de DevTracker es proporcionar una solución integral que:
 ### **1.4. Instrucciones de instalación:**
 
 #### Requisitos Previos
-- Node.js (v18 o superior)
-- npm (v9 o superior)
+- Node.js (v20 o superior)
+- npm (v10 o superior)
 - Docker y Docker Compose
 - Git
-- PostgreSQL 16 (si se instala localmente)
+- PostgreSQL 16
+- Angular CLI 19.2
+- NestJS 11
 
 #### Variables de Entorno
 Crear archivo `.env` en la raíz del proyecto:
@@ -250,10 +257,12 @@ PORT=3000
 NODE_ENV=development
 
 # Base de Datos
-POSTGRES_DB=devtracker
-POSTGRES_USER=devtracker
-POSTGRES_PASSWORD=devtracker123
-POSTGRES_PORT=5432
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_NAME=your_db_name
+
 
 # Jira
 JIRA_API_URL=https://tu-dominio.atlassian.net
@@ -282,14 +291,18 @@ docker-compose up -d postgres
 # Esperar a que la base de datos esté lista
 sleep 10
 
-# Ejecutar migraciones
+# Ejecutar migraciones y seeds
 npm run migration:run
+npm run seed
 ```
 
 4. **Iniciar el servidor de desarrollo**
 ```bash
 npm run start:dev
 ```
+
+5. **Verificar Swagger**
+- Abrir navegador en `http://localhost:3000/api/docs`
 
 #### Instalación del Frontend
 
@@ -305,51 +318,72 @@ npm install
 
 3. **Iniciar el servidor de desarrollo**
 ```bash
-ng serve
+npm run start:dev
+```
+
+#### Scripts Disponibles
+
+##### Frontend
+```bash
+# Desarrollo
+npm run start:dev         # Servidor de desarrollo
+npm run build            # Build de desarrollo
+npm run build:prod       # Build de producción
+npm run start:prod       # Servidor de producción
+npm run test            # Tests unitarios
+ng e2e                  # Tests E2E
+npm run watch           # Build con watch mode
+
+# PWA
+npm run build:prod      # Incluye configuración PWA
+```
+
+##### Backend
+```bash
+# Desarrollo
+npm run start:dev       # Servidor de desarrollo
+npm run start:debug     # Servidor con debugger
+npm run build          # Build de desarrollo
+npm run start:prod     # Servidor de producción
+
+# Base de Datos
+npm run seed           # Ejecutar seeds en desarrollo
+npm run seed:prod      # Ejecutar seeds en producción
+
+# Testing
+npm run test          # Tests unitarios
+npm run test:e2e      # Tests E2E
+npm run test:cov      # Reporte de cobertura
+
+# Deployment
+npm run deploy        # Build + Seeds + Start
+npm run railway:build # Build para Railway
+npm run railway:start # Start en Railway
+
+# Código
+npm run format        # Formatear código
+npm run lint         # Ejecutar linter
 ```
 
 #### Verificación de la Instalación
 
 1. **Backend**
-   - Abrir navegador en `http://localhost:3000`
-   - Debería ver el mensaje de bienvenida de NestJS
-   - Verificar logs en consola
+   - API: `http://localhost:3000`
+   - Swagger: `http://localhost:3000/api/docs`
+   - Health Check: `http://localhost:3000/health`
 
 2. **Frontend**
-   - Abrir navegador en `http://localhost:4200`
-   - Debería ver la pantalla de login de DevTracker
-   - Verificar que no hay errores en la consola del navegador
+   - App: `http://localhost:4200`
+   - PWA disponible en producción
+   - Material UI Theme configurado
 
 3. **Base de Datos**
-   - Verificar conexión:
 ```bash
+# Conexión directa
 docker exec -it jcc-postgres psql -U devtracker -d devtracker
-```
 
-#### Comandos Útiles
-
-**Backend**
-```bash
-# Ejecutar tests
-npm run test
-
-# Generar build de producción
-npm run build
-
-# Ejecutar linting
-npm run lint
-```
-
-**Frontend**
-```bash
-# Ejecutar tests
-ng test
-
-# Generar build de producción
-ng build --prod
-
-# Ejecutar linting
-ng lint
+# Ver logs
+docker logs -f jcc-postgres
 ```
 
 #### Solución de Problemas Comunes
@@ -364,37 +398,34 @@ ng lint
    - Verificar que el backend está corriendo
    - Revisar la consola del navegador
 
-3. **Error en el backend**
-   - Verificar logs en consola
-   - Comprobar conexión a la base de datos
-   - Validar variables de entorno
+2. **Errores de Material UI**
+   - Verificar importación de temas
+   - Comprobar estilos globales
+   - Actualizar Angular Material
 
-#### Despliegue en Producción
+3. **Errores de Base de Datos**
+   - Verificar conexión PostgreSQL
+   - Ejecutar `npm run seed` nuevamente
+   - Revisar logs de Docker
 
-1. **Backend**
-```bash
-# Generar build
-npm run build
+4. **Errores de Deployment**
+   - Verificar variables de entorno
+   - Comprobar builds
+   - Revisar logs de Railway
 
-# Iniciar en producción
-npm run start:prod
-```
+#### Notas de Seguridad
+- Usar HTTPS en producción
+- Configurar CORS adecuadamente
+- Mantener dependencias actualizadas
+- Revisar logs de seguridad
+- Hacer backup regular de la base de datos
 
-2. **Frontend**
-```bash
-# Generar build
-ng build --prod
-
-# Servir archivos estáticos
-npm install -g serve
-serve -s dist/frontend
-```
-
-#### Notas Adicionales
-- Asegurarse de que los puertos 3000 (backend), 4200 (frontend) y 5432 (PostgreSQL) estén disponibles
-- En producción, configurar un proxy reverso (nginx recomendado)
-- Implementar HTTPS en producción
-- Realizar backup regular de la base de datos
+#### Mantenimiento
+- Actualizar dependencias mensualmente
+- Revisar logs regularmente
+- Monitorear rendimiento
+- Hacer backup diario
+- Revisar seguridad
 
 ---
 
@@ -651,42 +682,125 @@ devtracker/
 ├── frontend/
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── core/           # Servicios singleton, guards
-│   │   │   ├── shared/         # Componentes compartidos
+│   │   │   ├── core/           # Servicios singleton, guards, interceptors
+│   │   │   ├── shared/         # Componentes compartidos, pipes, directivas
 │   │   │   ├── features/       # Módulos de características
+│   │   │   │   ├── auth/       # Autenticación y autorización
+│   │   │   │   ├── dashboard/  # Dashboard principal
+│   │   │   │   └── developments/ # Gestión de desarrollos
 │   │   │   └── store/          # Estado global (NgRx)
 │   │   ├── assets/            # Recursos estáticos
-│   │   └── environments/      # Configuración por ambiente
-│   ├── angular.json
-│   └── package.json
+│   │   ├── styles/           # Estilos globales y temas
+│   │   ├── environments/     # Configuración por ambiente
+│   │   ├── index.html        # Punto de entrada HTML
+│   │   ├── main.ts          # Punto de entrada TypeScript
+│   │   └── styles.scss      # Estilos globales
+│   ├── angular.json         # Configuración de Angular
+│   ├── package.json        # Dependencias y scripts
+│   └── ngsw-config.json    # Configuración de Service Worker
 │
 ├── backend/
 │   ├── src/
 │   │   ├── modules/           # Módulos de la aplicación
-│   │   ├── common/            # Utilidades compartidas
-│   │   ├── config/            # Configuración
-│   │   └── database/          # Migraciones y seeds
-│   ├── test/                  # Tests unitarios y e2e
-│   └── package.json
+│   │   │   ├── auth/         # Autenticación y autorización
+│   │   │   ├── developments/ # Gestión de desarrollos
+│   │   │   └── jira/        # Integración con Jira
+│   │   ├── database/         # Migraciones y seeds
+│   │   │   ├── migrations/   # Migraciones de TypeORM
+│   │   │   ├── seeds/       # Seeds de datos iniciales
+│   │   │   └── entities/    # Entidades de TypeORM
+│   │   ├── config/          # Configuración de la aplicación
+│   │   ├── shared/          # Utilidades compartidas
+│   │   ├── common/          # Decoradores, filtros, pipes
+│   │   └── app.module.ts    # Módulo principal
+│   ├── test/               # Tests unitarios y e2e
+│   └── package.json       # Dependencias y scripts
 │
 └── docker/
-    ├── frontend/             # Configuración Docker frontend
-    ├── backend/              # Configuración Docker backend
-    └── docker-compose.yml    # Orquestación de contenedores
+    ├── frontend/          # Configuración Docker frontend
+    ├── backend/           # Configuración Docker backend
+    └── docker-compose.yml # Orquestación de contenedores
 ```
 
 #### Patrones de Estructura
+
+1. **Frontend (Angular 19.2)**
+   - Arquitectura modular con lazy loading
+   - Patrón Container/Presentational
+   - Estado centralizado con NgRx
+   - Material UI para componentes
+   - PWA con service worker
+   - Interceptors para manejo de errores y tokens
+   - Guards para protección de rutas
+   - Pipes personalizados para transformación de datos
+
+2. **Backend (NestJS 11)**
+   - Arquitectura hexagonal
+   - Inyección de dependencias
+   - Repositorios con TypeORM
+   - DTOs para validación
+   - Swagger para documentación
+   - Middleware personalizado
+   - Filtros de excepciones
+   - Pipes de transformación
+   - Guards de autenticación
+   - Interceptors para logging
+
+3. **Base de Datos (PostgreSQL 16)**
+   - Migraciones automáticas
+   - Seeds para datos iniciales
+   - Índices optimizados
+   - Triggers para auditoría
+   - Constraints para integridad
+   - Backups automatizados
+
+4. **DevOps**
+   - Docker para contenedores
+   - Railway para despliegue
+   - GitHub Actions para CI/CD
+   - Swagger para documentación
+   - Logs centralizados
+   - Monitoreo de salud
+
+#### Características Principales
+
 1. **Frontend**
-   - Arquitectura modular
-   - Lazy loading de módulos
-   - Componentes presentacionales y contenedores
-   - Servicios por dominio
+   - Material UI para interfaz consistente
+   - PWA para experiencia offline
+   - Lazy loading para mejor rendimiento
+   - Estado predictible con NgRx
+   - Interceptors para manejo de errores
+   - Guards para seguridad
+   - Responsive design
+   - Temas personalizables
 
 2. **Backend**
-   - Arquitectura en capas
-   - Inyección de dependencias
-   - Repositorios por entidad
-   - DTOs para validación
+   - API RESTful documentada
+   - Autenticación JWT
+   - Validación de datos
+   - Manejo de errores centralizado
+   - Logging estructurado
+   - Caché configurable
+   - Rate limiting
+   - CORS configurado
+
+3. **Base de Datos**
+   - Migraciones versionadas
+   - Seeds para ambientes
+   - Índices optimizados
+   - Auditoría automática
+   - Backups programados
+   - Restauración verificada
+
+4. **Seguridad**
+   - JWT con refresh tokens
+   - CORS configurado
+   - Rate limiting
+   - Validación de datos
+   - Sanitización de inputs
+   - Logs de seguridad
+   - HTTPS forzado
+   - Headers seguros
 
 ### **2.4. Infraestructura y despliegue**
 
@@ -935,7 +1049,7 @@ La estrategia de testing se basa en la pirámide de testing, implementando difer
   - Registro/Login
   - CRUD de microservicios
   - Monitoreo
-  - Reportes
+   - Reportes
 
 - **Escenarios de Negocio**
   - Workflows completos
