@@ -87,10 +87,12 @@
                 <mat-progress-spinner
                   mode="determinate"
                   [value]="getProgressValue(development.progress)"
+                  [diameter]="120"
+                  [strokeWidth]="10"
                   color="primary">
                 </mat-progress-spinner>
                 <div class="progress-label">
-                  <span class="percentage">{{ development.progress }}</span>
+                  <span class="percentage">{{development.progress}}</span>
                   <span>Completado</span>
                 </div>
               </div>
