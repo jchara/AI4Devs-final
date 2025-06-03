@@ -503,8 +503,178 @@ Analiza si la configuración environment de producción se está ejecutando corr
 para ver si tienen la configuración del reemplazo de archivos de environment
 ```
 
-## Prompt 38: Cambiar repository de GitHub por URL de tarea de Jira - BACKEND
+## Prompt 38: Cambiar campo repository por URL de tarea de Jira - BACKEND
 
 ```
 Necesito Ajustar la entidad de Development para cambiar el campo repository: por jiraUrl, al realizar este cambio, ajusta también el repositorio y las semillas
+```
+
+## Prompt 39: Análisis de endpoint detallado de desarrollo - BACKEND
+
+```
+Eres un desarrollador senior backend con node, analiza el desarrollo @backend  e identifica el endpoint para consultar la información de un desarrollo.
+
+dame un status del endpoint concreto, no hagas cambios.
+```
+
+## Prompt 40: Crear vista detallada de desarrollo en panel deslizante - FRONTEND
+
+```
+Teniendo el contexto de lo que realiza el endpoint para ver detalles de un desarrollo, 
+actual como un experto desarrollador frontend senior en Angular y experto en UX/UI.
+para  @frontend 
+
+## Contexto del Endpoint
+Tengo un endpoint **GET /developments/:id** que retorna la siguiente información (DevelopmentResponseDto):
+- ID único del desarrollo
+- Título y descripción
+- Estado actual (DevelopmentStatus) y prioridad (DevelopmentPriority)
+- Progreso (0-100)
+- ID del ambiente, usuario asignado y equipo responsable
+- URL de Jira y rama de desarrollo
+- Fechas (creación, actualización, inicio, estimada, fin)
+- Notas adicionales
+
+## Requerimiento
+Crear una vista detallada de desarrollo individual que se **despliegue desde el lado derecho** como un panel deslizante (slide-out panel) cuando se selecciona "Ver detalles" desde el menú de acciones de la tabla de desarrollos.
+
+## Especificaciones del Panel Deslizante
+
+### Comportamiento del Panel:
+- **Posición**: Panel que se desliza desde el lado derecho de la pantalla
+- **Ancho**: Ocupa aproximadamente 60-70% del ancho de la pantalla en desktop
+- **Animación**: Transición suave de entrada/salida con backdrop semi-transparente
+- **Responsivo**: En móviles ocupa 100% del ancho
+- **Overlay**: Fondo oscuro semi-transparente que permite cerrar al hacer clic fuera
+- **Scroll**: Scroll independiente del contenido principal
+
+### Layout del Panel:
+
+**Header del Panel:**
+- Botón de cerrar (X) en la esquina superior derecha
+- Breadcrumbs: Dashboard > Desarrollos > [Título del desarrollo]
+- Título del desarrollo con estado badge
+- Barra de acciones: Botones "Editar" y "Cambiar Estado"
+
+**Contenido Principal (Layout de 2 columnas dentro del panel):**
+
+**Columna Principal (70%):**
+- **Sección "Información General"**: 
+  - Descripción del desarrollo
+  - Enlaces a issues de Jira (usando la URL de Jira del endpoint)
+  - Fechas formateadas (creación, actualización, inicio, estimada, fin)
+  - Prioridad y progreso visual
+
+- **Sección "Detalles Técnicos"**:
+  - Información del ambiente (ID ambiente)
+  - Rama de desarrollo
+  - Usuario asignado y equipo responsable
+  - Notas adicionales
+
+- **Sección "Timeline de Estado"**:
+  - Historial visual de cambios de estado
+  - Fechas importantes con iconos
+  - Progreso actual con barra visual (0-100)
+
+**Sidebar (30%):**
+- **Estado Actual**: Badge grande con estado y progreso circular
+- **Información Rápida**:
+  - Tiempo transcurrido desde creación
+  - Tiempo estimado vs actual
+  - Próxima fecha importante
+- **Enlaces Rápidos**:
+  - Botón directo a Jira (usar URL del endpoint)
+  - Acciones rápidas
+- **Notas**: Sección para notas adicionales del endpoint
+
+### Interacciones Requeridas:
+- **Modal de cambio de estado**: Formulario para actualizar el estado del desarrollo
+- **Tooltips informativos** en campos técnicos
+- **Expandir/colapsar secciones** con animaciones suaves
+- **Confirmación** para acciones importantes
+- **Loading states** durante la carga de datos
+- **Error handling** si falla la carga del desarrollo
+
+### Consideraciones Técnicas:
+- Usar el servicio HTTP para consumir **GET /developments/:id**
+- Implementar manejo de errores (404, 400, 500)
+- Estados de carga con skeletons
+- Tipado TypeScript para DevelopmentResponseDto
+- Responsivo con Flexbox/CSS Grid
+- Animaciones CSS para transiciones suaves
+
+### UX/UI Requirements:
+- **Diseño moderno** con Material Design o similar
+- **Jerarquía visual clara** con tipografías diferenciadas
+- **Colores semánticos** para estados (success, warning, error)
+- **Espaciado consistente** siguiendo design system
+- **Accesibilidad** con ARIA labels y navegación por teclado
+- **Micro-interacciones** para feedback visual
+
+Crea todos los componentes, servicios, interfaces TypeScript y estilos necesarios para implementar esta funcionalidad completa si ya existen algunos estilos y componentes reutilizalos
+
+### Consideraciones Adicionales:
+Ten en cuenta buenas prácticas tanto de diseño como de seguridad.
+Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero.
+```
+
+## Prompt 41: Respuestas sobre prioridades y panel deslizante - FRONTEND
+
+```
+Respondiendo a tus preguntas:
+1. Este es el enum de prioridades que tiene la entidad:
+create type developments_priority as enum ('low', 'medium', 'high', 'critical');
+
+2. No tengo conocimiento si existe este componente slide-out panel, verifica el proyecto @frontend  para ver si existe
+
+Como información adicional:
+
+Existe en el back el endpoint de actividad reciente del desarrollo:
+http://localhost:3000/api/activities/development/2?limit=10
+[
+{
+        "id": 5,
+        "type": "microservice_added",
+        "description": "Microservicio auth-service asociado al desarrollo",
+        "metadata": {
+            "microservice": "auth-service",
+            "version": "2.1.0-beta"
+        },
+        "isActive": true,
+        "createdAt": "2025-06-03T02:41:58.843Z",
+        "developmentId": 2,
+        "performedBy": {
+            "id": 3,
+            "name": "JCC",
+            "email": "jcc@company.com",
+            "password": "$2b$10$Okzvq9TvUbOqYp3/pOURK.B14T0sdvJZ2AL5aRCrS5meZQDrMhiWe",
+            "isActive": true,
+            "createdAt": "2025-06-03T02:41:58.665Z",
+            "updatedAt": "2025-06-03T02:41:58.665Z",
+            "role": {
+                "id": 1,
+                "name": "desarrollador",
+                "description": "Desarrollador de software",
+                "isActive": true,
+                "createdAt": "2025-06-03T02:41:58.366Z",
+                "updatedAt": "2025-06-03T02:41:58.366Z"
+            },
+            "roleId": 1,
+            "team": {
+                "id": 3,
+                "name": "Backend Team",
+                "description": "Equipo de desarrollo backend",
+                "isActive": true,
+                "createdAt": "2025-06-03T02:41:58.470Z",
+                "updatedAt": "2025-06-03T02:41:58.470Z"
+            },
+            "teamId": 3
+        },
+        "performedById": 3
+    }
+]
+Ten presente utilizar estos métodos de rendimiento utilizados actualmente en la aplicación:
+Lazy loading del panel
+Unsubscribe de observables
+Detección de cambios OnPush
 ```

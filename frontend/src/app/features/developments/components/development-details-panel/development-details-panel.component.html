@@ -1,0 +1,125 @@
+<div class="overlay" *ngIf="isOpen" [@overlay]>
+  <div class="details-panel" [@panelState]="{ value: '', params: getPanelAnimationParams() }" [class.mobile]="isMobile">
+    <!-- Header Fijo -->
+    <div class="panel-header">
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <mat-icon>chevron_right</mat-icon>
+        <span>Desarrollos</span>
+        <mat-icon>chevron_right</mat-icon>
+        <span>{{ development.title }}</span>
+      </div>
+      <button mat-icon-button class="close-button" (click)="onClose()" matTooltip="Cerrar panel">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Contenido Scrolleable -->
+    <div class="scrollable-content">
+      <!-- Título y Acciones (Parte del contenido scrolleable) -->
+      <div class="title-section">
+        <h1>{{ development.title }}</h1>
+        <div class="status-badge" [class]="getStatusBadgeClass(development.status)">
+          {{ development.status }}
+        </div>
+        <div class="action-buttons">
+          <button mat-stroked-button color="primary" (click)="onEdit()">
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+          <button mat-flat-button color="primary" (click)="onChangeStatus()">
+            <mat-icon>swap_horiz</mat-icon>
+            Cambiar Estado
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel Content -->
+      <div class="panel-content">
+        <div class="two-column-layout">
+          <!-- Columna Izquierda -->
+          <div class="left-column">
+            <!-- Información General -->
+            <section class="info-section">
+              <h2>Información General</h2>
+              <p class="description">{{ development.description }}</p>
+              
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Creado:</label>
+                  <span>{{ formatDate(development.createdDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Última actualización:</label>
+                  <span>{{ formatDate(development.updatedDate) }}</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Información Rápida -->
+            <section class="quick-info-section">
+              <h2>Información Rápida</h2>
+              <div class="quick-info-grid">
+                <div class="quick-info-item">
+                  <mat-icon>schedule</mat-icon>
+                  <div class="info-content">
+                    <label>Tiempo desde creación:</label>
+                    <span>{{ calculateTimeElapsed(development.createdDate) }}</span>
+                  </div>
+                </div>
+                <div class="quick-info-item">
+                  <mat-icon>event</mat-icon>
+                  <div class="info-content">
+                    <label>Estado:</label>
+                    <span>{{ development.status }}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Columna Derecha -->
+          <div class="right-column">
+            <!-- Estado Actual -->
+            <section class="status-section">
+              <h2>Estado Actual</h2>
+              <div class="progress-circle">
+                <mat-progress-spinner
+                  mode="determinate"
+                  [value]="getProgressValue(development.progress)"
+                  color="primary">
+                </mat-progress-spinner>
+                <div class="progress-label">
+                  <span class="percentage">{{ development.progress }}</span>
+                  <span>Completado</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Detalles Técnicos -->
+            <section class="technical-details-section">
+              <h2>Detalles Técnicos</h2>
+              <div class="technical-info-grid">
+                <div class="info-item">
+                  <label>Ambiente:</label>
+                  <span>{{ development.environment }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Microservicios:</label>
+                  <div class="microservices-list">
+                    <mat-chip-set>
+                      <mat-chip *ngFor="let ms of development.microservices">
+                        {{ ms.name }}
+                        <span *ngIf="ms.technology" class="chip-tech">({{ ms.technology }})</span>
+                      </mat-chip>
+                    </mat-chip-set>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

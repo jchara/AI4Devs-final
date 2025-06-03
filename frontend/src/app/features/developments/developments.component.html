@@ -368,6 +368,16 @@
       </div>
     </div>
   </div>
+
+  <!-- Panel de detalles -->
+  <app-development-details-panel
+    *ngIf="selectedDevelopment"
+    [development]="selectedDevelopment"
+    [isOpen]="isPanelOpen"
+    (closePanel)="onClosePanel()"
+    (editDevelopment)="onEditFromPanel()"
+    (changeStatus)="onChangeStatusFromPanel()">
+  </app-development-details-panel>
 </div>
 
 <!-- Menú de acciones desktop -->

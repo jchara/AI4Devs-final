@@ -31,6 +31,7 @@ import {
   Environment,
   Microservice,
 } from './models/development.model';
+import { DevelopmentDetailsPanelComponent } from './components/development-details-panel/development-details-panel.component';
 
 interface StatusOption {
   value: string;
@@ -41,7 +42,7 @@ interface StatusOption {
 @Component({
   selector: 'app-developments',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MaterialModule],
+  imports: [CommonModule, ReactiveFormsModule, MaterialModule, DevelopmentDetailsPanelComponent],
   templateUrl: './developments.component.html',
   styleUrl: './developments.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -99,6 +100,10 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     Environment.STAGING,
     Environment.PRODUCTION,
   ];
+
+  // Agregar estas propiedades para el panel de detalles
+  selectedDevelopment: Development | null = null;
+  isPanelOpen = false;
 
   private destroy$ = new Subject<void>();
 
@@ -281,8 +286,28 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(development: Development): void {
-    // TODO: Implementar modal de detalles
-    this.notificationService.showSuccess(`Ver detalles de: ${development.title}`);
+    this.selectedDevelopment = development;
+    this.isPanelOpen = true;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  onClosePanel(): void {
+    this.isPanelOpen = false;
+    this.selectedDevelopment = null;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  onEditFromPanel(): void {
+    if (this.selectedDevelopment) {
+      this.editDevelopment(this.selectedDevelopment);
+    }
+  }
+
+  onChangeStatusFromPanel(): void {
+    if (this.selectedDevelopment) {
+      const newStatus = this.getStatusesForChange(this.selectedDevelopment.status)[0];
+      this.changeStatus(this.selectedDevelopment, newStatus);
+    }
   }
 
   editDevelopment(development: Development): void {
