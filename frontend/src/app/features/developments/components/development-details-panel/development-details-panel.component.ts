@@ -1,13 +1,15 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, HostListener, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
-import { trigger, transition, style, animate, state, query, stagger, animateChild } from '@angular/animations';
+import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
 import { Development, DevelopmentStatus } from '../../models/development.model';
 import { BadgeUtilsService } from '../../../../shared/services/badge-utils.service';
+import { Subject } from 'rxjs';
+import { memoize } from 'lodash';
 
 @Component({
   selector: 'app-development-details-panel',
@@ -59,56 +61,29 @@ import { BadgeUtilsService } from '../../../../shared/services/badge-utils.servi
           style({ opacity: 0 })
         )
       ])
-    ]),
-    trigger('fadeSlideIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('300ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({ opacity: 1, transform: 'translateY(0)' })
-        )
-      ])
-    ]),
-    trigger('contentAnimation', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(30px)' }),
-        animate('400ms 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({ opacity: 1, transform: 'translateY(0)' })
-        )
-      ])
     ])
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DevelopmentDetailsPanelComponent implements OnDestroy {
+export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy {
   @Input() development!: Development;
   private _isOpen = false;
+  private readonly destroy$ = new Subject<void>();
+  private resizeObserver: ResizeObserver | null = null;
+
+  // Cache para optimización
+  private cachedProgressValue: { [key: string]: number } = {};
+  private cachedDates: { [key: string]: string } = {};
+  private cachedTimeElapsed: { [key: string]: string } = {};
+
+  isMobile = window.innerWidth <= 768;
 
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
     if (value) {
-      // Bloquea el scroll del body
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      
-      // Asegura que el panel empiece desde arriba
-      requestAnimationFrame(() => {
-        const panel = document.querySelector('.details-panel');
-        const scrollableContent = document.querySelector('.scrollable-content');
-        
-        if (panel) {
-          panel.scrollTop = 0;
-        }
-        
-        if (scrollableContent) {
-          scrollableContent.scrollTop = 0;
-        }
-      });
+      this.handlePanelOpen();
     } else {
-      // Restaura el scroll del body
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+      this.handlePanelClose();
     }
   }
 
@@ -120,55 +95,122 @@ export class DevelopmentDetailsPanelComponent implements OnDestroy {
   @Output() editDevelopment = new EventEmitter<void>();
   @Output() changeStatus = new EventEmitter<void>();
 
-  isMobile = window.innerWidth <= 768;
+  constructor(
+    private badgeUtils: BadgeUtilsService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
 
-  constructor(private badgeUtils: BadgeUtilsService) {}
-
-  getPanelAnimationParams() {
-    return {
-      transformEnter: this.isMobile ? 'translateY(100%)' : 'translateX(100%)',
-      transformLeave: this.isMobile ? 'translateY(100%)' : 'translateX(100%)'
-    };
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.isMobile = window.innerWidth <= 768;
+  ngOnInit() {
+    this.setupResizeObserver();
   }
 
   ngOnDestroy() {
-    if (this._isOpen) {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cleanupResizeObserver();
+    this.resetBodyStyles();
+    this.clearCaches();
+  }
+
+  private setupResizeObserver() {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        const newIsMobile = window.innerWidth <= 768;
+        if (this.isMobile !== newIsMobile) {
+          this.isMobile = newIsMobile;
+          this.changeDetectorRef.markForCheck();
+        }
+      });
+      this.resizeObserver.observe(document.body);
     }
   }
+
+  private cleanupResizeObserver() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+  }
+
+  private handlePanelOpen() {
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    
+    requestAnimationFrame(() => {
+      const panel = document.querySelector('.details-panel');
+      const scrollableContent = document.querySelector('.scrollable-content');
+      
+      if (panel) panel.scrollTop = 0;
+      if (scrollableContent) scrollableContent.scrollTop = 0;
+    });
+  }
+
+  private handlePanelClose() {
+    this.resetBodyStyles();
+  }
+
+  private resetBodyStyles() {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+  }
+
+  private clearCaches() {
+    this.cachedProgressValue = {};
+    this.cachedDates = {};
+    this.cachedTimeElapsed = {};
+  }
+
+  readonly getPanelAnimationParams = memoize(() => ({
+    transformEnter: this.isMobile ? 'translateY(100%)' : 'translateX(100%)',
+    transformLeave: this.isMobile ? 'translateY(100%)' : 'translateX(100%)'
+  }));
 
   getStatusBadgeClass(status: DevelopmentStatus | string): string {
     return this.badgeUtils.getStatusBadgeClass(status);
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('es-ES', {
+    const key = date.getTime().toString();
+    if (this.cachedDates[key]) {
+      return this.cachedDates[key];
+    }
+    
+    const formatted = date.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
+    this.cachedDates[key] = formatted;
+    return formatted;
   }
 
   calculateTimeElapsed(date: Date): string {
+    const key = date.getTime().toString();
     const now = new Date();
+    
+    if (this.cachedTimeElapsed[key] && 
+        (now.getTime() - date.getTime()) < 60000) {
+      return this.cachedTimeElapsed[key];
+    }
+    
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} días`;
+    this.cachedTimeElapsed[key] = `${diffDays} días`;
+    return this.cachedTimeElapsed[key];
   }
 
   getProgressValue(progress: string | undefined): number {
     if (!progress) return 0;
+    if (this.cachedProgressValue[progress] !== undefined) {
+      return this.cachedProgressValue[progress];
+    }
     const value = parseInt(progress.replace('%', ''));
-    return isNaN(value) ? 0 : value;
+    this.cachedProgressValue[progress] = isNaN(value) ? 0 : value;
+    return this.cachedProgressValue[progress];
   }
 
   onClose(): void {
@@ -181,5 +223,9 @@ export class DevelopmentDetailsPanelComponent implements OnDestroy {
 
   onChangeStatus(): void {
     this.changeStatus.emit();
+  }
+
+  trackByFn(index: number, item: any): number {
+    return item.id || index;
   }
 } 

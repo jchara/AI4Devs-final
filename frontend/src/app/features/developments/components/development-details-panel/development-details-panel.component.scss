@@ -1,11 +1,32 @@
 @use "sass:color";
 
+:root {
+  // Variables CSS críticas
+  --panel-animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --panel-animation-duration: 300ms;
+  --panel-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  --hover-transform: translateY(-2px);
+  --hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Optimizar transiciones comunes
+%hover-transition {
+  transition: transform var(--panel-animation-duration) var(--panel-animation-timing),
+              box-shadow var(--panel-animation-duration) var(--panel-animation-timing);
+  
+  &:hover {
+    transform: var(--hover-transform);
+    box-shadow: var(--hover-shadow);
+  }
+}
+
 :host {
   display: block;
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
+  will-change: transform;
 
   &:empty {
     display: none;
@@ -32,10 +53,13 @@
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   pointer-events: all;
   z-index: 1;
+  transform: translate3d(0, 0, 0);
 
   @media (max-width: 768px) {
     width: 100%;
   }
+
+  @extend %hover-transition;
 }
 
 .panel-header {
@@ -55,6 +79,11 @@
   overflow-x: hidden;
   background: var(--surface-ground);
   padding-bottom: 2rem;
+  transition: transform 0.3s ease;
+  contain: content;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   
   // Estilos para el scrollbar
   &::-webkit-scrollbar {
@@ -68,6 +97,7 @@
   &::-webkit-scrollbar-thumb {
     background: var(--surface-border);
     border-radius: 4px;
+    will-change: background;
     
     &:hover {
       background: var(--surface-hover);
@@ -127,8 +157,10 @@
   padding: 1.5rem;
   padding-bottom: 3rem;
   background-color: var(--surface-ground, #f8f9fa);
-
-
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  
   .two-column-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -153,11 +185,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     height: fit-content;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+    @extend %hover-transition;
 
     h2 {
       margin: 0 0 1rem;
@@ -249,6 +281,8 @@
     align-items: center;
     gap: 1rem;
     transition: transform 0.2s ease;
+    transform: translateZ(0);
+    will-change: transform;
 
     &:hover {
       transform: translateX(5px);
@@ -337,4 +371,6 @@ section {
   margin-bottom: 1.5rem;
   padding: 1.5rem;
   border-radius: 8px;
+
+  @extend %hover-transition;
 } 
