@@ -1,61 +1,45 @@
 @use "sass:color";
 
 :host {
-  position: fixed !important;
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 9999 !important;
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
   pointer-events: none;
-  width: 100%;
-  max-width: 1200px;
-  height: 100vh !important;
-  transform: none !important;
 
-  @media (min-width: 768px) {
-    width: 80%;
+  &:empty {
+    display: none;
   }
 }
 
 .overlay {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  position: fixed;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
   pointer-events: all;
-  height: 100vh !important;
-  z-index: -1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .details-panel {
-  position: fixed !important;
-  top: 0 !important;
-  right: 0 !important;
-  height: 100vh !important;
-  width: 100%;
+  position: relative;
+  width: 80%;
+  max-width: 1200px;
+  height: 100vh;
   background: var(--surface-ground);
   display: flex;
   flex-direction: column;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   pointer-events: all;
-  transform: none !important;
+  z-index: 1;
 
-  @media (min-width: 768px) {
-    width: 80%;
-    max-width: 1200px;
+  @media (max-width: 768px) {
+    width: 100%;
   }
 }
 
 .panel-header {
-  position: sticky !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 64px;
+  flex: 0 0 64px;
   background: var(--surface-card, #ffffff);
   padding: 1rem;
   border-bottom: 1px solid var(--surface-border, #dee2e6);
@@ -66,12 +50,11 @@
 }
 
 .scrollable-content {
-  position: relative;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--surface-ground);
-  height: calc(100vh - 64px) !important;
+  padding-bottom: 2rem;
   
   // Estilos para el scrollbar
   &::-webkit-scrollbar {
@@ -142,8 +125,9 @@
 
 .panel-content {
   padding: 1.5rem;
+  padding-bottom: 3rem;
   background-color: var(--surface-ground, #f8f9fa);
-  flex: 1 1 auto;
+
 
   .two-column-layout {
     display: grid;
@@ -341,4 +325,16 @@
   &:hover {
     background-color: color.adjust(#f8f9fa, $lightness: -5%);
   }
+}
+
+// Aseguramos que la última sección tenga margen inferior
+section:last-child {
+  margin-bottom: 2rem;
+}
+
+section {
+  background: var(--surface-card);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 8px;
 } 
