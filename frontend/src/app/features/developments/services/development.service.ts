@@ -290,14 +290,19 @@ export class DevelopmentService {
     return [
       {
         id: '1',
-        title: 'Demo',
+        title: 'API de notificaciones push',
         status: DevelopmentStatus.DEVELOPMENT,
         environment: Environment.TESTING,
-        createdDate: new Date('2024-01-10'),
-        updatedDate: new Date('2024-01-25'),
-        description: 'Sin descripción',
-        microservices: [{ id: '1', name: 'Demo' }],
-        progress: '0%'
+        createdDate: new Date('2024-02-06T21:41:00'),
+        updatedDate: new Date('2024-03-06T08:09:00'),
+        description: 'Desarrollar sistema de notificaciones en tiempo real',
+        microservices: [
+          { id: '1', name: 'Auth Service', technology: 'NestJS' },
+          { id: '2', name: 'User Service', technology: 'Python' },
+          { id: '3', name: 'Payment Service', technology: 'Node.js' }
+        ],
+        progress: '25.00%',
+        jiraUrl: 'https://devtracker.atlassian.net/browse/DT-123'
       }
     ];
   }

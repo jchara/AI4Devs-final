@@ -182,7 +182,7 @@
   }
 }
 
-.info-grid, .technical-info-grid {
+.info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
@@ -203,9 +203,117 @@
       transition: color 0.2s ease;
     }
 
+    .jira-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 1.2rem;
+        height: 1.2rem;
+        width: 1.2rem;
+      }
+
+      &:hover {
+        opacity: 0.85;
+        text-decoration: underline;
+      }
+    }
+
     &:hover {
       label {
         color: var(--primary-color);
+      }
+    }
+  }
+}
+
+.technical-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 1rem 0;
+
+  .info-item {
+    &:last-child {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+.technical-details-section {
+  padding: 1rem !important;
+
+  h2 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .technical-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 0.5rem 0;
+
+    .info-item {
+      label {
+        font-size: 0.8rem;
+        margin-bottom: 0.2rem;
+      }
+
+      span {
+        font-size: 0.9rem;
+      }
+
+      &:last-child {
+        grid-column: 1 / -1;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+
+  .microservices-list {
+    margin-top: 0.25rem;
+    
+    mat-chip {
+      height: 24px;
+      font-size: 0.8rem;
+      padding: 0 8px;
+      margin: 0.1rem;
+
+      .chip-tech {
+        font-size: 0.7rem;
+        margin-left: 0.3rem;
+      }
+    }
+  }
+
+  [data-theme="dark"] & {
+    .info-item {
+      label {
+        color: var(--text-color-secondary);
+      }
+      span {
+        color: var(--text-color);
+      }
+    }
+
+    mat-chip {
+      background: var(--surface-hover);
+      color: var(--text-color);
+
+      &:hover {
+        background: var(--surface-hover);
+        box-shadow: var(--hover-shadow);
+      }
+
+      .chip-tech {
+        color: var(--text-color-secondary);
       }
     }
   }
@@ -352,91 +460,4 @@
 // Aseguramos que la última sección tenga margen inferior
 section:last-child {
   margin-bottom: 2rem;
-}
-
-.technical-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin: 1rem 0;
-
-  .info-item {
-    &:last-child {
-      grid-column: 1 / -1;
-      margin-top: 0.5rem;
-    }
-  }
-}
-
-.technical-details-section {
-  padding: 1rem !important;
-
-  h2 {
-    font-size: 1.1rem !important;
-    margin-bottom: 0.75rem !important;
-  }
-
-  .technical-info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 0.5rem 0;
-
-    .info-item {
-      label {
-        font-size: 0.8rem;
-        margin-bottom: 0.2rem;
-      }
-
-      span {
-        font-size: 0.9rem;
-      }
-
-      &:last-child {
-        grid-column: 1 / -1;
-        margin-top: 0.25rem;
-      }
-    }
-  }
-
-  .microservices-list {
-    margin-top: 0.25rem;
-    
-    mat-chip {
-      height: 24px;
-      font-size: 0.8rem;
-      padding: 0 8px;
-      margin: 0.1rem;
-
-      .chip-tech {
-        font-size: 0.7rem;
-        margin-left: 0.3rem;
-      }
-    }
-  }
-
-  [data-theme="dark"] & {
-    .info-item {
-      label {
-        color: var(--text-color-secondary);
-      }
-      span {
-        color: var(--text-color);
-      }
-    }
-
-    mat-chip {
-      background: var(--surface-hover);
-      color: var(--text-color);
-
-      &:hover {
-        background: var(--surface-hover);
-        box-shadow: var(--hover-shadow);
-      }
-
-      .chip-tech {
-        color: var(--text-color-secondary);
-      }
-    }
-  }
 } 

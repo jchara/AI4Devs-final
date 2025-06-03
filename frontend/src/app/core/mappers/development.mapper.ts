@@ -32,7 +32,8 @@ export class DevelopmentMapper {
       createdDate: new Date(backendDev.createdAt),
       updatedDate: new Date(backendDev.updatedAt),
       microservices: microservices,
-      progress: `${backendDev.progress}%`
+      progress: `${backendDev.progress}%`,
+      jiraUrl: backendDev.jiraUrl
     };
   }
 
@@ -50,6 +51,7 @@ export class DevelopmentMapper {
     if (frontendDev.environment) {
       backendData.environmentId = this.mapEnvironmentToId(frontendDev.environment);
     }
+    if (frontendDev.jiraUrl) backendData.jiraUrl = frontendDev.jiraUrl;
 
     return backendData;
   }

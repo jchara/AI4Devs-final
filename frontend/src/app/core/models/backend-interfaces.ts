@@ -15,6 +15,7 @@ export interface BackendDevelopmentResponse {
   repository?: string;
   branch?: string;
   notes?: string;
+  jiraUrl?: string;
   createdAt: string;
   updatedAt: string;
   startDate?: string;

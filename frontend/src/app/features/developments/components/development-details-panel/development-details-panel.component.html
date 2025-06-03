@@ -53,6 +53,13 @@
                   <label>Última actualización:</label>
                   <span>{{ formatDate(development.updatedDate) }}</span>
                 </div>
+                <div class="info-item" *ngIf="development.jiraUrl">
+                  <label>URL de Jira:</label>
+                  <a [href]="development.jiraUrl" target="_blank" class="jira-link">
+                    <mat-icon>link</mat-icon>
+                    Ver en Jira
+                  </a>
+                </div>
               </div>
             </section>
 

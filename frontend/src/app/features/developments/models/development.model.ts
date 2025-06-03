@@ -14,6 +14,7 @@ export interface Development {
   description?: string;
   microservices: Microservice[];
   progress?: string;
+  jiraUrl?: string;
 }
 
 export interface DevelopmentMetrics {
