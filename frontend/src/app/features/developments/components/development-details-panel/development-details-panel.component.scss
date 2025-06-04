@@ -155,6 +155,8 @@
     font-size: 0.85rem;
     font-weight: 500;
     transition: var(--transition-standard);
+    min-width: fit-content;
+    text-align: center;
     
     &.status-planning {
       background-color: rgba(var(--color-info-rgb), 0.15);
@@ -292,6 +294,10 @@
 // Estilos para secciones específicas
 .info-section, .quick-info-section, .technical-details-section, .microservices-section {
   padding: var(--panel-padding);
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .info-grid {
@@ -429,17 +435,31 @@
       transform: translateX(5px);
     }
 
-    mat-icon {
-      color: var(--color-primary);
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: rgba(var(--color-primary-rgb), 0.1);
-      padding: 0.5rem;
       border-radius: 50%;
+      padding: 0.5rem;
+      height: 40px;
+      width: 40px;
+      min-width: 40px;
+      box-shadow: 0 2px 4px rgba(var(--color-primary-rgb), 0.2);
       transition: var(--transition-standard);
+      
+      &:hover {
+        transform: scale(1.05);
+        background: rgba(var(--color-primary-rgb), 0.15);
+        box-shadow: 0 3px 6px rgba(var(--color-primary-rgb), 0.3);
+      }
     }
 
-    &:hover mat-icon {
-      transform: scale(1.1);
-      background: rgba(var(--color-primary-rgb), 0.15);
+    mat-icon {
+      color: var(--color-primary);
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
     }
 
     .info-content {
@@ -551,40 +571,9 @@
       }
     }
     
-    .progress-bar-horizontal {
+    .progress-container {
       width: 100%;
-      height: 12px;
-      background-color: rgba(var(--bg-secondary-rgb), 0.7);
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-      margin: 0.5rem 0;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-      
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-        border-radius: 8px;
-        animation: pulse-animation 2s infinite;
-        transition: width 0.5s ease;
-      }
-      
-      .progress-label {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-      }
-    }
-    
-    @keyframes pulse-animation {
-      0% { opacity: 0.9; }
-      50% { opacity: 1; }
-      100% { opacity: 0.9; }
+      margin: 0.5rem 0 1rem;
     }
     
     .status-details {
@@ -651,6 +640,21 @@
   .microservices-table {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Para mejor scroll en iOS */
+    
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(var(--bg-secondary-rgb), 0.5);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(var(--color-primary-rgb), 0.3);
+      border-radius: 3px;
+    }
 
     table {
       width: 100%;
@@ -663,6 +667,11 @@
       th, td {
         padding: 0.75rem 1rem;
         text-align: left;
+        
+        @media (max-width: 768px) {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.85rem;
+        }
       }
 
       th {
@@ -674,6 +683,10 @@
         position: sticky;
         top: 0;
         z-index: 1;
+        
+        @media (max-width: 768px) {
+          font-size: 0.8rem;
+        }
       }
 
       td {
@@ -866,5 +879,175 @@ button[mat-menu-item] {
   
   &:hover {
     background-color: transparent;
+  }
+}
+
+.progress-container {
+  margin: 1rem 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  
+  .progress-bar-horizontal {
+    width: 100%;
+    height: 14px;
+    background-color: #e0e0e0;
+    border-radius: 7px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%; /* El ancho se controla dinámicamente desde el componente */
+      background: linear-gradient(90deg, #673AB7 0%, #673AB7 100%);
+      border-radius: 7px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 8px rgba(103, 58, 183, 0.5);
+    }
+    
+    .progress-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+      z-index: 1;
+    }
+  }
+}
+
+// Más ajustes responsive específicos para móvil
+@media (max-width: 768px) {
+  .details-panel.mobile {
+    width: 100%;
+    
+    .title-section {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      h1 {
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+      }
+      
+      .status-badge {
+        margin-bottom: 0.75rem;
+      }
+      
+      .action-buttons {
+        width: 100%;
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+    
+    .panel-content {
+      padding: 0.75rem;
+    }
+    
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .status-section-left {
+      padding: 1rem !important;
+    }
+    
+    .microservices-table {
+      margin: 0 -0.5rem; // Compensar el padding interior
+      width: calc(100% + 1rem);
+      padding: 0 0.5rem;
+      
+      table {
+        min-width: 100%;
+      }
+      
+      // Añadir indicación visual de scroll horizontal
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(90deg, transparent, rgba(var(--bg-primary-rgb), 0.3));
+        pointer-events: none;
+        opacity: 0.7;
+        z-index: 1;
+      }
+    }
+    
+    .progress-container {
+      width: 100%;
+      
+      .progress-value {
+        font-size: 0.9rem;
+      }
+    }
+    
+    .quick-info-grid {
+      .quick-info-item {
+        padding: 0.75rem 0.5rem;
+        
+        .icon-container {
+          height: 36px;
+          width: 36px;
+          min-width: 36px;
+        }
+        
+        .info-content {
+          span {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+    
+    // Ajustes adicionales para el contenido del panel
+    .scrollable-content {
+      -webkit-overflow-scrolling: touch;
+      
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: rgba(var(--bg-secondary-rgb), 0.3);
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: rgba(var(--color-primary-rgb), 0.3);
+      }
+    }
+    
+    // Ajustes para las tarjetas de contenido
+    section {
+      margin-bottom: 0.75rem;
+      transform: none !important; // Desactivar transformación en hover para móvil
+      
+      &:hover {
+        transform: none !important;
+      }
+    }
+  }
+  
+  .quick-info-grid {
+    .quick-info-item {
+      padding: 0.75rem 0.5rem;
+    }
+  }
+  
+  .progress-container {
+    margin: 0.75rem 0;
   }
 } 

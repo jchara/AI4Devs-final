@@ -113,6 +113,15 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
 
   ngOnInit() {
     this.setupResizeObserver();
+    this.detectMobileDevice();
+
+    // Agregar listener para orientación en dispositivos móviles
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        this.detectMobileDevice();
+        this.updateMenuButtonWidth();
+      }, 100);
+    });
   }
 
   ngAfterViewInit(): void {
@@ -132,7 +141,9 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     this.resetBodyStyles();
     this.clearCaches();
     
-    // Eliminar el listener de resize
+    // Eliminar los listeners adicionales
+    window.removeEventListener('resize', this.detectMobileDevice.bind(this));
+    window.removeEventListener('orientationchange', this.detectMobileDevice.bind(this));
     window.removeEventListener('resize', this.updateMenuButtonWidth.bind(this));
   }
 
@@ -144,8 +155,17 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
           this.isMobile = newIsMobile;
           this.changeDetectorRef.markForCheck();
         }
+        
+        // Actualizar cálculos de ancho para elementos que dependen del tamaño
+        this.updateMenuButtonWidth();
       });
       this.resizeObserver.observe(document.body);
+    } else {
+      // Fallback para navegadores que no soportan ResizeObserver
+      window.addEventListener('resize', () => {
+        this.detectMobileDevice();
+        this.updateMenuButtonWidth();
+      });
     }
   }
 
@@ -254,15 +274,53 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
   }
 
   /**
-   * Obtiene el porcentaje de progreso seguro para un microservicio
-   * @param progress Porcentaje de progreso, puede ser undefined
-   * @returns Porcentaje como string con el símbolo %
+   * Método para obtener el valor de progreso formateado para CSS
+   * Asegura que el progreso se aplique correctamente como un valor de ancho
+   * @param progress valor de progreso (por ejemplo: "25%" o 25)
+   * @returns valor formateado como porcentaje para CSS
    */
   getMicroserviceProgressStyle(progress: number | undefined): string {
     if (progress === undefined || progress === null) {
       return '0%';
     }
     return `${progress}%`;
+  }
+
+  /**
+   * Método para aplicar el progreso como estilo directamente en el HTML
+   * para la barra principal de progreso
+   */
+  getProgressBarStyle(): any {
+    let progressValue = this.development.progress;
+    let numericProgress = 0;
+    
+    // Verificar el tipo de dato y procesarlo adecuadamente
+    if (typeof progressValue === 'string') {
+      // Eliminar el símbolo '%' si existe
+      progressValue = progressValue.replace('%', '');
+      numericProgress = parseFloat(progressValue);
+    } else if (typeof progressValue === 'number') {
+      numericProgress = progressValue;
+    }
+    
+    // Validar que sea un número entre 0 y 100
+    if (isNaN(numericProgress)) {
+      numericProgress = 0;
+    } else if (numericProgress < 0) {
+      numericProgress = 0;
+    } else if (numericProgress > 100) {
+      numericProgress = 100;
+    }
+    
+    // Asegurar que valores muy pequeños sean al menos visibles (mínimo 3%)
+    if (numericProgress > 0 && numericProgress < 3) {
+      numericProgress = 3;
+    }
+      
+    // Devolver un objeto de estilo con el ancho
+    return {
+      width: `${numericProgress}%`
+    };
   }
 
   onClose(): void {
@@ -340,5 +398,14 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     setTimeout(() => {
       this.updateMenuButtonWidth();
     }, 0);
+  }
+
+  /**
+   * Detecta si el dispositivo es móvil basado en el tamaño de la pantalla
+   * y establece la propiedad isMobile
+   */
+  private detectMobileDevice(): void {
+    this.isMobile = window.innerWidth <= 768;
+    this.changeDetectorRef.markForCheck();
   }
 } 

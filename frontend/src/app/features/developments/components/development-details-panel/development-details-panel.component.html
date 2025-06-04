@@ -87,14 +87,18 @@
               <h2>Información Rápida</h2>
               <div class="quick-info-grid">
                 <div class="quick-info-item">
-                  <mat-icon>schedule</mat-icon>
+                  <div class="icon-container">
+                    <mat-icon>schedule</mat-icon>
+                  </div>
                   <div class="info-content">
                     <label>Tiempo desde creación:</label>
                     <span>{{ calculateTimeElapsed(development.createdDate) }}</span>
                   </div>
                 </div>
                 <div class="quick-info-item">
-                  <mat-icon>event</mat-icon>
+                  <div class="icon-container">
+                    <mat-icon>event</mat-icon>
+                  </div>
                   <div class="info-content">
                     <label>Estado:</label>
                     <span>{{ development.status }}</span>
@@ -162,10 +166,15 @@
                 <div class="status-badge-large" [class]="getStatusBadgeClass(development.status)">
                   {{ development.status }}
                 </div>
-                <div class="progress-bar-horizontal">
-                  <div class="progress-fill" [style.width]="development.progress"></div>
-                  <span class="progress-label">{{ development.progress }}</span>
+                
+                <!-- Componente de progreso con barra de progreso -->
+                <div class="progress-container">
+                  <div class="progress-bar-horizontal">
+                    <div class="progress-fill" [ngStyle]="getProgressBarStyle()"></div>
+                    <span class="progress-label">{{ development.progress }}</span>
+                  </div>
                 </div>
+                
                 <div class="status-details" *ngIf="development.developmentMicroservices?.length">
                   <p class="status-detail-label">Detalle de progreso:</p>
                   <ul class="status-detail-list">
