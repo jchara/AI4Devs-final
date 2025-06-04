@@ -5,7 +5,6 @@ export {
   DevelopmentMetricsResponseDto, 
   UpdateProgressResponseDto, 
   UpdateStatusResponseDto,
-  MicroserviceResponseDto,
   DevelopmentMicroserviceResponseDto
 } from './development-response.dto';
 export {

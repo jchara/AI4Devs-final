@@ -1,32 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DevelopmentStatus, DevelopmentPriority } from '../entities/development.entity';
-
-// DTO para microservicios en respuesta
-export class MicroserviceResponseDto {
-  @ApiProperty({
-    description: 'ID único del microservicio',
-    example: 1,
-  })
-  id: number;
-
-  @ApiProperty({
-    description: 'Nombre del microservicio',
-    example: 'auth-service',
-  })
-  name: string;
-
-  @ApiPropertyOptional({
-    description: 'Tecnología utilizada en el microservicio',
-    example: 'NestJS',
-  })
-  technology?: string;
-
-  @ApiPropertyOptional({
-    description: 'Descripción del microservicio',
-    example: 'Servicio de autenticación y autorización',
-  })
-  description?: string;
-}
+import { MicroserviceResponseDto } from './microservice-response.dto';
 
 // DTO para la relación desarrollo-microservicio
 export class DevelopmentMicroserviceResponseDto {
