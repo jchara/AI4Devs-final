@@ -13,16 +13,31 @@ if (!globalThis.crypto) {
 }
 
 // Nuevos repositorios de dominio
-import { UserRepository, RoleRepository, TeamRepository } from '../modules/identity';
-import { DevelopmentRepository, MicroserviceRepository, DevelopmentMicroserviceRepository } from '../modules/project-management';
-import { EnvironmentRepository, DeploymentTypeRepository, UpcomingDeploymentRepository } from '../modules/infrastructure';
+import {
+  UserRepository,
+  RoleRepository,
+  TeamRepository,
+} from '../modules/identity';
+import {
+  DevelopmentRepository,
+  MicroserviceRepository,
+  DevelopmentMicroserviceRepository,
+} from '../modules/project-management';
+import {
+  EnvironmentRepository,
+  DeploymentTypeRepository,
+  UpcomingDeploymentRepository,
+} from '../modules/infrastructure';
 import { ActivityRepository } from '../modules/activity';
 
 // Importar el servicio de usuarios para hasheo correcto
 import { UserService } from '../modules/identity/services/user.service';
 
 // Enums y tipos
-import { DevelopmentStatus, DevelopmentPriority } from '../modules/project-management/entities/development.entity';
+import {
+  DevelopmentStatus,
+  DevelopmentPriority,
+} from '../modules/project-management/entities/development.entity';
 import { ActivityType } from '../modules/activity/entities/recent-activity.entity';
 import { DeploymentStatus } from '../modules/infrastructure/entities/upcoming-deployment.entity';
 
@@ -37,7 +52,9 @@ async function runSeeds() {
   const environmentRepository = app.get(EnvironmentRepository);
   const microserviceRepository = app.get(MicroserviceRepository);
   const developmentRepository = app.get(DevelopmentRepository);
-  const developmentMicroserviceRepository = app.get(DevelopmentMicroserviceRepository);
+  const developmentMicroserviceRepository = app.get(
+    DevelopmentMicroserviceRepository,
+  );
   const deploymentTypeRepository = app.get(DeploymentTypeRepository);
   const upcomingDeploymentRepository = app.get(UpcomingDeploymentRepository);
   const activityRepository = app.get(ActivityRepository);
@@ -48,7 +65,7 @@ async function runSeeds() {
     // 1. Crear Roles (verificar si ya existen)
     console.log('👥 Verificando y creando roles...');
     let roles = await roleRepository.findAll();
-    
+
     if (roles.length === 0) {
       roles = await Promise.all([
         roleRepository.create({
@@ -61,7 +78,8 @@ async function runSeeds() {
         }),
         roleRepository.create({
           name: 'cloud',
-          description: 'DevOps/Cloud Engineer - Especialista en infraestructura',
+          description:
+            'DevOps/Cloud Engineer - Especialista en infraestructura',
         }),
       ]);
       console.log('✅ Roles creados');
@@ -72,7 +90,7 @@ async function runSeeds() {
     // 2. Crear Teams (verificar si ya existen)
     console.log('🏢 Verificando y creando equipos...');
     let teams = await teamRepository.findAll();
-    
+
     if (teams.length === 0) {
       teams = await Promise.all([
         teamRepository.create({
@@ -100,7 +118,7 @@ async function runSeeds() {
     // 3. Crear Users (verificar si ya existen)
     console.log('👤 Verificando y creando usuarios...');
     let users = await userRepository.findAll();
-    
+
     if (users.length === 0) {
       users = await Promise.all([
         userService.create({
@@ -133,7 +151,7 @@ async function runSeeds() {
     // 4. Crear Tipos de Despliegue (verificar si ya existen)
     console.log('🚀 Verificando y creando tipos de despliegue...');
     let deploymentTypes = await deploymentTypeRepository.findAll();
-    
+
     if (deploymentTypes.length === 0) {
       deploymentTypes = await Promise.all([
         deploymentTypeRepository.create({
@@ -161,7 +179,7 @@ async function runSeeds() {
     // 5. Crear Ambientes (verificar si ya existen)
     console.log('📦 Verificando y creando ambientes...');
     let environments = await environmentRepository.findAll();
-    
+
     if (environments.length === 0) {
       environments = await Promise.all([
         environmentRepository.create({
@@ -197,7 +215,7 @@ async function runSeeds() {
     // 6. Crear Microservicios (verificar si ya existen)
     console.log('🔧 Verificando y creando microservicios...');
     let microservices = await microserviceRepository.findAll();
-    
+
     if (microservices.length === 0) {
       microservices = await Promise.all([
         microserviceRepository.create({
@@ -239,12 +257,13 @@ async function runSeeds() {
     // 7. Crear Desarrollos (verificar si ya existen)
     console.log('💻 Verificando y creando desarrollos...');
     let developments = await developmentRepository.findAll();
-    
+
     if (developments.length === 0) {
       developments = await Promise.all([
         developmentRepository.create({
           title: 'Implementación de autenticación OAuth 2.0',
-          description: 'Migrar el sistema de autenticación actual a OAuth 2.0 para mejorar la seguridad',
+          description:
+            'Migrar el sistema de autenticación actual a OAuth 2.0 para mejorar la seguridad',
           status: DevelopmentStatus.IN_PROGRESS,
           priority: DevelopmentPriority.HIGH,
           environmentId: environments[1].id, // Testing
@@ -310,167 +329,194 @@ async function runSeeds() {
     }
 
     // 8. Crear relaciones Development-Microservice
-    console.log('🔗 Creando relaciones desarrollo-microservicios...');
-    const developmentMicroservices = await Promise.all([
-      // OAuth 2.0 - auth-service
-      developmentMicroserviceRepository.create({
-        developmentId: developments[0].id,
-        microserviceId: microservices[1].id, // auth-service
-        progress: 75,
-        version: '2.1.0-beta',
-        notes: 'Integración OAuth completada, pendiente testing',
-      }),
-      // OAuth 2.0 - user-service
-      developmentMicroserviceRepository.create({
-        developmentId: developments[0].id,
-        microserviceId: microservices[0].id, // user-service
-        progress: 50,
-        version: '1.8.0-alpha',
-        notes: 'Actualización de endpoints de usuario',
-      }),
-      // DB Optimization - user-service
-      developmentMicroserviceRepository.create({
-        developmentId: developments[1].id,
-        microserviceId: microservices[0].id, // user-service
-        progress: 100,
-        version: '1.7.2',
-        notes: 'Optimización de consultas completada',
-      }),
-      // Push Notifications - notification-service
-      developmentMicroserviceRepository.create({
-        developmentId: developments[2].id,
-        microserviceId: microservices[3].id, // notification-service
-        progress: 25,
-        version: '1.2.0-dev',
-        notes: 'Diseño de arquitectura en progreso',
-      }),
-      // Dashboard - analytics-service
-      developmentMicroserviceRepository.create({
-        developmentId: developments[3].id,
-        microserviceId: microservices[4].id, // analytics-service
-        progress: 100,
-        version: '2.0.0',
-        notes: 'Integración completada y desplegada',
-      }),
-    ]);
+    console.log(
+      '🔗 Verificando y creando relaciones desarrollo-microservicios...',
+    );
+    let developmentMicroservices =
+      await developmentMicroserviceRepository.findAll();
+
+    if (developmentMicroservices.length === 0) {
+      developmentMicroservices = await Promise.all([
+        // OAuth 2.0 - auth-service
+        developmentMicroserviceRepository.create({
+          developmentId: developments[0].id,
+          microserviceId: microservices[1].id, // auth-service
+          progress: 75,
+          version: '2.1.0-beta',
+          notes: 'Integración OAuth completada, pendiente testing',
+        }),
+        // OAuth 2.0 - user-service
+        developmentMicroserviceRepository.create({
+          developmentId: developments[0].id,
+          microserviceId: microservices[0].id, // user-service
+          progress: 50,
+          version: '1.8.0-alpha',
+          notes: 'Actualización de endpoints de usuario',
+        }),
+        // DB Optimization - user-service
+        developmentMicroserviceRepository.create({
+          developmentId: developments[1].id,
+          microserviceId: microservices[0].id, // user-service
+          progress: 100,
+          version: '1.7.2',
+          notes: 'Optimización de consultas completada',
+        }),
+        // Push Notifications - notification-service
+        developmentMicroserviceRepository.create({
+          developmentId: developments[2].id,
+          microserviceId: microservices[3].id, // notification-service
+          progress: 25,
+          version: '1.2.0-dev',
+          notes: 'Diseño de arquitectura en progreso',
+        }),
+        // Dashboard - analytics-service
+        developmentMicroserviceRepository.create({
+          developmentId: developments[3].id,
+          microserviceId: microservices[4].id, // analytics-service
+          progress: 100,
+          version: '2.0.0',
+          notes: 'Integración completada y desplegada',
+        }),
+      ]);
+    } else {
+      console.log(
+        'ℹ️ Relaciones desarrollo-microservicio ya existen, usando existentes',
+      );
+    }
 
     // 9. Crear Próximos Despliegues
-    console.log('📅 Creando próximos despliegues...');
-    const futureDate1 = new Date();
-    futureDate1.setDate(futureDate1.getDate() + 3);
-    
-    const futureDate2 = new Date();
-    futureDate2.setDate(futureDate2.getDate() + 7);
-    
-    const futureDate3 = new Date();
-    futureDate3.setDate(futureDate3.getDate() + 14);
+    console.log('📅 Verificando y creando próximos despliegues...');
+    let upcomingDeployments = await upcomingDeploymentRepository.findAll();
 
-    const upcomingDeployments = await Promise.all([
-      upcomingDeploymentRepository.create({
-        title: 'Deploy OAuth 2.0 a Staging',
-        description: 'Despliegue de la nueva funcionalidad de autenticación',
-        status: DeploymentStatus.SCHEDULED,
-        scheduledDate: futureDate1,
-        version: '2.1.0-beta',
-        notes: 'Requiere coordinación con equipo de QA',
-        developmentId: developments[0].id,
-        environmentId: environments[2].id, // Staging
-        deployedById: users[1].id, // JLL
-        deploymentTypeId: deploymentTypes[0].id, // release
-      }),
-      upcomingDeploymentRepository.create({
-        title: 'Hotfix en Producción - User Service',
-        description: 'Corrección urgente en servicio de usuarios',
-        status: DeploymentStatus.SCHEDULED,
-        scheduledDate: futureDate2,
-        version: '1.7.3-hotfix',
-        notes: 'Corrección crítica de seguridad',
-        environmentId: environments[3].id, // Producción
-        deployedById: users[1].id, // JLL
-        deploymentTypeId: deploymentTypes[1].id, // hotfix
-      }),
-      upcomingDeploymentRepository.create({
-        title: 'Release Push Notifications v1.2.0',
-        description: 'Primera versión del sistema de notificaciones',
-        status: DeploymentStatus.SCHEDULED,
-        scheduledDate: futureDate3,
-        version: '1.2.0',
-        notes: 'Deploy programado después de testing completo',
-        developmentId: developments[2].id,
-        environmentId: environments[1].id, // Testing
-        deployedById: users[1].id, // JLL
-        deploymentTypeId: deploymentTypes[0].id, // release
-      }),
-    ]);
+    if (upcomingDeployments.length === 0) {
+      const futureDate1 = new Date();
+      futureDate1.setDate(futureDate1.getDate() + 3);
+
+      const futureDate2 = new Date();
+      futureDate2.setDate(futureDate2.getDate() + 7);
+
+      const futureDate3 = new Date();
+      futureDate3.setDate(futureDate3.getDate() + 14);
+
+      upcomingDeployments = await Promise.all([
+        upcomingDeploymentRepository.create({
+          title: 'Deploy OAuth 2.0 a Staging',
+          description: 'Despliegue de la nueva funcionalidad de autenticación',
+          status: DeploymentStatus.SCHEDULED,
+          scheduledDate: futureDate1,
+          version: '2.1.0-beta',
+          notes: 'Requiere coordinación con equipo de QA',
+          developmentId: developments[0].id,
+          environmentId: environments[2].id, // Staging
+          deployedById: users[1].id, // JLL
+          deploymentTypeId: deploymentTypes[0].id, // release
+        }),
+        upcomingDeploymentRepository.create({
+          title: 'Hotfix en Producción - User Service',
+          description: 'Corrección urgente en servicio de usuarios',
+          status: DeploymentStatus.SCHEDULED,
+          scheduledDate: futureDate2,
+          version: '1.7.3-hotfix',
+          notes: 'Corrección crítica de seguridad',
+          environmentId: environments[3].id, // Producción
+          deployedById: users[1].id, // JLL
+          deploymentTypeId: deploymentTypes[1].id, // hotfix
+        }),
+        upcomingDeploymentRepository.create({
+          title: 'Release Push Notifications v1.2.0',
+          description: 'Primera versión del sistema de notificaciones',
+          status: DeploymentStatus.SCHEDULED,
+          scheduledDate: futureDate3,
+          version: '1.2.0',
+          notes: 'Deploy programado después de testing completo',
+          developmentId: developments[2].id,
+          environmentId: environments[1].id, // Testing
+          deployedById: users[1].id, // JLL
+          deploymentTypeId: deploymentTypes[0].id, // release
+        }),
+      ]);
+    } else {
+      console.log('ℹ️ Próximos despliegues ya existen, usando existentes');
+    }
 
     // 10. Crear Actividades
-    console.log('📝 Creando actividades recientes...');
-    const activities = await Promise.all([
-      activityRepository.create({
-        type: ActivityType.DEVELOPMENT_CREATED,
-        description: 'Se creó el desarrollo "Implementación de autenticación OAuth 2.0"',
-        developmentId: developments[0].id,
-        performedById: users[0].id, // JCC
-        metadata: { 
-          priority: DevelopmentPriority.HIGH,
-          environment: 'Testing' 
-        },
-      }),
-      activityRepository.create({
-        type: ActivityType.STATUS_CHANGED,
-        description: 'Estado del desarrollo cambiado a "En Testing"',
-        developmentId: developments[1].id,
-        performedById: users[2].id, // Maria QA
-        metadata: { 
-          previousStatus: DevelopmentStatus.IN_PROGRESS,
-          newStatus: DevelopmentStatus.TESTING 
-        },
-      }),
-      activityRepository.create({
-        type: ActivityType.PROGRESS_UPDATED,
-        description: 'Progreso actualizado al 75%',
-        developmentId: developments[0].id,
-        performedById: users[0].id, // JCC
-        metadata: { 
-          previousProgress: 50,
-          newProgress: 75 
-        },
-      }),
-      activityRepository.create({
-        type: ActivityType.DEPLOYMENT_SCHEDULED,
-        description: 'Despliegue programado para OAuth 2.0',
-        developmentId: developments[0].id,
-        performedById: users[1].id, // JLL
-        metadata: { 
-          deploymentDate: futureDate1.toISOString(),
-          environment: 'Staging' 
-        },
-      }),
-      activityRepository.create({
-        type: ActivityType.MICROSERVICE_ADDED,
-        description: 'Microservicio auth-service asociado al desarrollo',
-        developmentId: developments[0].id,
-        performedById: users[0].id, // JCC
-        metadata: { 
-          microservice: 'auth-service',
-          version: '2.1.0-beta' 
-        },
-      }),
-    ]);
+    console.log('📝 Verificando y creando actividades recientes...');
+    let activities = await activityRepository.findAll();
+
+    if (activities.length === 0) {
+      activities = await Promise.all([
+        activityRepository.create({
+          type: ActivityType.DEVELOPMENT_CREATED,
+          description:
+            'Se creó el desarrollo "Implementación de autenticación OAuth 2.0"',
+          developmentId: developments[0].id,
+          performedById: users[0].id, // JCC
+          metadata: {
+            priority: DevelopmentPriority.HIGH,
+            environment: 'Testing',
+          },
+        }),
+        activityRepository.create({
+          type: ActivityType.STATUS_CHANGED,
+          description: 'Estado del desarrollo cambiado a "En Testing"',
+          developmentId: developments[1].id,
+          performedById: users[2].id, // Maria QA
+          metadata: {
+            previousStatus: DevelopmentStatus.IN_PROGRESS,
+            newStatus: DevelopmentStatus.TESTING,
+          },
+        }),
+        activityRepository.create({
+          type: ActivityType.PROGRESS_UPDATED,
+          description: 'Progreso actualizado al 75%',
+          developmentId: developments[0].id,
+          performedById: users[0].id, // JCC
+          metadata: {
+            previousProgress: 50,
+            newProgress: 75,
+          },
+        }),
+        activityRepository.create({
+          type: ActivityType.DEPLOYMENT_SCHEDULED,
+          description: 'Despliegue programado para OAuth 2.0',
+          developmentId: developments[0].id,
+          performedById: users[1].id, // JLL
+          metadata: {
+            deploymentDate: new Date().toISOString(),
+            environment: 'Staging',
+          },
+        }),
+        activityRepository.create({
+          type: ActivityType.MICROSERVICE_ADDED,
+          description: 'Microservicio auth-service asociado al desarrollo',
+          developmentId: developments[0].id,
+          performedById: users[0].id, // JCC
+          metadata: {
+            microservice: 'auth-service',
+            version: '2.1.0-beta',
+          },
+        }),
+      ]);
+    } else {
+      console.log('ℹ️ Actividades ya existen, usando existentes');
+    }
 
     console.log('✅ Seeds completados exitosamente!');
     console.log(`📊 Resumen:`);
     console.log(`   - ${roles.length} roles disponibles`);
     console.log(`   - ${teams.length} equipos disponibles`);
     console.log(`   - ${users.length} usuarios disponibles`);
-    console.log(`   - ${deploymentTypes.length} tipos de despliegue disponibles`);
+    console.log(
+      `   - ${deploymentTypes.length} tipos de despliegue disponibles`,
+    );
     console.log(`   - ${environments.length} ambientes disponibles`);
     console.log(`   - ${microservices.length} microservicios disponibles`);
     console.log(`   - ${developments.length} desarrollos disponibles`);
-    console.log(`   - ${developmentMicroservices.length} relaciones desarrollo-microservicio creadas`);
+    console.log(
+      `   - ${developmentMicroservices.length} relaciones desarrollo-microservicio creadas`,
+    );
     console.log(`   - ${upcomingDeployments.length} despliegues programados`);
     console.log(`   - ${activities.length} actividades registradas`);
-
   } catch (error) {
     console.error('❌ Error durante la ejecución de seeds:', error);
     throw error;
