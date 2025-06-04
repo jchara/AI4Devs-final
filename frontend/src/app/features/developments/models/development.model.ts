@@ -2,6 +2,16 @@ export interface Microservice {
   id: string;
   name: string;
   technology?: string;
+  description?: string;
+  repository?: string;
+}
+
+export interface DevelopmentMicroservice {
+  id: string;
+  microservice: Microservice;
+  progress?: number;
+  notes?: string;
+  version?: string;
 }
 
 export interface Development {
@@ -13,6 +23,7 @@ export interface Development {
   updatedDate: Date;
   description?: string;
   microservices: Microservice[];
+  developmentMicroservices?: DevelopmentMicroservice[];
   progress?: string;
   jiraUrl?: string;
 }

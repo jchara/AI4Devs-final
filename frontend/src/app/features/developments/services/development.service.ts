@@ -26,13 +26,10 @@ export class DevelopmentService {
    * Obtener todos los desarrollos
    */
   getDevelopments(): Observable<Development[]> {
-    return forkJoin({
-      developments: this.apiService.get<BackendDevelopmentResponse[]>('developments'),
-      microservices: this.getMicroservicesData()
-    }).pipe(
-      map(({ developments, microservices }) => {
+    return this.apiService.get<BackendDevelopmentResponse[]>('developments').pipe(
+      map(developments => {
         return developments.map(dev => 
-          DevelopmentMapper.mapDevelopmentFromBackend(dev, microservices)
+          DevelopmentMapper.mapDevelopmentFromBackend(dev)
         );
       }),
       catchError(error => {
@@ -58,13 +55,10 @@ export class DevelopmentService {
       params.status = StatusToBackendMap[filters.status as DevelopmentStatus];
     }
     
-    return forkJoin({
-      developments: this.apiService.get<BackendDevelopmentResponse[]>('developments', params),
-      microservices: this.getMicroservicesData()
-    }).pipe(
-      map(({ developments, microservices }) => {
+    return this.apiService.get<BackendDevelopmentResponse[]>('developments', params).pipe(
+      map(developments => {
         let mappedDevelopments = developments.map(dev => 
-          DevelopmentMapper.mapDevelopmentFromBackend(dev, microservices)
+          DevelopmentMapper.mapDevelopmentFromBackend(dev)
         );
 
         // Aplicar filtros adicionales que no soporta el backend
@@ -190,12 +184,9 @@ export class DevelopmentService {
    * Obtener desarrollo por ID
    */
   getDevelopmentById(id: string): Observable<Development | undefined> {
-    return forkJoin({
-      development: this.apiService.get<BackendDevelopmentResponse>(`developments/${id}`),
-      microservices: this.getMicroservicesData()
-    }).pipe(
-      map(({ development, microservices }) => 
-        DevelopmentMapper.mapDevelopmentFromBackend(development, microservices)
+    return this.apiService.get<BackendDevelopmentResponse>(`developments/${id}`).pipe(
+      map(development => 
+        DevelopmentMapper.mapDevelopmentFromBackend(development)
       ),
       catchError(error => {
         console.error('Error getting development by id:', error);
@@ -234,7 +225,7 @@ export class DevelopmentService {
     return this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}`, backendData).pipe(
       map(response => {
         this.notificationService.showSuccess('Desarrollo actualizado exitosamente');
-        return DevelopmentMapper.mapDevelopmentFromBackend(response, development.microservices || []);
+        return DevelopmentMapper.mapDevelopmentFromBackend(response);
       })
     );
   }
@@ -256,15 +247,12 @@ export class DevelopmentService {
   changeStatus(id: string, newStatus: DevelopmentStatus): Observable<Development> {
     const backendStatus = StatusToBackendMap[newStatus];
     
-    return forkJoin({
-      response: this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}/status`, { 
-        status: backendStatus 
-      }),
-      microservices: this.getMicroservicesData()
+    return this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}/status`, { 
+      status: backendStatus 
     }).pipe(
-      map(({ response, microservices }) => {
+      map(response => {
         this.notificationService.showSuccess(`Estado cambiado a: ${newStatus}`);
-        return DevelopmentMapper.mapDevelopmentFromBackend(response, microservices);
+        return DevelopmentMapper.mapDevelopmentFromBackend(response);
       })
     );
   }

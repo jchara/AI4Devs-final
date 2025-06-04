@@ -3,6 +3,7 @@ import {
   BackendDevelopmentMetricsResponse,
   BackendActivityResponse,
   BackendMicroserviceResponse,
+  BackendDevelopmentMicroserviceResponse,
   StatusTranslationMap,
   StatusToBackendMap,
   BackendDevelopmentStatus
@@ -12,6 +13,7 @@ import {
   DevelopmentMetrics, 
   RecentActivity,
   Microservice,
+  DevelopmentMicroservice,
   DevelopmentStatus,
   ActivityType,
   Environment
@@ -22,7 +24,40 @@ export class DevelopmentMapper {
   /**
    * Mapea desarrollo del backend al frontend
    */
-  static mapDevelopmentFromBackend(backendDev: BackendDevelopmentResponse, microservices: Microservice[] = []): Development {
+  static mapDevelopmentFromBackend(backendDev: BackendDevelopmentResponse, externalMicroservices: Microservice[] = []): Development {
+    // Obtener los microservicios del desarrollo si existen en la respuesta
+    let microservices: Microservice[] = [];
+    let developmentMicroservices: DevelopmentMicroservice[] = [];
+    
+    if (backendDev.developmentMicroservices && backendDev.developmentMicroservices.length > 0) {
+      // Mapeamos los microservicios que vienen con el desarrollo
+      microservices = backendDev.developmentMicroservices.map(devMicro => ({
+        id: devMicro.microservice.id.toString(),
+        name: devMicro.microservice.name,
+        technology: devMicro.microservice.technology,
+        description: devMicro.microservice.description,
+        repository: devMicro.microservice.repository
+      }));
+      
+      // Mapeamos la relación desarrollo-microservicio
+      developmentMicroservices = backendDev.developmentMicroservices.map(devMicro => ({
+        id: devMicro.id.toString(),
+        microservice: {
+          id: devMicro.microservice.id.toString(),
+          name: devMicro.microservice.name,
+          technology: devMicro.microservice.technology,
+          description: devMicro.microservice.description,
+          repository: devMicro.microservice.repository
+        },
+        progress: devMicro.progress,
+        notes: devMicro.notes,
+        version: devMicro.version
+      }));
+    } else {
+      // Si no hay microservicios en la respuesta, usamos los externos (compatibilidad)
+      microservices = externalMicroservices;
+    }
+
     return {
       id: backendDev.id.toString(),
       title: backendDev.title,
@@ -32,6 +67,7 @@ export class DevelopmentMapper {
       createdDate: new Date(backendDev.createdAt),
       updatedDate: new Date(backendDev.updatedAt),
       microservices: microservices,
+      developmentMicroservices: developmentMicroservices.length > 0 ? developmentMicroservices : undefined,
       progress: `${backendDev.progress}%`,
       jiraUrl: backendDev.jiraUrl
     };

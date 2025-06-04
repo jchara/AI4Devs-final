@@ -687,3 +687,38 @@ En el proyecto backend@development.repository.ts se agregó en la respuesta de l
 Como desarrollador back senior, analiza el proyecto @backend y ajusta lo que se vea implicado por este cambio.
 Antes de hacer algo dame un análisis, y si tienes dudas pregúntame primero.
 ```
+
+## Prompt 43: Corrección del modelo de microservicios en frontend - FRONTEND
+
+```
+Con estos ajustes realizados a los endpoints de desarrollos en el back, toma el rol de experto en front Angular, analiza el proyecto @frontend  e identifica donde puedes hacer las mejoras para corregir donde se muestran los microservicios por desarrollo
+```
+
+## Prompt 44: Modernización de la interfaz del panel de detalles - FRONTEND
+
+```
+Analiza los componentes y la información del panel de detalles de desarrollo, dale un estilo moderno como el que acabas de hacer con el ajuste anterior de los microservicios, importante no dañar la funcionalidad del panel.
+```
+
+## Prompt 45: Mejoras adicionales en usabilidad del panel de detalles - FRONTEND
+
+```
+Analizando los cambios realizados, estos algunos ajustes que debes implementar:
+
+- El botón cambio de estado debería ser un desplegable con los estados
+- El orden de los elementos dentro de Información General debe ser mejor
+- La distribución de las cards dentro del panel debe ser equitativa 
+- El color en la linea de progreso se de la card de Estado actual se perdió
+```
+
+## Prompt 46: Ajustes finales en el panel de detalles de desarrollo - FRONTEND
+
+```
+Algunos ajustes adicionales:
+quita Detalles Técnicos, Detalle de Microservicios debe ser el primero de la segunda columna y abajo debe estar Estado Actual
+
+la barra de progreso de Estado Actual no tiene color (ver imagen)
+
+en el botón cambiar estado, el desplegable es mas delgado que el botón y los estados tienen un diseño feo (ver imagen 2)
+```
+

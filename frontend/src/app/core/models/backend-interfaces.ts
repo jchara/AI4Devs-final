@@ -21,6 +21,18 @@ export interface BackendDevelopmentResponse {
   startDate?: string;
   estimatedDate?: string;
   endDate?: string;
+  environment?: any;
+  assignedTo?: any;
+  team?: any;
+  developmentMicroservices?: BackendDevelopmentMicroserviceResponse[];
+}
+
+export interface BackendDevelopmentMicroserviceResponse {
+  id: number;
+  progress: number;
+  notes?: string;
+  version?: string;
+  microservice: BackendMicroserviceResponse;
 }
 
 export interface BackendDevelopmentMetricsResponse {
