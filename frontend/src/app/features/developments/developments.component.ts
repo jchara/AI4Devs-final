@@ -61,6 +61,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   isMobile = false;
   isTablet = false;
   displayedColumns: string[] = [
+    'id',
     'status',
     'title',
     'description',
@@ -71,6 +72,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     'actions',
   ];
   displayedColumnsTablet: string[] = [
+    'id',
     'status',
     'title',
     'microservices',

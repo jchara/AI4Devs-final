@@ -115,6 +115,14 @@
   <!-- Tabla para desktop y tablet -->
   <div class="table-container" *ngIf="!isMobile && !loading">
     <mat-table [dataSource]="dataSource" class="developments-table" matSort>
+      <!-- Columna ID -->
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+        <mat-cell *matCellDef="let development">
+          <span class="id-text">{{ development.id }}</span>
+        </mat-cell>
+      </ng-container>
+
       <!-- Columna Estado -->
       <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef mat-sort-header
