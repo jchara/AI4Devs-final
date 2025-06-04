@@ -947,7 +947,13 @@ button[mat-menu-item] {
         width: 100%;
         margin-top: 0.5rem;
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: 0.5rem;
+        
+        button {
+          width: 100%;
+          justify-content: center;
+        }
       }
     }
     
@@ -961,15 +967,51 @@ button[mat-menu-item] {
     
     .status-section-left {
       padding: 1rem !important;
+      overflow: visible !important;
+      
+      .status-info {
+        overflow: visible;
+        word-break: break-word;
+        
+        .status-details {
+          width: 100%;
+          overflow: visible;
+          
+          .status-detail-list {
+            li {
+              flex-wrap: wrap;
+              gap: 0.25rem;
+              
+              .ms-name {
+                flex: 1;
+                min-width: 0;
+                white-space: normal;
+                word-break: break-word;
+              }
+              
+              .ms-progress {
+                white-space: nowrap;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Mejoras específicas para el desplegable de estados
+    #stateMenuButton {
+      width: 100%;
     }
     
     .microservices-table {
       margin: 0 -0.5rem; // Compensar el padding interior
       width: calc(100% + 1rem);
       padding: 0 0.5rem;
+      overflow-x: auto;
       
       table {
         min-width: 100%;
+        overflow: visible;
       }
       
       // Añadir indicación visual de scroll horizontal
@@ -992,6 +1034,13 @@ button[mat-menu-item] {
       
       .progress-value {
         font-size: 0.9rem;
+      }
+      
+      .progress-bar-horizontal {
+        .progress-label {
+          font-size: 0.75rem;
+          text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+        }
       }
     }
     
@@ -1049,5 +1098,35 @@ button[mat-menu-item] {
   
   .progress-container {
     margin: 0.75rem 0;
+  }
+}
+
+// Mejoras específicas para el menú desplegable de estados
+::ng-deep {
+  .mat-mdc-menu-panel.status-menu {
+    width: 100% !important;
+    min-width: 200px !important;
+    margin-top: 4px !important;
+    
+    .mat-mdc-menu-content {
+      padding: 8px !important;
+    }
+    
+    button.mat-mdc-menu-item {
+      width: 100% !important;
+      display: block !important;
+      text-align: center !important;
+      height: auto !important;
+      padding: 4px !important;
+      
+      .status-menu-item {
+        display: block !important;
+        width: 100% !important;
+        padding: 8px !important;
+        text-align: center !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+      }
+    }
   }
 } 

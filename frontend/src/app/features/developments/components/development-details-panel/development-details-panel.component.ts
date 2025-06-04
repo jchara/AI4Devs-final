@@ -340,64 +340,67 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
   }
 
   /**
-   * Actualiza la variable CSS con el ancho del botón para el menú
-   * Garantiza que el menú desplegable tenga exactamente el mismo ancho que el botón
+   * Actualiza el ancho del menú para que coincida con el botón
+   * Importante para la visualización correcta en dispositivos móviles
    */
   private updateMenuButtonWidth(): void {
-    const button = document.getElementById('stateMenuButton');
-    if (button) {
-      // Obtenemos el ancho exacto del botón
-      const buttonWidth = button.offsetWidth;
-      const buttonWidthPx = `${buttonWidth}px`;
-      
-      // Establecemos variables CSS
-      document.documentElement.style.setProperty('--menu-button-width', buttonWidthPx);
-      
-      // Función para aplicar estilos a elementos del menú
-      const applyMenuStyles = () => {
-        // Aplicar a todos los paneles de menú existentes
-        const menuPanels = document.querySelectorAll('.mat-mdc-menu-panel');
-        menuPanels.forEach(panel => {
-          const panelElement = panel as HTMLElement;
-          panelElement.style.width = buttonWidthPx;
-          panelElement.style.minWidth = buttonWidthPx;
-          panelElement.style.maxWidth = buttonWidthPx;
-        });
+    setTimeout(() => {
+      const button = document.getElementById('stateMenuButton');
+      if (button) {
+        const buttonWidth = button.offsetWidth;
+        document.documentElement.style.setProperty('--menu-button-width', `${buttonWidth}px`);
         
-        // Aplicar a los contenidos del menú
-        const menuContents = document.querySelectorAll('.mat-mdc-menu-content');
-        menuContents.forEach(content => {
-          const contentElement = content as HTMLElement;
-          contentElement.style.width = '100%';
-          contentElement.style.boxSizing = 'border-box';
-        });
+        // Asegurar que se aplican los estilos correctamente en móvil
+        if (this.isMobile) {
+          // Forzar un ancho mínimo en móvil para evitar truncamiento
+          document.documentElement.style.setProperty('--menu-button-width', `${Math.max(buttonWidth, window.innerWidth * 0.8)}px`);
+          
+          // Ajustar la posición del menú para alinearlo correctamente
+          const statusMenu = document.querySelector('.status-menu') as HTMLElement;
+          if (statusMenu) {
+            statusMenu.style.maxWidth = '90vw';
+            statusMenu.style.left = '5vw';
+            statusMenu.style.right = '5vw';
+          }
+        }
         
-        // Aplicar a los elementos del menú
-        const menuItems = document.querySelectorAll('.mat-mdc-menu-item');
-        menuItems.forEach(item => {
-          const itemElement = item as HTMLElement;
-          itemElement.style.width = '100%';
-          itemElement.style.boxSizing = 'border-box';
-        });
-      };
-      
-      // Ejecutar inmediatamente y después de pequeños intervalos
-      applyMenuStyles();
-      setTimeout(applyMenuStyles, 10);
-      setTimeout(applyMenuStyles, 50);
-      setTimeout(applyMenuStyles, 100);
-    }
+        this.changeDetectorRef.markForCheck();
+      }
+    }, 0);
   }
 
   /**
-   * Método llamado cuando se abre el menú desplegable
-   * Actualiza el ancho del menú para que coincida con el botón
+   * Maneja la apertura del menú de estados
+   * Aplica ajustes específicos para mejorar la visualización en móvil
    */
   onMenuOpened(): void {
-    // Actualizamos el ancho del menú cuando se abre
-    setTimeout(() => {
-      this.updateMenuButtonWidth();
-    }, 0);
+    // Ejecutamos updateMenuButtonWidth cuando se abre el menú para asegurar
+    // que los estilos se aplican correctamente
+    this.updateMenuButtonWidth();
+    
+    // Ajustes adicionales específicos para dispositivos móviles
+    if (this.isMobile) {
+      setTimeout(() => {
+        // Seleccionar el panel del menú que está abierto
+        const menuPanel = document.querySelector('.mat-mdc-menu-panel.status-menu') as HTMLElement;
+        if (menuPanel) {
+          // Centrar horizontalmente
+          menuPanel.style.left = '50%';
+          menuPanel.style.transform = 'translateX(-50%)';
+          menuPanel.style.maxWidth = '90vw';
+          menuPanel.style.width = '90vw';
+          
+          // Ajustar elementos internos
+          const menuItems = menuPanel.querySelectorAll('.mat-mdc-menu-item');
+          menuItems.forEach(item => {
+            const itemElement = item as HTMLElement;
+            itemElement.style.width = '100%';
+            itemElement.style.textAlign = 'center';
+            itemElement.style.padding = '8px';
+          });
+        }
+      }, 10);
+    }
   }
 
   /**
