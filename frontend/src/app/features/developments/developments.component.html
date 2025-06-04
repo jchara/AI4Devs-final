@@ -16,7 +16,7 @@
         <button
           mat-raised-button
           color="primary"
-          class="btn-nuevo"
+          class="btn-nuevo action-button"
           (click)="newDevelopment()"
         >
           <mat-icon>add</mat-icon>
@@ -82,9 +82,7 @@
             (click)="selectStatusFilter(status.value)"
           >
             {{ status.label }}
-            <span class="chip-count" *ngIf="status.count > 0"
-              >({{ status.count }})</span
-            >
+            <span class="chip-count" *ngIf="status.count > 0">{{ status.count }}</span>
           </div>
         </div>
       </div>
@@ -92,7 +90,8 @@
       <div class="filter-actions">
         <button
           mat-button
-          color="warn"
+          color="primary"
+          class="action-button"
           (click)="clearFilters()"
           *ngIf="
             searchControl.value ||
@@ -276,7 +275,7 @@
         </mat-card-header>
 
         <mat-card-content>
-          <p class="card-description">{{ development.description }}</p>
+          <p class="card-description">{{ truncateText(development.description || "", 120) }}</p>
 
           <div class="card-info-grid">
             <div class="info-item">
@@ -312,7 +311,7 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-button (click)="viewDetails(development)">
+          <button mat-button color="primary" (click)="viewDetails(development)">
             <mat-icon>visibility</mat-icon>
             Ver detalles
           </button>
@@ -349,12 +348,14 @@
         han creado desarrollos.
       </p>
       <div class="empty-actions">
-        <button mat-raised-button color="primary" (click)="newDevelopment()">
+        <button mat-raised-button color="primary" class="action-button" (click)="newDevelopment()">
           <mat-icon>add</mat-icon>
           Crear primer desarrollo
         </button>
         <button
           mat-button
+          color="primary"
+          class="action-button"
           (click)="clearFilters()"
           *ngIf="
             searchControl.value ||
