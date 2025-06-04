@@ -6,13 +6,26 @@ import {
   MicroserviceRepository, 
   DevelopmentMicroserviceRepository 
 } from './repositories';
-import { DevelopmentController } from './controllers';
-import { DevelopmentService } from './services/development.service';
+import { DevelopmentController, MicroserviceController } from './controllers';
+import { DevelopmentService, MicroserviceService } from './services';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Development, DevelopmentMicroservice, Microservice])],
-  controllers: [DevelopmentController],
-  providers: [DevelopmentService, DevelopmentRepository, MicroserviceRepository, DevelopmentMicroserviceRepository],
-  exports: [DevelopmentService, DevelopmentRepository, MicroserviceRepository, DevelopmentMicroserviceRepository, TypeOrmModule],
+  controllers: [DevelopmentController, MicroserviceController],
+  providers: [
+    DevelopmentService, 
+    MicroserviceService, 
+    DevelopmentRepository, 
+    MicroserviceRepository, 
+    DevelopmentMicroserviceRepository
+  ],
+  exports: [
+    DevelopmentService, 
+    MicroserviceService, 
+    DevelopmentRepository, 
+    MicroserviceRepository, 
+    DevelopmentMicroserviceRepository, 
+    TypeOrmModule
+  ],
 })
 export class ProjectManagementModule {} 

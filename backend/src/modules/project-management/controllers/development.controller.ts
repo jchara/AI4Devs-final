@@ -52,7 +52,7 @@ export class DevelopmentController {
   @Get()
   @ApiOperation({ 
     summary: 'Obtener desarrollos con filtros opcionales',
-    description: 'Retorna una lista de desarrollos, opcionalmente filtrada por estado, prioridad, asignado, equipo, ambiente o búsqueda de texto'
+    description: 'Retorna una lista de desarrollos, opcionalmente filtrada por estado, prioridad, asignado, equipo, ambiente o búsqueda de texto. Incluye información completa de cada desarrollo con sus microservicios asociados.'
   })
   @ApiQuery({ name: 'status', enum: DevelopmentStatus, required: false, description: 'Filtrar por estado del desarrollo' })
   @ApiQuery({ name: 'priority', enum: DevelopmentPriority, required: false, description: 'Filtrar por prioridad del desarrollo' })
@@ -214,25 +214,24 @@ export class DevelopmentController {
   }
 
   @Get(':id')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Obtener desarrollo por ID',
-    description: 'Retorna los detalles completos de un desarrollo específico'
+    description: 'Retorna un desarrollo por su ID, incluyendo información completa como ambiente, usuario asignado, equipo y microservicios asociados'
   })
-  @ApiParam({ 
-    name: 'id', 
-    type: Number, 
-    description: 'ID del desarrollo',
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'ID del desarrollo a obtener',
     example: 1
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Desarrollo encontrado exitosamente',
+  @ApiResponse({
+    status: 200,
+    description: 'Desarrollo obtenido exitosamente',
     type: DevelopmentResponseDto
   })
   @ApiResponse({ status: 404, description: 'Desarrollo no encontrado' })
-  @ApiResponse({ status: 400, description: 'ID inválido proporcionado' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Development> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Development> {
     return this.developmentService.findOne(id);
   }
 

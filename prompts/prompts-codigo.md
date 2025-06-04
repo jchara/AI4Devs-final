@@ -678,3 +678,12 @@ Lazy loading del panel
 Unsubscribe de observables
 Detección de cambios OnPush
 ```
+
+## Prompt 42: Análisis y ajuste de entidad Development por cambio en desarrollo.repository.ts - BACKEND
+
+```
+En el proyecto backend@development.repository.ts se agregó en la respuesta de los desarrollos incluir la información de los microservicios que tiene cada desarrollo.
+
+Como desarrollador back senior, analiza el proyecto @backend y ajusta lo que se vea implicado por este cambio.
+Antes de hacer algo dame un análisis, y si tienes dudas pregúntame primero.
+```

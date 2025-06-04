@@ -1,6 +1,66 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DevelopmentStatus, DevelopmentPriority } from '../entities/development.entity';
 
+// DTO para microservicios en respuesta
+export class MicroserviceResponseDto {
+  @ApiProperty({
+    description: 'ID único del microservicio',
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: 'Nombre del microservicio',
+    example: 'auth-service',
+  })
+  name: string;
+
+  @ApiPropertyOptional({
+    description: 'Tecnología utilizada en el microservicio',
+    example: 'NestJS',
+  })
+  technology?: string;
+
+  @ApiPropertyOptional({
+    description: 'Descripción del microservicio',
+    example: 'Servicio de autenticación y autorización',
+  })
+  description?: string;
+}
+
+// DTO para la relación desarrollo-microservicio
+export class DevelopmentMicroserviceResponseDto {
+  @ApiProperty({
+    description: 'ID de la relación',
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: 'Progreso del microservicio en este desarrollo',
+    example: 75.5,
+  })
+  progress: number;
+
+  @ApiPropertyOptional({
+    description: 'Notas específicas sobre este microservicio en el desarrollo',
+    example: 'Pendiente revisión de seguridad',
+  })
+  notes?: string;
+
+  @ApiPropertyOptional({
+    description: 'Versión del microservicio',
+    example: '1.2.3',
+  })
+  version?: string;
+
+  @ApiProperty({
+    description: 'Información del microservicio',
+    type: MicroserviceResponseDto,
+  })
+  microservice: MicroserviceResponseDto;
+}
+
 export class DevelopmentResponseDto {
   @ApiProperty({
     description: 'ID único del desarrollo',
@@ -112,6 +172,30 @@ export class DevelopmentResponseDto {
     example: 'Recordar actualizar la documentación de la API',
   })
   notes?: string;
+
+  @ApiPropertyOptional({
+    description: 'Detalles del ambiente',
+    example: { id: 2, name: 'Testing' },
+  })
+  environment?: any;
+
+  @ApiPropertyOptional({
+    description: 'Detalles del usuario asignado',
+    example: { id: 3, name: 'John Doe' },
+  })
+  assignedTo?: any;
+
+  @ApiPropertyOptional({
+    description: 'Detalles del equipo',
+    example: { id: 1, name: 'Backend Team' },
+  })
+  team?: any;
+
+  @ApiPropertyOptional({
+    description: 'Microservicios asociados al desarrollo',
+    type: [DevelopmentMicroserviceResponseDto],
+  })
+  developmentMicroservices?: DevelopmentMicroserviceResponseDto[];
 }
 
 export class DevelopmentMetricsResponseDto {

@@ -15,6 +15,15 @@ export class DevelopmentRepository extends BaseRepository<Development> implement
     super(developmentRepository);
   }
 
+  // Relaciones estándar para usar en todos los métodos
+  private readonly standardRelations = [
+    'environment', 
+    'assignedTo', 
+    'team', 
+    'developmentMicroservices', 
+    'developmentMicroservices.microservice'
+  ];
+
   async findWithFilters(filters: DevelopmentFilters): Promise<Development[]> {
     const where: FindOptionsWhere<Development> = { isActive: true };
 
@@ -39,7 +48,7 @@ export class DevelopmentRepository extends BaseRepository<Development> implement
 
     return this.developmentRepository.find({
       where,
-      relations: ['environment', 'assignedTo', 'team', 'developmentMicroservices'],
+      relations: this.standardRelations,
       order: { updatedAt: 'DESC' },
     });
   }
@@ -47,28 +56,28 @@ export class DevelopmentRepository extends BaseRepository<Development> implement
   async findByStatus(status: DevelopmentStatus): Promise<Development[]> {
     return this.developmentRepository.find({
       where: { status, isActive: true },
-      relations: ['environment', 'assignedTo', 'team'],
+      relations: this.standardRelations,
     });
   }
 
   async findByTeam(teamId: number): Promise<Development[]> {
     return this.developmentRepository.find({
       where: { teamId, isActive: true },
-      relations: ['environment', 'assignedTo', 'team'],
+      relations: this.standardRelations,
     });
   }
 
   async findByAssignedUser(userId: number): Promise<Development[]> {
     return this.developmentRepository.find({
       where: { assignedToId: userId, isActive: true },
-      relations: ['environment', 'assignedTo', 'team'],
+      relations: this.standardRelations,
     });
   }
 
   async findByEnvironment(environmentId: number): Promise<Development[]> {
     return this.developmentRepository.find({
       where: { environmentId, isActive: true },
-      relations: ['environment', 'assignedTo', 'team'],
+      relations: this.standardRelations,
     });
   }
 
@@ -160,7 +169,7 @@ export class DevelopmentRepository extends BaseRepository<Development> implement
   async findAll(): Promise<Development[]> {
     return this.developmentRepository.find({
       where: { isActive: true },
-      relations: ['environment', 'assignedTo', 'team', 'developmentMicroservices'],
+      relations: this.standardRelations,
       order: { updatedAt: 'DESC' },
     });
   }
@@ -168,7 +177,7 @@ export class DevelopmentRepository extends BaseRepository<Development> implement
   async findOne(id: number): Promise<Development | null> {
     return this.developmentRepository.findOne({
       where: { id, isActive: true },
-      relations: ['environment', 'assignedTo', 'team', 'developmentMicroservices'],
+      relations: this.standardRelations,
     });
   }
 } 
