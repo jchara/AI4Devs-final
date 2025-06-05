@@ -722,3 +722,16 @@ la barra de progreso de Estado Actual no tiene color (ver imagen)
 en el botón cambiar estado, el desplegable es mas delgado que el botón y los estados tienen un diseño feo (ver imagen 2)
 ```
 
+## Prompt 47: Implementación del CRUD para entidad environments - BACKEND
+
+```
+Como desarrollador senior backend analiza el proyecto@/backend  y realiza el crud necesario para la entidad environments
+
+si tienes alguna duda, pregunta primero, y muéstrame el plan de acción antes de hacer cualquier cambio
+```
+
+## Prompt 48: Ejecución de implementación del CRUD para entidad environments - BACKEND
+
+```
+Ejecuta el plan de acción teniendo en cuenta buenas prácticas de programación y seguridad
+```

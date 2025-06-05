@@ -6,10 +6,24 @@ import {
   DeploymentTypeRepository, 
   UpcomingDeploymentRepository 
 } from './repositories';
+import { EnvironmentService } from './services';
+import { EnvironmentController } from './controllers';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Environment, DeploymentType, UpcomingDeployment])],
-  providers: [EnvironmentRepository, DeploymentTypeRepository, UpcomingDeploymentRepository],
-  exports: [EnvironmentRepository, DeploymentTypeRepository, UpcomingDeploymentRepository, TypeOrmModule],
+  providers: [
+    EnvironmentRepository, 
+    DeploymentTypeRepository, 
+    UpcomingDeploymentRepository,
+    EnvironmentService
+  ],
+  controllers: [EnvironmentController],
+  exports: [
+    EnvironmentRepository, 
+    DeploymentTypeRepository, 
+    UpcomingDeploymentRepository, 
+    EnvironmentService,
+    TypeOrmModule
+  ],
 })
 export class InfrastructureModule {} 
