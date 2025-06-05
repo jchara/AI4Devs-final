@@ -19,6 +19,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/microservices/microservices.component').then(m => m.MicroservicesComponent)
   },
   {
+    path: 'ambientes',
+    loadComponent: () => import('./features/environments/environments.component').then(m => m.EnvironmentsComponent)
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }

@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Eliminar ambiente</h2>
+
+<mat-dialog-content>
+  <div class="delete-content">
+    <p class="delete-message">
+      ¿Estás seguro de que deseas eliminar el ambiente <strong>{{ environment.name }}</strong>?
+    </p>
+    <p class="delete-warning">
+      Esta acción no se puede deshacer. Los desarrollos asociados a este ambiente quedarán sin referencia.
+    </p>
+    
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">Cancelar</button>
+  <button 
+    mat-raised-button 
+    color="warn" 
+    (click)="onConfirm()" 
+    [disabled]="loading">
+    Eliminar
+  </button>
+</mat-dialog-actions> 

@@ -1,0 +1,41 @@
+.delete-content {
+  padding: var(--spacing-xs) 0;
+  position: relative;
+  min-width: 300px;
+  
+  .delete-message {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+    
+    strong {
+      color: var(--color-primary);
+    }
+  }
+  
+  .delete-warning {
+    font-size: 0.9rem;
+    color: #f44336; // Color rojo para advertencias
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .loading-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border-radius: var(--border-radius);
+  }
+}
+
+// Estilos específicos para modo oscuro
+:host-context(.dark-theme) {
+  .loading-container {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+} 

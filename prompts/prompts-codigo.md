@@ -735,3 +735,41 @@ si tienes alguna duda, pregunta primero, y muéstrame el plan de acción antes d
 ```
 Ejecuta el plan de acción teniendo en cuenta buenas prácticas de programación y seguridad
 ```
+
+## Prompt 49: Implementación de vista de Ambientes - FRONTEND
+
+```
+ahora como desarrollador senior en angular y experto en UX/UI, implementa estos nuevos endpoints que se acaban de crear y crea una vista en el proyecto de front @/frontend 
+
+Antes de realizar cualquier cambio ten presente:
+- revisar el código del proyecto
+- utiliza los mismos patrones y estándares de diseño, de seguridad y de rendimiento.
+
+para la nueva vista tener en cuenta:
+- La vista debe navegarse desde la opción ambientes del sidebar
+- Utiliza las mismas librerías de UI
+- Diseño responsive con stack vertical en móviles
+- Animaciones suaves de entrada/salid si se necesitan
+- Botones: "Cancelar" (secundario) y "Crear Desarrollo" (primario)
+- Estados de loading y éxito
+- Labels flotantes en inputs
+- Usar las mismas variables CSS definidas en el proyecto  
+si se necesitan
+
+Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero.
+```
+
+## Prompt 50: Ajustes adicionales a la vista de Ambientes - FRONTEND
+
+```
+En la nueva vista de ambientes creada, se necesitan hacer los siguientes ajustes:
+
+- cuando se navega a la vista de ambientes no se está aplicando el efecto fadeIn de las demás
+vistas, analiza a fondo los estilos de la aplicación e implementa la mejora
+
+- Al navegar a la vista nueva de ambiente, se muestra este error en consola:
+[Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+
+- Revisa el rendimiento de carga de la nueva vista de ambientes porque funciona lenta,
+aplica las técnicas de optimización de las demás vistas ya implementadas
+```

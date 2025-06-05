@@ -1,0 +1,99 @@
+<div *ngIf="isOpen" 
+  class="panel-overlay" 
+  (click)="closeOnBackdropClick($event)" 
+  [@overlay]>
+  <div class="slide-panel" 
+      [@panelState]="getPanelAnimationParams()">
+    <div class="panel-header">
+      <div class="header-title">
+        <h2>{{ title }}</h2>
+      </div>
+      <button mat-icon-button (click)="close()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="panel-content">
+      <form [formGroup]="environmentForm" class="environment-form">
+        <!-- Estado de carga -->
+        <div *ngIf="loading" class="loading-overlay">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+        
+        <!-- Nombre del ambiente -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name" placeholder="Ej. Producción" required>
+          <mat-error *ngIf="environmentForm.get('name')?.invalid">
+            {{ getFormError('name') }}
+          </mat-error>
+        </mat-form-field>
+        
+        <!-- Descripción del ambiente -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="description" placeholder="Descripción del ambiente" rows="3" required></textarea>
+          <mat-error *ngIf="environmentForm.get('description')?.invalid">
+            {{ getFormError('description') }}
+          </mat-error>
+        </mat-form-field>
+        
+        <!-- Color del ambiente -->
+        <div class="color-section">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Color</mat-label>
+            <input matInput formControlName="color" placeholder="#007bff">
+            <div matSuffix class="color-preview" [ngStyle]="getColorStyle(environmentForm.get('color')?.value)"></div>
+            <mat-error *ngIf="environmentForm.get('color')?.invalid">
+              {{ getFormError('color') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <div class="color-palette">
+            <div class="palette-title">Colores predefinidos:</div>
+            <div class="color-options">
+              <button 
+                *ngFor="let color of predefinedColors" 
+                type="button" 
+                class="color-option" 
+                [ngStyle]="getColorStyle(color)"
+                (click)="selectColor(color)"
+                [class.selected]="environmentForm.get('color')?.value === color">
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Orden del ambiente -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Orden</mat-label>
+          <input matInput type="number" formControlName="order" min="1" required>
+          <mat-error *ngIf="environmentForm.get('order')?.invalid">
+            {{ getFormError('order') }}
+          </mat-error>
+        </mat-form-field>
+        
+        <!-- Estado (activo/inactivo) -->
+        <div class="toggle-field">
+          <mat-slide-toggle formControlName="isActive" color="primary">
+            Ambiente activo
+          </mat-slide-toggle>
+        </div>
+      </form>
+    </div>
+    
+    <div class="panel-footer">
+      <button mat-stroked-button (click)="close()" [disabled]="loading" class="cancel-button">
+        Cancelar
+      </button>
+      <button 
+        mat-flat-button 
+        color="primary" 
+        (click)="onSubmit()" 
+        [disabled]="environmentForm.invalid || loading"
+        class="save-button">
+        {{ isEditMode ? 'Actualizar' : 'Crear' }}
+      </button>
+    </div>
+  </div>
+</div> 
