@@ -21,29 +21,6 @@
   padding-bottom: 2rem;
 }
 
-// Estilo centralizado para botones de acción
-.action-button {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--card-shadow);
-  transition: var(--transition-standard);
-  font-weight: 500;
-
-  mat-icon {
-    margin-right: var(--spacing-sm);
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--card-shadow-hover);
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
 // Header mejorado
 .header-content {
   display: flex;
@@ -93,7 +70,7 @@
 
 // Botón Nuevo mejorado (ahora usa la clase centralizada)
 .btn-nuevo {
-  @extend .action-button;
+  @extend .action-button !optional;
 }
 
 // Sección de filtros mejorada
@@ -542,7 +519,7 @@
 
         &[color="primary"],
         &[color="warn"] {
-          @extend .action-button;
+          @extend .action-button !optional;
         }
       }
     }

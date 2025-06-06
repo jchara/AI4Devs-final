@@ -240,3 +240,52 @@
     padding: var(--spacing-md);
   }
 }
+
+.environment-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  
+  &.icon-development {
+    color: var(--color-accent);
+  }
+  
+  &.icon-testing {
+    color: var(--color-primary);
+  }
+  
+  &.icon-staging {
+    color: var(--color-warning);
+  }
+  
+  &.icon-production {
+    color: var(--color-success);
+  }
+}
+
+// Mejora gráficos de resumen
+.metric-type {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  
+  &.type-development {
+    background-color: rgba(var(--color-accent-rgb, 102, 198, 234), 0.1);
+    color: var(--color-accent);
+  }
+  
+  &.type-testing {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary);
+  }
+  
+  &.type-staging {
+    background-color: rgba(var(--color-warning-rgb, 255, 152, 0), 0.1);
+    color: var(--color-warning);
+  }
+  
+  &.type-production {
+    background-color: rgba(var(--color-success-rgb, 76, 175, 80), 0.1);
+    color: var(--color-success);
+  }
+}

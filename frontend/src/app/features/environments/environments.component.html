@@ -16,8 +16,8 @@
           <button
             mat-raised-button
             color="primary"
+            class="app-button primary-button"
             (click)="openCreatePanel()"
-            class="btn-nuevo action-button"
           >
             <mat-icon>add</mat-icon>
             <span>Nuevo Ambiente</span>
@@ -260,7 +260,7 @@
       <p *ngIf="!searchForm.get('searchTerm')?.value">
         Puedes crear un nuevo ambiente haciendo clic en el botón "Nuevo Ambiente"
       </p>
-      <button mat-flat-button color="primary" (click)="openCreatePanel()">
+      <button mat-flat-button color="primary" class="app-button primary-button" (click)="openCreatePanel()">
         <mat-icon>add</mat-icon>
         Nuevo Ambiente
       </button>

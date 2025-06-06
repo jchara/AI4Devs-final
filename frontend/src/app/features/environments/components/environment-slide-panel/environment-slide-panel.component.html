@@ -93,7 +93,11 @@
           
           <!-- Botones de acción - ahora dentro del formulario -->
           <div class="form-actions">
-            <button mat-stroked-button (click)="close()" [disabled]="loading" class="cancel-button">
+            <button 
+              mat-stroked-button 
+              (click)="close()" 
+              [disabled]="loading" 
+              class="app-button cancel-button">
               Cancelar
             </button>
             <button 
@@ -101,7 +105,7 @@
               color="primary" 
               (click)="onSubmit()" 
               [disabled]="environmentForm.invalid || loading"
-              class="save-button">
+              class="app-button primary-button">
               {{ isEditMode ? 'Actualizar' : 'Crear' }}
             </button>
           </div>

@@ -197,42 +197,6 @@
       width: 100%;
       justify-content: flex-end;
     }
-
-    button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      transition: var(--transition-standard);
-
-      &:first-child {
-        background: transparent;
-        border: 1px solid var(--color-primary);
-        color: var(--color-primary);
-        
-        &:hover {
-          background: rgba(var(--color-primary-rgb), 0.05);
-        }
-      }
-      
-      &:last-child {
-        background: var(--color-primary);
-        color: white;
-        
-        &:hover {
-          background: var(--color-primary-dark);
-          box-shadow: 0 3px 8px rgba(var(--color-primary-rgb), 0.3);
-        }
-      }
-
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-      }
-    }
   }
 }
 

@@ -23,11 +23,11 @@
           {{ development.status }}
         </div>
         <div class="action-buttons">
-          <button mat-stroked-button color="primary" (click)="onEdit()">
+          <button mat-stroked-button color="primary" (click)="onEdit()" class="app-button secondary-button">
             <mat-icon>edit</mat-icon>
             Editar
           </button>
-          <button mat-flat-button color="primary" [matMenuTriggerFor]="stateMenu" id="stateMenuButton">
+          <button mat-flat-button color="primary" [matMenuTriggerFor]="stateMenu" id="stateMenuButton" class="app-button primary-button">
             <mat-icon>swap_horiz</mat-icon>
             Cambiar Estado
             <mat-icon>arrow_drop_down</mat-icon>

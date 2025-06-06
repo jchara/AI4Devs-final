@@ -207,44 +207,7 @@
             width: 100%;
           }
           
-          .cancel-button, .save-button {
-            min-width: 120px;
-            border-radius: 6px;
-            height: 40px;
-            transition: var(--transition-standard);
-            
-            @media (max-width: 768px) {
-              flex: 1;
-            }
-            
-            &.cancel-button {
-              background: transparent;
-              border: 1px solid var(--color-primary);
-              color: var(--color-primary);
-              
-              &:hover {
-                background: rgba(var(--color-primary-rgb), 0.05);
-              }
-            }
-            
-            &.save-button {
-              background: var(--color-primary);
-              color: var(--text-on-primary);
-              
-              &:hover {
-                background: var(--color-primary-hover);
-                box-shadow: 0 3px 8px rgba(var(--color-primary-rgb), 0.3);
-                transform: translateY(-2px);
-              }
-              
-              &:disabled {
-                background-color: rgba(0, 0, 0, 0.12);
-                color: rgba(0, 0, 0, 0.38);
-                box-shadow: none;
-                transform: none;
-              }
-            }
-          }
+          /* Los estilos de botones ahora están definidos en el archivo _components.scss */
         }
       }
     }

@@ -16,7 +16,7 @@
         <button
           mat-raised-button
           color="primary"
-          class="btn-nuevo action-button"
+          class="app-button primary-button"
           (click)="newDevelopment()"
         >
           <mat-icon>add</mat-icon>
@@ -91,7 +91,7 @@
         <button
           mat-button
           color="primary"
-          class="action-button"
+          class="app-button secondary-button"
           (click)="clearFilters()"
           *ngIf="
             searchControl.value ||
@@ -356,14 +356,14 @@
         han creado desarrollos.
       </p>
       <div class="empty-actions">
-        <button mat-raised-button color="primary" class="action-button" (click)="newDevelopment()">
+        <button mat-raised-button color="primary" class="app-button primary-button" (click)="newDevelopment()">
           <mat-icon>add</mat-icon>
           Crear primer desarrollo
         </button>
         <button
           mat-button
           color="primary"
-          class="action-button"
+          class="app-button secondary-button"
           (click)="clearFilters()"
           *ngIf="
             searchControl.value ||

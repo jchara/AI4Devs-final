@@ -149,6 +149,104 @@
   }
 }
 
+// Estilos comunes para botones de acción (para reutilizar en toda la app)
+.app-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  min-width: 120px;
+  border-radius: 4px !important;
+  padding: 0.75rem 1.5rem;
+  height: auto;
+  line-height: 1;
+  transition: var(--transition-standard, all 0.25s cubic-bezier(0.4, 0, 0.2, 1));
+  
+  &.mat-mdc-raised-button,
+  &.mat-mdc-flat-button,
+  &.mat-mdc-stroked-button,
+  &.mat-mdc-button {
+    border-radius: 4px !important;
+  }
+  
+  .mdc-button__ripple {
+    border-radius: 4px !important;
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  &.primary-button {
+    background-color: var(--color-primary) !important;
+    color: var(--text-on-primary) !important;
+    border: none !important;
+    
+    &:hover {
+      background-color: var(--color-primary-hover) !important;
+    }
+    
+    &:disabled {
+      background-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.38) !important;
+      box-shadow: none !important;
+    }
+  }
+  
+  &.secondary-button, &.cancel-button {
+    background-color: transparent !important;
+    border: 1px solid var(--color-primary) !important;
+    color: var(--color-primary) !important;
+    
+    &:hover {
+      background-color: rgba(var(--color-primary-rgb), 0.05) !important;
+    }
+    
+    &:disabled {
+      border-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.38) !important;
+    }
+  }
+  
+  &.warn-button, &.delete-button {
+    background-color: var(--color-warn) !important;
+    color: var(--text-on-warn) !important;
+    border: none !important;
+    
+    &:hover {
+      background-color: var(--color-error) !important;
+    }
+    
+    &:disabled {
+      background-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.38) !important;
+      box-shadow: none !important;
+    }
+  }
+  
+  // Variante pequeña
+  &.small {
+    padding: 0.5rem 1rem;
+    min-width: 100px;
+    font-size: 0.9rem;
+  }
+  
+  // Variante grande
+  &.large {
+    padding: 1rem 2rem;
+    min-width: 150px;
+    font-size: 1.1rem;
+  }
+  
+  // Responsive
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 // -----------------------------------------------------------------------------
 // CARD COMPONENTS
 // -----------------------------------------------------------------------------

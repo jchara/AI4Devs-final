@@ -5,6 +5,7 @@
 // DESIGN SYSTEM - Sistema de diseño centralizado
 // =============================================================================
 @use 'styles/index';
+@use 'styles/shared-components.scss';
 
 // Variables CSS por defecto (serán sobrescritas por el ThemeService)
 :root {
@@ -17,6 +18,7 @@
   --color-primary: #7D2BE3;
   --color-primary-hover: #6A21C5;
   --color-accent: #66C6EA;
+  --color-accent-rgb: 102, 198, 234;
   --color-warn: #F44336;  // Color de advertencia/eliminar
   --color-success: #4CAF50;
   --color-info: #2196F3;
@@ -24,6 +26,10 @@
   --color-error: #F44336;
   --color-primary-rgb: 125, 43, 227; // RGB de color primario para transparencias
   --color-warn-rgb: 244, 67, 54;     // RGB para transparencias
+  --color-success-rgb: 76, 175, 80;
+  --color-info-rgb: 33, 150, 243;
+  --color-warning-rgb: 255, 152, 0;
+  --color-error-rgb: 244, 67, 54;
   --border-color: #E0E0E0;
   --border-color-light: #EEEEEE;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -499,4 +505,19 @@ body.dark {
   .info-snackbar .mat-mdc-snack-bar-container {
     background-color: #0288D1 !important;
   }
+}
+
+// Estilos globales para Angular Material
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-stroked-button,
+.mat-mdc-button {
+  border-radius: 4px !important;
+}
+
+// MDC button containers
+.mdc-button__ripple,
+.mat-mdc-button-ripple,
+.mdc-button__focus-ring {
+  border-radius: 4px !important;
 }
