@@ -743,7 +743,8 @@ ahora como desarrollador senior en angular y experto en UX/UI, implementa estos 
 
 Antes de realizar cualquier cambio ten presente:
 - revisar el código del proyecto
-- utiliza los mismos patrones y estándares de diseño, de seguridad y de rendimiento.
+- utiliza los mismos patrones y estándares de diseño, de seguridad y de rendimiento
+- mantén siempre una interfaz homogénea para botones, tablas paneles, modales, etc
 
 para la nueva vista tener en cuenta:
 - La vista debe navegarse desde la opción ambientes del sidebar
@@ -753,8 +754,7 @@ para la nueva vista tener en cuenta:
 - Botones: "Cancelar" (secundario) y "Crear Desarrollo" (primario)
 - Estados de loading y éxito
 - Labels flotantes en inputs
-- Usar las mismas variables CSS definidas en el proyecto  
-si se necesitan
+- Usar las mismas variables CSS definidas en el proyecto si es necesario
 
 Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero.
 ```
@@ -772,4 +772,10 @@ vistas, analiza a fondo los estilos de la aplicación e implementa la mejora
 
 - Revisa el rendimiento de carga de la nueva vista de ambientes porque funciona lenta,
 aplica las técnicas de optimización de las demás vistas ya implementadas
+```
+
+## Prompt 51: Ajustes modal de eliminar en la vista de Ambientes - FRONTEND
+
+```
+En el modal que se creo para confirmar la eliminación de un ambiente se debe cerrar al navegar a otra ruta desde el sidebar
 ```

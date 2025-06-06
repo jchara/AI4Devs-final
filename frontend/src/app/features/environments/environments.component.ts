@@ -23,6 +23,8 @@ import { EnvironmentService } from '../../core/services/environment.service';
 import { Environment } from '../../core/models/environment.model';
 import { EnvironmentDeleteDialogComponent } from './components/environment-delete-dialog/environment-delete-dialog.component';
 import { EnvironmentSlidePanelComponent } from './components/environment-slide-panel/environment-slide-panel.component';
+import { Router, NavigationStart } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-environments',
@@ -78,8 +80,18 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   constructor(
     private environmentService: EnvironmentService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) { 
+    // Cerrar diálogos cuando hay navegación
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      // Cerrar todos los diálogos abiertos
+      this.dialog.closeAll();
+    });
+  }
   
   ngOnInit(): void {
     // Carga inicial diferida para mejorar el tiempo de carga
