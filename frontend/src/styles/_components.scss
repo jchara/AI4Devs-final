@@ -297,4 +297,47 @@
     color: white;
     border-color: var(--color-primary);
   }
+}
+
+// -----------------------------------------------------------------------------
+// DIALOGS
+// -----------------------------------------------------------------------------
+.custom-dialog-container {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+  }
+  
+  .mat-mdc-dialog-actions {
+    justify-content: flex-end !important;
+    padding: 8px 24px 24px !important;
+    gap: 8px !important;
+  }
+}
+
+.environment-delete-dialog {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    overflow: hidden !important;
+    
+    .mat-mdc-dialog-content {
+      max-height: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .mat-mdc-dialog-actions {
+      padding: 0 !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+    }
+  }
+}
+
+.mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 4px !important;
+  }
 } 

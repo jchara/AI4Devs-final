@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 import { EnvironmentService } from '../../../../core/services/environment.service';
 import { Environment } from '../../../../core/models/environment.model';
+import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
 
 @Component({
   selector: 'app-environment-delete-dialog',
@@ -14,10 +17,51 @@ import { Environment } from '../../../../core/models/environment.model';
     CommonModule,
     MatDialogModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './environment-delete-dialog.component.html',
-  styleUrls: ['./environment-delete-dialog.component.scss']
+  styleUrls: ['./environment-delete-dialog.component.scss'],
+  animations: [
+    trigger('panelState', [
+      transition(':enter', [
+        style({ 
+          transform: 'translateY(50px)',
+          opacity: 0 
+        }),
+        animate('300ms cubic-bezier(0.4, 0, 0.2, 1)', 
+          style({ 
+            transform: 'translateY(0)',
+            opacity: 1 
+          })
+        ),
+        query('@*', animateChild(), { optional: true })
+      ]),
+      transition(':leave', [
+        query('@*', animateChild(), { optional: true }),
+        animate('250ms cubic-bezier(0.4, 0, 0.2, 1)', 
+          style({ 
+            transform: 'translateY(50px)',
+            opacity: 0 
+          })
+        )
+      ])
+    ]),
+    trigger('overlay', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('250ms cubic-bezier(0.4, 0, 0.2, 1)', 
+          style({ opacity: 1 })
+        )
+      ]),
+      transition(':leave', [
+        animate('200ms cubic-bezier(0.4, 0, 0.2, 1)', 
+          style({ opacity: 0 })
+        )
+      ])
+    ])
+  ]
 })
 export class EnvironmentDeleteDialogComponent implements OnDestroy {
   private destroy$ = new Subject<void>();

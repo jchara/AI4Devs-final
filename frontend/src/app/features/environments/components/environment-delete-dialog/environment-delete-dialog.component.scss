@@ -1,41 +1,181 @@
-.delete-content {
-  padding: var(--spacing-xs) 0;
-  position: relative;
-  min-width: 300px;
+:host {
+  --panel-padding: 1.5rem;
+  --section-spacing: 1.25rem;
+  --card-radius: 5px;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --transition-standard: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   
-  .delete-message {
-    font-size: 1rem;
-    margin-bottom: var(--spacing-md);
-    
-    strong {
-      color: var(--color-primary);
-    }
-  }
-  
-  .delete-warning {
-    font-size: 0.9rem;
-    color: #f44336; // Color rojo para advertencias
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .loading-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    border-radius: var(--border-radius);
+  // Aseguramos que el diálogo tome el estilo propio, no el de Material
+  ::ng-deep .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 5px !important;
+    overflow: hidden !important;
   }
 }
 
-// Estilos específicos para modo oscuro
+.delete-dialog-panel {
+  background: var(--bg-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-width: 400px;
+  max-width: 500px;
+  margin: 0 auto;
+  border-radius: 5px;
+  overflow: hidden;
+  font-family: var(--font-family);
+  border: 1px solid var(--border-color);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    
+    mat-icon {
+      font-size: 1rem;
+      height: 1rem;
+      width: 1rem;
+      line-height: 1rem;
+      margin: 0 0.25rem;
+    }
+  }
+
+  .header-title h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+  
+  .close-button {
+    color: var(--text-primary);
+    border-radius: 50%;
+    transition: var(--transition-standard);
+    &:hover {
+      transform: rotate(90deg);
+      background: var(--bg-secondary);
+    }
+  }
+}
+
+.panel-content {
+  padding: 1.5rem;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.delete-message {
+  font-size: 1.08rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  
+  strong {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+}
+
+.delete-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(244, 67, 54, 0.08);
+  border-left: 4px solid var(--color-warn);
+  border-radius: 4px;
+  
+  .warning-icon {
+    color: var(--color-warn);
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    flex-shrink: 0;
+  }
+  
+  span {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color-light, #eee);
+}
+
+.cancel-button, .delete-button {
+  min-width: 120px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem;
+  height: auto;
+  line-height: 1;
+}
+
+.cancel-button {
+  background: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  
+  &:hover {
+    background: rgba(var(--color-primary-rgb), 0.05) !important;
+  }
+}
+
+.delete-button {
+  background: var(--color-warn, #F44336) !important;
+  color: var(--text-on-warn, white) !important;
+  
+  &:hover {
+    background: #D32F2F !important;
+    box-shadow: 0 3px 8px rgba(var(--color-warn-rgb, 244, 67, 54), 0.3) !important;
+    transform: translateY(-2px);
+  }
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  border-radius: var(--card-radius);
+}
+
 :host-context(.dark-theme) {
-  .loading-container {
+  .loading-overlay {
     background-color: rgba(0, 0, 0, 0.5);
   }
 } 

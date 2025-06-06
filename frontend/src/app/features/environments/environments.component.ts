@@ -167,7 +167,12 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   
   openDeleteDialog(environment: Environment): void {
     const dialogRef = this.dialog.open(EnvironmentDeleteDialogComponent, {
-      width: '400px',
+      width: '480px',
+      height: 'auto',
+      maxWidth: '95vw',
+      panelClass: ['custom-dialog-container', 'environment-delete-dialog'],
+      autoFocus: false,
+      hasBackdrop: true,
       data: environment
     });
     

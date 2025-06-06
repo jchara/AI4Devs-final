@@ -17,12 +17,21 @@
   --color-primary: #7D2BE3;
   --color-primary-hover: #6A21C5;
   --color-accent: #66C6EA;
+  --color-warn: #F44336;  // Color de advertencia/eliminar
+  --color-success: #4CAF50;
+  --color-info: #2196F3;
+  --color-warning: #FF9800;
+  --color-error: #F44336;
+  --color-primary-rgb: 125, 43, 227; // RGB de color primario para transparencias
+  --color-warn-rgb: 244, 67, 54;     // RGB para transparencias
   --border-color: #E0E0E0;
+  --border-color-light: #EEEEEE;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
   --text-on-primary: #FFFFFF;
   --text-on-primary-hover: #FFFFFF;
   --text-on-accent: #FFFFFF;
+  --text-on-warn: #FFFFFF;
   
   // Espaciado
   --spacing-xs: 4px;
