@@ -791,3 +791,15 @@ Ahora se deben ajustar tres cosas en la vista de ambientes:
 
 - El texto de los toggles no tiene el color de la variable de texto y esto hace que cuando se cambie a modo oscuro el texto del toggle siga de color negro y no se vea
 ```
+
+## Prompt 53: Implementación de borrado lógico en entidad Environment - BACKEND
+
+```
+Ahora como desarrollador senior en backend nestJS @environment.entity.ts  ajusta esta entidad para agregar la columna deletedAt para un borrado lógico
+
+- Ajusta el endpoint de eliminar para que realice un soft delete
+
+- Ajusta los endpoints de listar para tener en cuenta la condición de excluir ambientes que tengan soft delete
+
+adicionalmente verifica el resto del proyecto @/backend  por si se debe ajustar algo mas con el cambio en la entidad
+```
