@@ -23,6 +23,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/environments/environments.component').then(m => m.EnvironmentsComponent)
   },
   {
+    path: 'jira-sync',
+    loadComponent: () => import('./features/jira-sync/jira-sync.component').then(m => m.JiraSyncComponent)
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }
