@@ -82,7 +82,10 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   ) {}
   
   ngOnInit(): void {
-    this.loadEnvironments();
+    // Carga inicial diferida para mejorar el tiempo de carga
+    setTimeout(() => {
+      this.loadEnvironments();
+    });
     
     this.environmentService.loading$
       .pipe(takeUntil(this.destroy$))
@@ -97,7 +100,7 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
       )
       .subscribe(value => {
         this.filterEnvironments(value || '');
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       });
   }
   
@@ -115,7 +118,7 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
         next: environments => {
           this.environments = environments;
           this.filteredEnvironments = environments;
-          this.cdr.detectChanges();
+          this.cdr.markForCheck();
         },
         error: () => {
           this.loading = false;

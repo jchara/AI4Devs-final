@@ -12,6 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { EnvironmentService } from '../../../../core/services/environment.service';
 import { Environment, CreateEnvironmentDto, UpdateEnvironmentDto } from '../../../../core/models/environment.model';
 import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
+import { memoize } from 'lodash';
 
 @Component({
   selector: 'app-environment-slide-panel',
@@ -73,14 +74,16 @@ import { trigger, transition, style, animate, query, animateChild } from '@angul
 export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
   private _isOpen = false;
+  private _environment: Environment | null = null;
+  private resizeObserver: ResizeObserver | null = null;
   
-  @Input() environment: Environment | null = null;
   @Output() closePanel = new EventEmitter<boolean>();
   
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
     if (value) {
       this.handlePanelOpen();
+      this.initializeForm();
     } else {
       this.handlePanelClose();
     }
@@ -91,10 +94,22 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
     return this._isOpen;
   }
   
+  @Input() set environment(env: Environment | null) {
+    this._environment = env;
+    if (this.isOpen) {
+      this.initializeForm();
+    }
+  }
+  
+  get environment(): Environment | null {
+    return this._environment;
+  }
+  
   title: string = 'Nuevo Ambiente';
   environmentForm: FormGroup;
   isEditMode: boolean = false;
   loading = false;
+  isMobile = window.innerWidth <= 768;
   
   // Opciones predefinidas de colores
   predefinedColors = [
@@ -113,7 +128,28 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
     private environmentService: EnvironmentService,
     private cdr: ChangeDetectorRef
   ) {
-    this.environmentForm = this.fb.group({
+    this.environmentForm = this.createForm();
+  }
+  
+  ngOnInit(): void {
+    this.setupServiceSubscriptions();
+    this.detectMobileDevice();
+  }
+  
+  ngAfterViewInit(): void {
+    this.setupResizeObserver();
+    this.setupScrollHandlers();
+  }
+  
+  ngOnDestroy(): void {
+    this.cleanupResizeObserver();
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.resetBodyStyles();
+  }
+  
+  private createForm(): FormGroup {
+    return this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(50)]],
       description: ['', [Validators.required, Validators.maxLength(100)]],
       color: ['#007bff', Validators.maxLength(20)],
@@ -122,20 +158,36 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
     });
   }
   
-  ngOnInit(): void {
+  private initializeForm(): void {
     this.isEditMode = !!this.environment;
     this.title = this.isEditMode ? 'Editar Ambiente' : 'Nuevo Ambiente';
     
+    // Resetear el formulario para evitar mezclar datos entre sesiones
+    this.environmentForm.reset({
+      name: '',
+      description: '',
+      color: '#007bff',
+      order: 1,
+      isActive: true
+    });
+    
     if (this.isEditMode && this.environment) {
-      this.environmentForm.patchValue({
-        name: this.environment.name,
-        description: this.environment.description,
-        color: this.environment.color,
-        order: this.environment.order,
-        isActive: this.environment.isActive
+      // Usar setTimeout para asegurar que el cambio se aplique después de que Angular haya terminado
+      // el ciclo de renderizado actual
+      setTimeout(() => {
+        this.environmentForm.patchValue({
+          name: this.environment?.name || '',
+          description: this.environment?.description || '',
+          color: this.environment?.color || '#007bff',
+          order: this.environment?.order || 1,
+          isActive: this.environment?.isActive !== undefined ? this.environment.isActive : true
+        });
+        this.cdr.markForCheck();
       });
     }
-    
+  }
+  
+  private setupServiceSubscriptions(): void {
     this.environmentService.loading$
       .pipe(takeUntil(this.destroy$))
       .subscribe(loading => {
@@ -144,42 +196,41 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
       });
   }
   
-  ngAfterViewInit(): void {
-    // Usar ResizeObserver para optimizar el rendimiento
+  private setupResizeObserver(): void {
     if (typeof ResizeObserver !== 'undefined') {
-      const resizeObserver = new ResizeObserver(() => {
-        // Garantizar que los eventos de resize no causen problemas de rendimiento
-        this.cdr.detectChanges();
+      this.resizeObserver = new ResizeObserver(() => {
+        this.detectMobileDevice();
       });
       
-      const panel = document.querySelector('.slide-panel');
-      if (panel) {
-        resizeObserver.observe(panel);
-      }
-      
-      // Desconectar el observer al destruir el componente
-      this.destroy$.subscribe(() => {
-        resizeObserver.disconnect();
-      });
+      this.resizeObserver.observe(document.body);
     }
-    
-    // Optimizar eventos de scroll
-    const scrollableElements = document.querySelectorAll('.panel-content');
+  }
+  
+  private cleanupResizeObserver(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+  }
+  
+  private setupScrollHandlers(): void {
+    const scrollableElements = document.querySelectorAll('.scrollable-content');
     scrollableElements.forEach(element => {
       element.addEventListener('wheel', () => {
-        // Solo monitoreo, sin lógica pesada
         // El evento es pasivo por defecto
       }, { passive: true });
     });
   }
   
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.resetBodyStyles();
+  private detectMobileDevice(): void {
+    const newIsMobile = window.innerWidth <= 768;
+    if (this.isMobile !== newIsMobile) {
+      this.isMobile = newIsMobile;
+      this.cdr.markForCheck();
+    }
   }
   
-  private handlePanelOpen() {
+  private handlePanelOpen(): void {
     // Usar requestAnimationFrame para asegurar que las operaciones DOM se realicen en un frame óptimo
     requestAnimationFrame(() => {
       document.body.style.overflow = 'hidden';
@@ -198,7 +249,7 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
     });
   }
   
-  private handlePanelClose() {
+  private handlePanelClose(): void {
     requestAnimationFrame(() => {
       this.resetBodyStyles();
       // Marcar para detección de cambios
@@ -206,7 +257,7 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
     });
   }
   
-  private resetBodyStyles() {
+  private resetBodyStyles(): void {
     const scrollY = document.body.style.top;
     document.body.style.overflow = '';
     document.body.style.position = '';
@@ -239,7 +290,10 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => this.close(true),
-          error: () => {}
+          error: () => {
+            // Marcar para detección de cambios en caso de error
+            this.cdr.markForCheck();
+          }
         });
     } else {
       const createData: CreateEnvironmentDto = {
@@ -254,7 +308,10 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => this.close(true),
-          error: () => {}
+          error: () => {
+            // Marcar para detección de cambios en caso de error
+            this.cdr.markForCheck();
+          }
         });
     }
   }
@@ -297,14 +354,12 @@ export class EnvironmentSlidePanelComponent implements OnInit, OnDestroy, AfterV
   
   getColorStyle(color: string): object {
     return {
-      'background-color': color
+      'background-color': color || '#007bff'
     };
   }
   
-  getPanelAnimationParams() {
-    return {
-      transformEnter: 'translateX(100%)',
-      transformLeave: 'translateX(100%)'
-    };
-  }
-} 
+  readonly getPanelAnimationParams = memoize(() => ({
+    transformEnter: 'translateX(100%)',
+    transformLeave: 'translateX(100%)'
+  }));
+}
