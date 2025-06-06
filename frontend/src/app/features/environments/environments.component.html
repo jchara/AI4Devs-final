@@ -120,7 +120,7 @@
               (change)="toggleActive(environment)"
               color="primary"
             >
-              {{ getActiveStatusText(environment.isActive) }}
+              <span class="toggle-text">{{ getActiveStatusText(environment.isActive) }}</span>
             </mat-slide-toggle>
           </td>
         </ng-container>
@@ -137,19 +137,23 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu" class="actions-menu">
-              <button mat-menu-item (click)="openEditPanel(environment)">
-                <mat-icon>edit</mat-icon>
-                <span>Editar</span>
-              </button>
-              <mat-divider></mat-divider>
-              <button
-                mat-menu-item
-                (click)="openDeleteDialog(environment)"
-                class="delete-action"
-              >
-                <mat-icon>delete_outline</mat-icon>
-                <span>Eliminar</span>
-              </button>
+              <div class="menu-section">
+                <button mat-menu-item (click)="openEditPanel(environment)" class="menu-item">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+              </div>
+              
+              <div class="menu-section">
+                <button
+                  mat-menu-item
+                  (click)="openDeleteDialog(environment)"
+                  class="menu-item delete-action"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </div>
             </mat-menu>
           </td>
         </ng-container>
@@ -186,20 +190,24 @@
           >
             <mat-icon>more_vert</mat-icon>
           </button>
-          <mat-menu #mobileMenu="matMenu" class="actions-menu">
-            <button mat-menu-item (click)="openEditPanel(environment)">
-              <mat-icon>edit</mat-icon>
-              <span>Editar</span>
-            </button>
-            <mat-divider></mat-divider>
-            <button
-              mat-menu-item
-              (click)="openDeleteDialog(environment)"
-              class="delete-action"
-            >
-              <mat-icon>delete_outline</mat-icon>
-              <span>Eliminar</span>
-            </button>
+          <mat-menu #mobileMenu="matMenu" class="actions-menu mobile-menu">
+            <div class="menu-section">
+              <button mat-menu-item (click)="openEditPanel(environment)" class="menu-item">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+            </div>
+            
+            <div class="menu-section">
+              <button
+                mat-menu-item
+                (click)="openDeleteDialog(environment)"
+                class="menu-item delete-action"
+              >
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </div>
           </mat-menu>
         </div>
 
@@ -237,7 +245,7 @@
                 (change)="toggleActive(environment)"
                 color="primary"
               >
-                {{ getActiveStatusText(environment.isActive) }}
+                <span class="toggle-text">{{ getActiveStatusText(environment.isActive) }}</span>
               </mat-slide-toggle>
             </div>
           </div>

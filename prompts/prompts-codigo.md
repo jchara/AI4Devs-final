@@ -779,3 +779,15 @@ aplica las técnicas de optimización de las demás vistas ya implementadas
 ```
 En el modal que se creo para confirmar la eliminación de un ambiente se debe cerrar al navegar a otra ruta desde el sidebar
 ```
+
+## Prompt 52: Ajustes de estilo en la vista de Ambientes - FRONTEND
+
+```
+Ahora se deben ajustar tres cosas en la vista de ambientes:
+
+- El menu de acciones debe tener el mismo estilo que el menu de acciones de la vista desarrollo
+
+- Los toggles de la columna estado no tienen el color primario de la aplicación
+
+- El texto de los toggles no tiene el color de la variable de texto y esto hace que cuando se cambie a modo oscuro el texto del toggle siga de color negro y no se vea
+```
