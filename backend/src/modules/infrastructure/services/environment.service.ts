@@ -64,7 +64,7 @@ export class EnvironmentService {
     // Verificar si existe el ambiente
     await this.findOne(id);
     
-    // Eliminar el ambiente (marcarlo como inactivo)
-    await this.environmentRepository.remove(id);
+    // Realizar borrado lógico (soft delete)
+    await this.environmentRepository.softDelete(id);
   }
 } 

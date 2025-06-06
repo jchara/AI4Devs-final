@@ -1,18 +1,32 @@
-import { Repository, FindOptionsWhere, ObjectLiteral } from 'typeorm';
+import { Repository, FindOptionsWhere, ObjectLiteral, IsNull } from 'typeorm';
 import { BaseRepositoryInterface } from './base.repository.interface';
 
 export abstract class BaseRepository<T extends ObjectLiteral> implements BaseRepositoryInterface<T> {
   constructor(protected repository: Repository<T>) {}
 
   async findAll(): Promise<T[]> {
+    const hasDeletedAt = this.repository.metadata.columns.some(
+      column => column.propertyName === 'deletedAt'
+    );
+
     return this.repository.find({
-      where: { isActive: true } as unknown as FindOptionsWhere<T>,
+      where: {
+        isActive: true,
+        ...(hasDeletedAt ? { deletedAt: IsNull() } : {}),
+      } as unknown as FindOptionsWhere<T>,
     });
   }
 
   async findOne(id: number): Promise<T | null> {
+    const hasDeletedAt = this.repository.metadata.columns.some(
+      column => column.propertyName === 'deletedAt'
+    );
+
     return this.repository.findOne({
-      where: { id } as unknown as FindOptionsWhere<T>,
+      where: {
+        id,
+        ...(hasDeletedAt ? { deletedAt: IsNull() } : {}),
+      } as unknown as FindOptionsWhere<T>,
     });
   }
 
@@ -41,8 +55,16 @@ export abstract class BaseRepository<T extends ObjectLiteral> implements BaseRep
   }
 
   async findBy(criteria: Partial<T>): Promise<T[]> {
+    const hasDeletedAt = this.repository.metadata.columns.some(
+      column => column.propertyName === 'deletedAt'
+    );
+
     return this.repository.find({
-      where: { ...criteria, isActive: true } as unknown as FindOptionsWhere<T>,
+      where: {
+        ...criteria, 
+        isActive: true,
+        ...(hasDeletedAt ? { deletedAt: IsNull() } : {}),
+      } as unknown as FindOptionsWhere<T>,
     });
   }
 } 
