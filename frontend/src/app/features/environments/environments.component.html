@@ -94,7 +94,7 @@
                 mat-icon-button
                 (click)="increaseOrder(environment)"
                 matTooltip="Subir orden"
-                [disabled]="environment.order <= 1"
+                [disabled]="environment.order <= 1 || !environment.isActive"
               >
                 <mat-icon>arrow_upward</mat-icon>
               </button>
@@ -103,6 +103,7 @@
                 mat-icon-button
                 (click)="decreaseOrder(environment)"
                 matTooltip="Bajar orden"
+                [disabled]="!environment.isActive"
               >
                 <mat-icon>arrow_downward</mat-icon>
               </button>
@@ -213,7 +214,7 @@
                   mat-icon-button
                   (click)="increaseOrder(environment)"
                   matTooltip="Subir orden"
-                  [disabled]="environment.order <= 1"
+                  [disabled]="environment.order <= 1 || !environment.isActive"
                 >
                   <mat-icon>arrow_upward</mat-icon>
                 </button>
@@ -222,6 +223,7 @@
                   mat-icon-button
                   (click)="decreaseOrder(environment)"
                   matTooltip="Bajar orden"
+                  [disabled]="!environment.isActive"
                 >
                   <mat-icon>arrow_downward</mat-icon>
                 </button>

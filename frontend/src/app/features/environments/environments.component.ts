@@ -18,7 +18,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { EnvironmentService } from '../../core/services/environment.service';
 import { Environment } from '../../core/models/environment.model';
 import { EnvironmentDeleteDialogComponent } from './components/environment-delete-dialog/environment-delete-dialog.component';
@@ -187,19 +187,36 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   }
   
   increaseOrder(environment: Environment): void {
-    this.environmentService.updateOrder(environment.id, environment.order - 1)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadEnvironments();
-      });
+    const currentOrder = environment.order;
+    const targetOrder = currentOrder - 1;
+    if (targetOrder < 1) return;
+    const adjacent = this.environments.find(env => env.order === targetOrder);
+    if (!adjacent) return;
+    forkJoin([
+      this.environmentService.updateOrder(environment.id, targetOrder),
+      this.environmentService.updateOrder(adjacent.id, currentOrder)
+    ]).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.loadEnvironments(); // Refresca la tabla y reordena
+      },
+      error: () => this.cdr.markForCheck()
+    });
   }
   
   decreaseOrder(environment: Environment): void {
-    this.environmentService.updateOrder(environment.id, environment.order + 1)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadEnvironments();
-      });
+    const currentOrder = environment.order;
+    const targetOrder = currentOrder + 1;
+    const adjacent = this.environments.find(env => env.order === targetOrder);
+    if (!adjacent) return;
+    forkJoin([
+      this.environmentService.updateOrder(environment.id, targetOrder),
+      this.environmentService.updateOrder(adjacent.id, currentOrder)
+    ]).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.loadEnvironments(); // Refresca la tabla y reordena
+      },
+      error: () => this.cdr.markForCheck()
+    });
   }
   
   getColorStyle(color: string): object {
