@@ -86,14 +86,23 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.loadEnvironments();
     });
-    
+
+    // Suscripción reactiva a la lista de ambientes
+    this.environmentService.environments$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(environments => {
+        this.environments = environments;
+        this.filterEnvironments(this.searchForm.get('searchTerm')?.value || '');
+        this.cdr.markForCheck();
+      });
+
     this.environmentService.loading$
       .pipe(takeUntil(this.destroy$))
       .subscribe(loading => {
         this.loading = loading;
         this.cdr.markForCheck();
       });
-    
+
     this.searchForm.get('searchTerm')?.valueChanges
       .pipe(
         takeUntil(this.destroy$)
@@ -111,20 +120,7 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   
   loadEnvironments(): void {
     if (this.loading) return;
-    
-    this.environmentService.getEnvironments()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: environments => {
-          this.environments = environments;
-          this.filteredEnvironments = environments;
-          this.cdr.markForCheck();
-        },
-        error: () => {
-          this.loading = false;
-          this.cdr.markForCheck();
-        }
-      });
+    this.environmentService.getEnvironments().pipe(takeUntil(this.destroy$)).subscribe();
   }
   
   filterEnvironments(searchTerm: string): void {
@@ -185,11 +181,9 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   }
   
   toggleActive(environment: Environment): void {
-    this.environmentService.toggleActive(environment.id, !environment.isActive)
+    this.environmentService.updateAndRefresh(environment.id, { isActive: !environment.isActive })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadEnvironments();
-      });
+      .subscribe();
   }
   
   increaseOrder(environment: Environment): void {

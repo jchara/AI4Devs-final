@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, switchMap } from 'rxjs';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { NotificationService } from './notification.service';
@@ -110,5 +110,11 @@ export class EnvironmentService {
 
   updateOrder(id: number, newOrder: number): Observable<Environment> {
     return this.updateEnvironment(id, { order: newOrder });
+  }
+
+  updateAndRefresh(id: number, data: UpdateEnvironmentDto) {
+    return this.updateEnvironment(id, data).pipe(
+      switchMap(() => this.getEnvironments())
+    );
   }
 } 

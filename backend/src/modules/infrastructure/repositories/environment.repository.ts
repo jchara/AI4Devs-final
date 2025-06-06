@@ -21,7 +21,6 @@ export class EnvironmentRepository extends BaseRepository<Environment> {
 
   async findAll(): Promise<Environment[]> {
     return this.environmentRepository.find({
-      where: { isActive: true },
       order: { order: 'ASC', name: 'ASC' },
     });
   }

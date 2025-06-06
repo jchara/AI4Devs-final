@@ -12,7 +12,7 @@ export abstract class BaseRepository<T extends ObjectLiteral> implements BaseRep
 
   async findOne(id: number): Promise<T | null> {
     return this.repository.findOne({
-      where: { id, isActive: true } as unknown as FindOptionsWhere<T>,
+      where: { id } as unknown as FindOptionsWhere<T>,
     });
   }
 
