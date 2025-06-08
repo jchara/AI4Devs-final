@@ -10,7 +10,9 @@ import { EnvironmentService } from './services';
 import { EnvironmentController } from './controllers';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Environment, DeploymentType, UpcomingDeployment])],
+  imports: [
+    TypeOrmModule.forFeature([Environment, DeploymentType, UpcomingDeployment])
+  ],
   providers: [
     EnvironmentRepository, 
     DeploymentTypeRepository, 

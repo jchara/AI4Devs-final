@@ -66,7 +66,7 @@ export class UpcomingDeployment {
   @Column()
   environmentId: number;
 
-  @ManyToOne(() => User, user => user.deployments, { nullable: true })
+  @ManyToOne(() => User, (user) => user.deployments, { nullable: true })
   @JoinColumn({ name: 'deployedById' })
   deployedBy: User;
 

@@ -1,137 +1,65 @@
-import { IsString, IsOptional, IsEnum, IsInt, IsDateString, Min, Max, MinLength, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DevelopmentStatus, DevelopmentPriority } from '../entities/development.entity';
+import { IsString, IsEnum, IsOptional, IsNumber, IsDate, IsArray } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { DevelopmentStatus, DevelopmentPriority } from '../../../shared/enums';
+import { Type } from 'class-transformer';
 
 export class CreateDevelopmentDto {
-  @ApiProperty({
-    description: 'Título del desarrollo',
-    example: 'Implementación de autenticación JWT',
-    minLength: 3,
-    maxLength: 200,
-  })
+  @ApiProperty({ description: 'Título del desarrollo' })
   @IsString()
-  @MinLength(3, { message: 'El título debe tener al menos 3 caracteres' })
-  @MaxLength(200, { message: 'El título no puede exceder 200 caracteres' })
   title: string;
 
-  @ApiProperty({
-    description: 'Descripción detallada del desarrollo',
-    example: 'Sistema de autenticación basado en JWT con refresh tokens y roles de usuario',
-    minLength: 10,
-    maxLength: 1000,
-  })
+  @ApiProperty({ description: 'Descripción del desarrollo' })
   @IsString()
-  @MinLength(10, { message: 'La descripción debe tener al menos 10 caracteres' })
-  @MaxLength(1000, { message: 'La descripción no puede exceder 1000 caracteres' })
   description: string;
 
-  @ApiPropertyOptional({
-    description: 'Estado del desarrollo',
-    enum: DevelopmentStatus,
-    example: DevelopmentStatus.PLANNING,
-    default: DevelopmentStatus.PLANNING,
-  })
-  @IsOptional()
-  @IsEnum(DevelopmentStatus, { message: 'Estado inválido' })
-  status?: DevelopmentStatus;
+  @ApiProperty({ description: 'Estado del desarrollo', enum: DevelopmentStatus })
+  @IsEnum(DevelopmentStatus)
+  status: DevelopmentStatus;
 
-  @ApiPropertyOptional({
-    description: 'Prioridad del desarrollo',
-    enum: DevelopmentPriority,
-    example: DevelopmentPriority.HIGH,
-    default: DevelopmentPriority.MEDIUM,
-  })
-  @IsOptional()
-  @IsEnum(DevelopmentPriority, { message: 'Prioridad inválida' })
-  priority?: DevelopmentPriority;
+  @ApiProperty({ description: 'Prioridad del desarrollo', enum: DevelopmentPriority })
+  @IsEnum(DevelopmentPriority)
+  priority: DevelopmentPriority;
 
-  @ApiPropertyOptional({
-    description: 'ID del ambiente donde se desplegará',
-    example: 1,
-  })
-  @IsOptional()
-  @IsInt({ message: 'El environmentId debe ser un número entero' })
-  environmentId?: number;
+  @ApiProperty({ description: 'ID del proyecto' })
+  @IsNumber()
+  projectId: number;
 
-  @ApiPropertyOptional({
-    description: 'Progreso del desarrollo (0-100)',
-    example: 25,
-    minimum: 0,
-    maximum: 100,
-    default: 0,
-  })
+  @ApiProperty({ description: 'ID del usuario asignado', required: false })
+  @IsNumber()
   @IsOptional()
-  @IsInt({ message: 'El progreso debe ser un número entero' })
-  @Min(0, { message: 'El progreso mínimo es 0' })
-  @Max(100, { message: 'El progreso máximo es 100' })
-  progress?: number;
-
-  @ApiPropertyOptional({
-    description: 'ID del usuario asignado',
-    example: 2,
-  })
-  @IsOptional()
-  @IsInt({ message: 'El assignedToId debe ser un número entero' })
   assignedToId?: number;
 
-  @ApiPropertyOptional({
-    description: 'ID del equipo responsable',
-    example: 1,
-  })
+  @ApiProperty({ description: 'ID del equipo', required: false })
+  @IsNumber()
   @IsOptional()
-  @IsInt({ message: 'El teamId debe ser un número entero' })
   teamId?: number;
 
-  @ApiPropertyOptional({
-    description: 'URL de la tarea de Jira',
-    example: 'https://company.atlassian.net/browse/AUTH-2024',
-  })
+  @ApiProperty({ description: 'Fecha de inicio', required: false })
+  @IsDate()
+  @Type(() => Date)
   @IsOptional()
-  @IsString()
-  jiraUrl?: string;
-
-  @ApiPropertyOptional({
-    description: 'Rama de desarrollo',
-    example: 'feature/jwt-authentication',
-  })
-  @IsOptional()
-  @IsString()
-  branch?: string;
-
-  @ApiPropertyOptional({
-    description: 'Fecha de inicio del desarrollo',
-    example: '2024-01-15T09:00:00.000Z',
-    format: 'date-time',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: 'Fecha de inicio inválida' })
   startDate?: Date;
 
-  @ApiPropertyOptional({
-    description: 'Fecha estimada de finalización',
-    example: '2024-02-15T17:00:00.000Z',
-    format: 'date-time',
-  })
+  @ApiProperty({ description: 'Fecha de finalización', required: false })
+  @IsDate()
+  @Type(() => Date)
   @IsOptional()
-  @IsDateString({}, { message: 'Fecha estimada inválida' })
-  estimatedDate?: Date;
-
-  @ApiPropertyOptional({
-    description: 'Fecha real de finalización',
-    example: '2024-02-10T16:30:00.000Z',
-    format: 'date-time',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: 'Fecha de fin inválida' })
   endDate?: Date;
 
-  @ApiPropertyOptional({
-    description: 'Notas adicionales del desarrollo',
-    example: 'Recordar actualizar la documentación de la API',
-    maxLength: 500,
-  })
+  @ApiProperty({ description: 'Progreso del desarrollo', required: false })
+  @IsNumber()
   @IsOptional()
-  @IsString()
-  @MaxLength(500, { message: 'Las notas no pueden exceder 500 caracteres' })
-  notes?: string;
+  progress?: number;
+
+  @ApiProperty({ description: 'IDs de los componentes', type: [Number], required: false })
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  componentIds?: number[];
+
+  @ApiProperty({ description: 'IDs de las bases de datos', type: [Number], required: false })
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  databaseIds?: number[];
 } 

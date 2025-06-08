@@ -11,7 +11,18 @@ export class CreateUserDto {
   @IsString()
   @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
   @MaxLength(100, { message: 'El nombre no puede exceder 100 caracteres' })
-  name: string;
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Apellido del usuario',
+    example: 'González',
+    minLength: 2,
+    maxLength: 100,
+  })
+  @IsString()
+  @MinLength(2, { message: 'El apellido debe tener al menos 2 caracteres' })
+  @MaxLength(100, { message: 'El apellido no puede exceder 100 caracteres' })
+  lastName: string;
 
   @ApiProperty({
     description: 'Email único del usuario',

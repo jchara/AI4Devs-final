@@ -1,21 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
 import { Development } from '../../project-management/entities/development.entity';
+import { Database } from '../../project-management/entities/database.entity';
+import { UpcomingDeployment } from './upcoming-deployment.entity';
 
 @Entity('environments')
 export class Environment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, length: 50 })
+  @Column({ unique: true })
   name: string;
 
-  @Column({ length: 100 })
+  @Column({ nullable: true })
   description: string;
 
   @Column({ length: 20, default: '#007bff' })
   color: string;
 
-  @Column({ default: 1 })
+  @Column({ default: 0 })
   order: number;
 
   @Column({ default: true })
@@ -27,10 +29,15 @@ export class Environment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn({ nullable: true })
+  @DeleteDateColumn()
   deletedAt: Date;
 
-  // Relaciones
   @OneToMany(() => Development, development => development.environment)
   developments: Development[];
+
+  @OneToMany(() => Database, database => database.environment)
+  databases: Database[];
+
+  @OneToMany(() => UpcomingDeployment, deployment => deployment.environment)
+  deployments: UpcomingDeployment[];
 }

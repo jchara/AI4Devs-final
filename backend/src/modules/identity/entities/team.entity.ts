@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Development } from '../../project-management/entities/development.entity';
 
@@ -7,11 +15,14 @@ export class Team {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, length: 100 })
+  @Column()
   name: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ nullable: true })
   description: string;
+
+  @OneToMany(() => User, (user) => user.team)
+  users: User[];
 
   @Column({ default: true })
   isActive: boolean;
@@ -22,8 +33,8 @@ export class Team {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => User, (user) => user.team)
-  users: User[];
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @OneToMany(() => Development, (development) => development.team)
   developments: Development[];

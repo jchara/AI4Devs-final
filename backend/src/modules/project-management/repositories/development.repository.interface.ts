@@ -1,5 +1,6 @@
 import { BaseRepositoryInterface } from '../../../shared/repositories/base.repository.interface';
-import { Development, DevelopmentStatus, DevelopmentPriority } from '../entities/development.entity';
+import { Development } from '../entities/development.entity';
+import { DevelopmentStatus, DevelopmentPriority } from '../../../shared/enums';
 
 export interface DevelopmentFilters {
   status?: DevelopmentStatus;
@@ -10,11 +11,12 @@ export interface DevelopmentFilters {
   search?: string;
 }
 
-export interface DevelopmentRepositoryInterface extends BaseRepositoryInterface<Development> {
+export interface DevelopmentRepositoryInterface
+  extends BaseRepositoryInterface<Development> {
   findWithFilters(filters: DevelopmentFilters): Promise<Development[]>;
   findByStatus(status: DevelopmentStatus): Promise<Development[]>;
   findByTeam(teamId: number): Promise<Development[]>;
   findByAssignedUser(userId: number): Promise<Development[]>;
   findByEnvironment(environmentId: number): Promise<Development[]>;
   getMetrics(): Promise<any>;
-} 
+}

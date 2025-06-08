@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DevelopmentStatus, DevelopmentPriority } from '../entities/development.entity';
+import { DevelopmentStatus, DevelopmentPriority } from '../../../shared/enums';
 import { MicroserviceResponseDto } from './microservice-response.dto';
 
 // DTO para la relación desarrollo-microservicio

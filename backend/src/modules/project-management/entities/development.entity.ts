@@ -1,46 +1,48 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  Index,
+} from 'typeorm';
 import { Environment } from '../../infrastructure/entities/environment.entity';
-import { DevelopmentMicroservice } from './development-microservice.entity';
 import { User } from '../../identity/entities/user.entity';
 import { Team } from '../../identity/entities/team.entity';
-
-export enum DevelopmentStatus {
-  PLANNING = 'planning',
-  IN_PROGRESS = 'in_progress',
-  TESTING = 'testing',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
-}
-
-export enum DevelopmentPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  CRITICAL = 'critical'
-}
+import { DevelopmentComponent } from './development-component.entity';
+import { DevelopmentDatabase } from './development-database.entity';
+import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
+import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
+import { RecentActivity } from '../../activity/entities/recent-activity.entity';
+import { UpcomingDeployment } from '../../infrastructure/entities/upcoming-deployment.entity';
 
 @Entity('developments')
+@Index(['isActive', 'deletedAt'])
 export class Development {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 200 })
+  @Column()
   title: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column('text')
   description: string;
 
   @Column({
     type: 'enum',
     enum: DevelopmentStatus,
-    default: DevelopmentStatus.PLANNING
+    default: DevelopmentStatus.PLANNING,
   })
   status: DevelopmentStatus;
 
   @Column({
     type: 'enum',
     enum: DevelopmentPriority,
-    default: DevelopmentPriority.MEDIUM
+    default: DevelopmentPriority.MEDIUM,
   })
   priority: DevelopmentPriority;
 
@@ -56,17 +58,56 @@ export class Development {
   @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
   progress: number;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ nullable: true })
   jiraUrl: string;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ nullable: true })
   branch: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column('text', { nullable: true })
   notes: string;
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ nullable: true })
+  environmentId: number;
+
+  @Column({ nullable: true })
+  assignedToId: number;
+
+  @Column({ nullable: true })
+  teamId: number;
+
+  @ManyToOne(() => Environment, { eager: true })
+  @JoinColumn({ name: 'environmentId' })
+  environment: Environment;
+
+  @ManyToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'assignedToId' })
+  assignedTo: User;
+
+  @ManyToOne(() => Team, { eager: true })
+  @JoinColumn({ name: 'teamId' })
+  team: Team;
+
+  @OneToMany(
+    () => DevelopmentComponent,
+    (developmentComponent) => developmentComponent.development,
+  )
+  developmentComponents: DevelopmentComponent[];
+
+  @OneToMany(
+    () => DevelopmentDatabase,
+    (developmentDatabase) => developmentDatabase.development,
+  )
+  developmentDatabases: DevelopmentDatabase[];
+
+  @OneToMany(() => RecentActivity, (activity) => activity.development)
+  activities: RecentActivity[];
+
+  @OneToMany(() => UpcomingDeployment, (deployment) => deployment.development)
+  deployments: UpcomingDeployment[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -74,28 +115,6 @@ export class Development {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Relaciones
-  @ManyToOne(() => Environment, environment => environment.developments)
-  @JoinColumn({ name: 'environmentId' })
-  environment: Environment;
-
-  @Column()
-  environmentId: number;
-
-  @ManyToOne(() => User, user => user.developments, { nullable: true })
-  @JoinColumn({ name: 'assignedToId' })
-  assignedTo: User;
-
-  @Column({ nullable: true })
-  assignedToId: number;
-
-  @ManyToOne(() => Team, team => team.developments, { nullable: true })
-  @JoinColumn({ name: 'teamId' })
-  team: Team;
-
-  @Column({ nullable: true })
-  teamId: number;
-
-  @OneToMany(() => DevelopmentMicroservice, devMicro => devMicro.development)
-  developmentMicroservices: DevelopmentMicroservice[];
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

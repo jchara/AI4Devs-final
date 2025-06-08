@@ -39,7 +39,7 @@ export class UserRepository extends BaseRepository<User> implements UserReposito
     return this.userRepository.find({
       where: { isActive: true },
       relations: ['role', 'team'],
-      order: { name: 'ASC' },
+      order: { id: 'ASC' },
     });
   }
 

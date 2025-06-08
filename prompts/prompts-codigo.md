@@ -803,3 +803,97 @@ Ahora como desarrollador senior en backend nestJS @environment.entity.ts  ajusta
 
 adicionalmente verifica el resto del proyecto @/backend  por si se debe ajustar algo mas con el cambio en la entidad
 ```
+
+## Prompt 54: Refactorización Arquitectural del Backend - BACKEND
+
+```
+Como arquitecto de software y desarrollador senior en NestJS, realiza una refactorización completa del backend siguiendo estos principios:
+
+**Objetivos:**
+1. Separación clara de dominios
+2. Implementación de patrones de diseño
+3. Optimización de rendimiento
+4. Mejora de mantenibilidad
+
+**Cambios Arquitecturales:**
+1. Reorganización por dominios:
+   - Identity (usuarios, roles, equipos)
+   - Project Management (proyectos, componentes, desarrollos)
+   - Infrastructure (ambientes, despliegues)
+   - Activity (auditoría, actividades)
+
+2. Implementación de patrones:
+   - Repository Pattern
+   - DTOs separados
+   - Barrel exports
+   - Soft delete donde corresponde
+   - Índices optimizados
+
+3. Mejoras técnicas:
+   - Consolidación de enums
+   - Optimización de consultas
+   - Mejor manejo de relaciones
+   - Documentación con Swagger
+
+**Entidades a Refactorizar:**
+- User (firstName/lastName)
+- Role
+- Team
+- Development
+- Project
+- Component
+- Database
+- Environment
+- DevelopmentComponent
+- DevelopmentDatabase
+- UpcomingDeployment
+- DeploymentType
+- RecentActivity
+
+**Consideraciones:**
+- Mantener compatibilidad con frontend
+- No modificar endpoints existentes
+- Implementar cambios gradualmente
+- Documentar cambios realizados
+```
+
+## Prompt 55: Implementación de Mejoras en la Base de Datos - BACKEND
+
+```
+Como experto en bases de datos y desarrollador backend senior, implementa las siguientes mejoras en la base de datos:
+
+**Mejoras a Implementar:**
+1. Soft Delete:
+   - Agregar deletedAt en entidades críticas
+   - Implementar lógica de exclusión
+   - Ajustar queries para filtrar eliminados
+
+2. Índices Optimizados:
+   - Índices para soft delete (isActive, deletedAt)
+   - Índices para relaciones frecuentes
+   - Índices para campos de búsqueda
+
+3. Relaciones Mejoradas:
+   - Ajustar relaciones many-to-many
+   - Optimizar joins
+   - Implementar cascada donde corresponda
+
+4. Enums Consolidados:
+   - Mover todos los enums a /shared/enums
+   - Tipar correctamente en entidades
+   - Documentar valores permitidos
+
+**Entidades a Optimizar:**
+- Environment
+- Project
+- Component
+- Database
+- DevelopmentComponent
+- DevelopmentDatabase
+
+**Consideraciones:**
+- Mantener datos existentes
+- No afectar rendimiento
+- Documentar cambios
+- Actualizar seeds
+```

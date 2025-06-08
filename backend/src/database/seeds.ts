@@ -1,7 +1,7 @@
-import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../app.module';
 import { webcrypto } from 'crypto';
+import 'reflect-metadata';
+import { AppModule } from '../app.module';
 
 // Polyfill para crypto en entornos que no lo tienen disponible globalmente
 if (!globalThis.crypto) {
@@ -13,33 +13,41 @@ if (!globalThis.crypto) {
 }
 
 // Nuevos repositorios de dominio
+import { ActivityRepository } from '../modules/activity';
 import {
-  UserRepository,
   RoleRepository,
   TeamRepository,
+  UserRepository,
 } from '../modules/identity';
 import {
-  DevelopmentRepository,
-  MicroserviceRepository,
-  DevelopmentMicroserviceRepository,
-} from '../modules/project-management';
-import {
-  EnvironmentRepository,
   DeploymentTypeRepository,
+  EnvironmentRepository,
   UpcomingDeploymentRepository,
 } from '../modules/infrastructure';
-import { ActivityRepository } from '../modules/activity';
+import {
+  ComponentRepository,
+  DatabaseRepository,
+  DevelopmentComponentRepository,
+  DevelopmentDatabaseRepository,
+  DevelopmentRepository,
+  ProjectRepository,
+} from '../modules/project-management';
 
 // Importar el servicio de usuarios para hasheo correcto
 import { UserService } from '../modules/identity/services/user.service';
 
 // Enums y tipos
-import {
-  DevelopmentStatus,
-  DevelopmentPriority,
-} from '../modules/project-management/entities/development.entity';
 import { ActivityType } from '../modules/activity/entities/recent-activity.entity';
 import { DeploymentStatus } from '../modules/infrastructure/entities/upcoming-deployment.entity';
+import {
+  ComponentType,
+  DatabaseChangeType,
+  DatabaseType,
+  DevelopmentComponentChangeType,
+  DevelopmentPriority,
+  DevelopmentStatus,
+  ProjectType,
+} from '../shared/enums';
 
 async function runSeeds() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -48,13 +56,16 @@ async function runSeeds() {
   const roleRepository = app.get(RoleRepository);
   const teamRepository = app.get(TeamRepository);
   const userRepository = app.get(UserRepository);
-  const userService = app.get(UserService); // Servicio para hashear contraseñas
+  const userService = app.get(UserService);
   const environmentRepository = app.get(EnvironmentRepository);
-  const microserviceRepository = app.get(MicroserviceRepository);
+  const projectRepository = app.get(ProjectRepository);
+  const componentRepository = app.get(ComponentRepository);
   const developmentRepository = app.get(DevelopmentRepository);
-  const developmentMicroserviceRepository = app.get(
-    DevelopmentMicroserviceRepository,
+  const developmentComponentRepository = app.get(
+    DevelopmentComponentRepository,
   );
+  const databaseRepository = app.get(DatabaseRepository);
+  const developmentDatabaseRepository = app.get(DevelopmentDatabaseRepository);
   const deploymentTypeRepository = app.get(DeploymentTypeRepository);
   const upcomingDeploymentRepository = app.get(UpcomingDeploymentRepository);
   const activityRepository = app.get(ActivityRepository);
@@ -122,21 +133,24 @@ async function runSeeds() {
     if (users.length === 0) {
       users = await Promise.all([
         userService.create({
-          name: 'JCC',
+          firstName: 'Janier',
+          lastName: 'Cardona',
           email: 'jcc@company.com',
           password: 'password123', // Se hasheará automáticamente por UserService
           roleId: roles[0].id, // desarrollador
           teamId: teams[0].id, // Backend Team
         }),
         userService.create({
-          name: 'JLL',
+          firstName: 'Juan',
+          lastName: 'Lopez',
           email: 'jll@company.com',
           password: 'password123', // Se hasheará automáticamente por UserService
           roleId: roles[2].id, // cloud
           teamId: teams[2].id, // DevOps Team
         }),
         userService.create({
-          name: 'Maria QA',
+          firstName: 'Maria',
+          lastName: 'Quintero',
           email: 'maria@company.com',
           password: 'password123',
           roleId: roles[1].id, // QA
@@ -212,49 +226,101 @@ async function runSeeds() {
       console.log('ℹ️ Ambientes ya existen, usando existentes');
     }
 
-    // 6. Crear Microservicios (verificar si ya existen)
-    console.log('🔧 Verificando y creando microservicios...');
-    let microservices = await microserviceRepository.findAll();
+    // 6. Crear Proyectos
+    console.log('📦 Verificando y creando proyectos...');
+    let projects = await projectRepository.findAll();
 
-    if (microservices.length === 0) {
-      microservices = await Promise.all([
-        microserviceRepository.create({
-          name: 'user-service',
-          description: 'Servicio de gestión de usuarios',
-          repository: 'https://github.com/company/user-service',
-          technology: 'Node.js + Express',
+    if (projects.length === 0) {
+      projects = await Promise.all([
+        projectRepository.create({
+          name: 'Backend Services',
+          repositoryUrl: 'https://github.com/company/backend-services',
+          type: ProjectType.BACKEND,
+          description: 'Monorepo de servicios backend',
         }),
-        microserviceRepository.create({
-          name: 'auth-service',
-          description: 'Servicio de autenticación y autorización',
-          repository: 'https://github.com/company/auth-service',
-          technology: 'Node.js + NestJS',
-        }),
-        microserviceRepository.create({
-          name: 'payment-service',
-          description: 'Servicio de procesamiento de pagos',
-          repository: 'https://github.com/company/payment-service',
-          technology: 'Java + Spring Boot',
-        }),
-        microserviceRepository.create({
-          name: 'notification-service',
-          description: 'Servicio de notificaciones',
-          repository: 'https://github.com/company/notification-service',
-          technology: 'Python + FastAPI',
-        }),
-        microserviceRepository.create({
-          name: 'analytics-service',
-          description: 'Servicio de análisis y métricas',
-          repository: 'https://github.com/company/analytics-service',
-          technology: 'Python + Django',
+        projectRepository.create({
+          name: 'Frontend Apps',
+          repositoryUrl: 'https://github.com/company/frontend-apps',
+          type: ProjectType.FRONTEND,
+          description: 'Monorepo de aplicaciones frontend',
         }),
       ]);
-      console.log('✅ Microservicios creados');
+      console.log('✅ Proyectos creados');
     } else {
-      console.log('ℹ️ Microservicios ya existen, usando existentes');
+      console.log('ℹ️ Proyectos ya existen, usando existentes');
     }
 
-    // 7. Crear Desarrollos (verificar si ya existen)
+    // 7. Crear Componentes
+    console.log('🔧 Verificando y creando componentes...');
+    let components = await componentRepository.findAll();
+
+    if (components.length === 0) {
+      components = await Promise.all([
+        componentRepository.create({
+          projectId: projects[0].id,
+          name: 'user-service',
+          type: ComponentType.MICROSERVICE,
+          description: 'Servicio de gestión de usuarios',
+          technology: 'Node.js + Express',
+        }),
+        componentRepository.create({
+          projectId: projects[0].id,
+          name: 'auth-service',
+          type: ComponentType.MICROSERVICE,
+          description: 'Servicio de autenticación y autorización',
+          technology: 'Node.js + NestJS',
+        }),
+        componentRepository.create({
+          projectId: projects[1].id,
+          name: 'admin-dashboard',
+          type: ComponentType.MICROFRONTEND,
+          description: 'Panel de administración',
+          technology: 'React + TypeScript',
+        }),
+        componentRepository.create({
+          projectId: projects[1].id,
+          name: 'user-portal',
+          type: ComponentType.MICROFRONTEND,
+          description: 'Portal de usuario',
+          technology: 'Vue.js + TypeScript',
+        }),
+      ]);
+      console.log('✅ Componentes creados');
+    } else {
+      console.log('ℹ️ Componentes ya existen, usando existentes');
+    }
+
+    // 8. Crear Bases de Datos
+    console.log('🗄️ Verificando y creando bases de datos...');
+    let databases = await databaseRepository.findAll();
+
+    if (databases.length === 0) {
+      databases = await Promise.all([
+        databaseRepository.create({
+          name: 'users-db',
+          type: DatabaseType.POSTGRES,
+          description: 'Base de datos de usuarios',
+          environmentId: environments[0].id, // Desarrollo
+        }),
+        databaseRepository.create({
+          name: 'auth-db',
+          type: DatabaseType.POSTGRES,
+          description: 'Base de datos de autenticación',
+          environmentId: environments[0].id, // Desarrollo
+        }),
+        databaseRepository.create({
+          name: 'analytics-db',
+          type: DatabaseType.MYSQL,
+          description: 'Base de datos de análisis',
+          environmentId: environments[0].id, // Desarrollo
+        }),
+      ]);
+      console.log('✅ Bases de datos creadas');
+    } else {
+      console.log('ℹ️ Bases de datos ya existen, usando existentes');
+    }
+
+    // 9. Crear Desarrollos (verificar si ya existen)
     console.log('💻 Verificando y creando desarrollos...');
     let developments = await developmentRepository.findAll();
 
@@ -328,63 +394,69 @@ async function runSeeds() {
       console.log('ℹ️ Desarrollos ya existen, usando existentes');
     }
 
-    // 8. Crear relaciones Development-Microservice
+    // 9. Crear relaciones Development-Component
     console.log(
-      '🔗 Verificando y creando relaciones desarrollo-microservicios...',
+      '🔗 Verificando y creando relaciones desarrollo-componentes...',
     );
-    let developmentMicroservices =
-      await developmentMicroserviceRepository.findAll();
+    let developmentComponents = await developmentComponentRepository.findAll();
 
-    if (developmentMicroservices.length === 0) {
-      developmentMicroservices = await Promise.all([
-        // OAuth 2.0 - auth-service
-        developmentMicroserviceRepository.create({
+    if (developmentComponents.length === 0) {
+      developmentComponents = await Promise.all([
+        developmentComponentRepository.create({
           developmentId: developments[0].id,
-          microserviceId: microservices[1].id, // auth-service
+          componentId: components[1].id, // auth-service
+          changeType: DevelopmentComponentChangeType.CREATED,
           progress: 75,
           version: '2.1.0-beta',
           notes: 'Integración OAuth completada, pendiente testing',
         }),
-        // OAuth 2.0 - user-service
-        developmentMicroserviceRepository.create({
+        developmentComponentRepository.create({
           developmentId: developments[0].id,
-          microserviceId: microservices[0].id, // user-service
+          componentId: components[0].id, // user-service
+          changeType: DevelopmentComponentChangeType.MODIFIED,
           progress: 50,
           version: '1.8.0-alpha',
           notes: 'Actualización de endpoints de usuario',
         }),
-        // DB Optimization - user-service
-        developmentMicroserviceRepository.create({
-          developmentId: developments[1].id,
-          microserviceId: microservices[0].id, // user-service
-          progress: 100,
-          version: '1.7.2',
-          notes: 'Optimización de consultas completada',
-        }),
-        // Push Notifications - notification-service
-        developmentMicroserviceRepository.create({
-          developmentId: developments[2].id,
-          microserviceId: microservices[3].id, // notification-service
-          progress: 25,
-          version: '1.2.0-dev',
-          notes: 'Diseño de arquitectura en progreso',
-        }),
-        // Dashboard - analytics-service
-        developmentMicroserviceRepository.create({
-          developmentId: developments[3].id,
-          microserviceId: microservices[4].id, // analytics-service
-          progress: 100,
-          version: '2.0.0',
-          notes: 'Integración completada y desplegada',
-        }),
       ]);
+      console.log('✅ Relaciones desarrollo-componentes creadas');
     } else {
       console.log(
-        'ℹ️ Relaciones desarrollo-microservicio ya existen, usando existentes',
+        'ℹ️ Relaciones desarrollo-componentes ya existen, usando existentes',
       );
     }
 
-    // 9. Crear Próximos Despliegues
+    // 10. Crear relaciones Development-Database
+    console.log(
+      '🔗 Verificando y creando relaciones desarrollo-bases de datos...',
+    );
+    let developmentDatabases = await developmentDatabaseRepository.findAll();
+
+    if (developmentDatabases.length === 0) {
+      developmentDatabases = await Promise.all([
+        developmentDatabaseRepository.create({
+          developmentId: developments[0].id,
+          databaseId: databases[1].id, // auth-db
+          changeType: DatabaseChangeType.SCHEMA_CHANGE,
+          scriptDescription: 'Crear tablas de OAuth',
+          notes: 'Implementación de esquema OAuth 2.0',
+        }),
+        developmentDatabaseRepository.create({
+          developmentId: developments[0].id,
+          databaseId: databases[0].id, // users-db
+          changeType: DatabaseChangeType.FUNCTION,
+          scriptDescription: 'Crear funciones de encriptación',
+          notes: 'Implementación de funciones de seguridad',
+        }),
+      ]);
+      console.log('✅ Relaciones desarrollo-bases de datos creadas');
+    } else {
+      console.log(
+        'ℹ️ Relaciones desarrollo-bases de datos ya existen, usando existentes',
+      );
+    }
+
+    // 10. Crear Próximos Despliegues
     console.log('📅 Verificando y creando próximos despliegues...');
     let upcomingDeployments = await upcomingDeploymentRepository.findAll();
 
@@ -439,7 +511,7 @@ async function runSeeds() {
       console.log('ℹ️ Próximos despliegues ya existen, usando existentes');
     }
 
-    // 10. Crear Actividades
+    // 11. Crear Actividades
     console.log('📝 Verificando y creando actividades recientes...');
     let activities = await activityRepository.findAll();
 
@@ -510,10 +582,15 @@ async function runSeeds() {
       `   - ${deploymentTypes.length} tipos de despliegue disponibles`,
     );
     console.log(`   - ${environments.length} ambientes disponibles`);
-    console.log(`   - ${microservices.length} microservicios disponibles`);
+    console.log(`   - ${projects.length} proyectos disponibles`);
+    console.log(`   - ${components.length} componentes disponibles`);
+    console.log(`   - ${databases.length} bases de datos disponibles`);
     console.log(`   - ${developments.length} desarrollos disponibles`);
     console.log(
-      `   - ${developmentMicroservices.length} relaciones desarrollo-microservicio creadas`,
+      `   - ${developmentComponents.length} relaciones desarrollo-componente creadas`,
+    );
+    console.log(
+      `   - ${developmentDatabases.length} relaciones desarrollo-base de datos creadas`,
     );
     console.log(`   - ${upcomingDeployments.length} despliegues programados`);
     console.log(`   - ${activities.length} actividades registradas`);
