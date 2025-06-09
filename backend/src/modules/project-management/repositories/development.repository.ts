@@ -17,12 +17,118 @@ export class DevelopmentRepository extends BaseRepository<Development> {
     super(developmentRepository);
   }
 
+  async findAll(): Promise<Development[]> {
+    return this.developmentRepository
+      .createQueryBuilder('development')
+      .leftJoinAndSelect('development.assignedTo', 'assignedTo')
+      .leftJoinAndSelect('development.team', 'team')
+      .leftJoinAndSelect('development.environment', 'environment')
+      .select([
+        'development.id',
+        'development.title',
+        'development.description',
+        'development.status',
+        'development.priority',
+        'development.startDate',
+        'development.endDate',
+        'development.estimatedDate',
+        'development.progress',
+        'development.jiraUrl',
+        'development.branch',
+        'development.notes',
+        'development.isActive',
+        'development.environmentId',
+        'development.assignedToId',
+        'development.teamId',
+        'development.createdAt',
+        'development.updatedAt',
+        'development.deletedAt',
+        'environment.id',
+        'environment.name',
+        'environment.description',
+        'environment.color',
+        'environment.order',
+        'environment.isActive',
+        'environment.createdAt',
+        'environment.updatedAt',
+        'environment.deletedAt',
+        'assignedTo.id',
+        'assignedTo.email',
+        'assignedTo.firstName',
+        'assignedTo.lastName',
+        'assignedTo.roleId',
+        'assignedTo.teamId',
+        'assignedTo.isActive',
+        'assignedTo.createdAt',
+        'assignedTo.updatedAt',
+        'assignedTo.deletedAt',
+        'team.id',
+        'team.name',
+        'team.description',
+        'team.isActive',
+        'team.createdAt',
+        'team.updatedAt',
+        'team.deletedAt'
+      ])
+      .where('development.isActive = :isActive', { isActive: true })
+      .orderBy('development.id', 'ASC')
+      .getMany();
+  }
+
   async findWithFilters(filters: DevelopmentFilters): Promise<Development[]> {
     const queryBuilder = this.developmentRepository
       .createQueryBuilder('development')
       .leftJoinAndSelect('development.assignedTo', 'assignedTo')
       .leftJoinAndSelect('development.team', 'team')
-      .leftJoinAndSelect('development.environment', 'environment');
+      .leftJoinAndSelect('development.environment', 'environment')
+      .select([
+        'development.id',
+        'development.title',
+        'development.description',
+        'development.status',
+        'development.priority',
+        'development.startDate',
+        'development.endDate',
+        'development.estimatedDate',
+        'development.progress',
+        'development.jiraUrl',
+        'development.branch',
+        'development.notes',
+        'development.isActive',
+        'development.environmentId',
+        'development.assignedToId',
+        'development.teamId',
+        'development.createdAt',
+        'development.updatedAt',
+        'development.deletedAt',
+        'environment.id',
+        'environment.name',
+        'environment.description',
+        'environment.color',
+        'environment.order',
+        'environment.isActive',
+        'environment.createdAt',
+        'environment.updatedAt',
+        'environment.deletedAt',
+        'assignedTo.id',
+        'assignedTo.email',
+        'assignedTo.firstName',
+        'assignedTo.lastName',
+        'assignedTo.roleId',
+        'assignedTo.teamId',
+        'assignedTo.isActive',
+        'assignedTo.createdAt',
+        'assignedTo.updatedAt',
+        'assignedTo.deletedAt',
+        'team.id',
+        'team.name',
+        'team.description',
+        'team.isActive',
+        'team.createdAt',
+        'team.updatedAt',
+        'team.deletedAt'
+      ])
+      .where('development.isActive = :isActive', { isActive: true });
 
     if (filters.status) {
       queryBuilder.andWhere('development.status = :status', {
@@ -60,6 +166,8 @@ export class DevelopmentRepository extends BaseRepository<Development> {
         { search: `%${filters.search}%` },
       );
     }
+
+    queryBuilder.orderBy('development.id', 'ASC');
 
     return queryBuilder.getMany();
   }
