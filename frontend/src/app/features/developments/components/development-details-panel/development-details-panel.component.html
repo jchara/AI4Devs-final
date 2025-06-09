@@ -1,5 +1,9 @@
 <div class="overlay" *ngIf="isOpen" [@overlay]>
-  <div class="details-panel" [@panelState]="{ value: '', params: getPanelAnimationParams() }" [class.mobile]="isMobile">
+  <div
+    class="details-panel"
+    [@panelState]="{ value: '', params: getPanelAnimationParams() }"
+    [class.mobile]="isMobile"
+  >
     <!-- Header Fijo -->
     <div class="panel-header">
       <div class="breadcrumbs">
@@ -9,7 +13,12 @@
         <mat-icon>chevron_right</mat-icon>
         <span>{{ development.title }}</span>
       </div>
-      <button mat-icon-button class="close-button" (click)="onClose()" matTooltip="Cerrar panel">
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onClose()"
+        matTooltip="Cerrar panel"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -19,22 +28,48 @@
       <!-- Título y Acciones (Parte del contenido scrolleable) -->
       <div class="title-section">
         <h1>{{ development.title }}</h1>
-        <div class="status-badge" [class]="getStatusBadgeClass(development.status)">
+        <div
+          class="status-badge"
+          [class]="getStatusBadgeClass(development.status)"
+        >
           {{ development.status }}
         </div>
         <div class="action-buttons">
-          <button mat-stroked-button color="primary" (click)="onEdit()" class="app-button secondary-button">
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="onEdit()"
+            class="app-button secondary-button"
+          >
             <mat-icon>edit</mat-icon>
             Editar
           </button>
-          <button mat-flat-button color="primary" [matMenuTriggerFor]="stateMenu" id="stateMenuButton" class="app-button primary-button">
+          <button
+            mat-flat-button
+            color="primary"
+            [matMenuTriggerFor]="stateMenu"
+            id="stateMenuButton"
+            class="app-button primary-button"
+          >
             <mat-icon>swap_horiz</mat-icon>
             Cambiar Estado
             <mat-icon>arrow_drop_down</mat-icon>
           </button>
-          <mat-menu #stateMenu="matMenu" class="status-menu" (opened)="onMenuOpened()">
-            <button mat-menu-item *ngFor="let status of availableStatuses" (click)="changeStatusTo(status)">
-              <span class="status-menu-item" [class]="getStatusBadgeClass(status)">{{ status }}</span>
+          <mat-menu
+            #stateMenu="matMenu"
+            class="status-menu"
+            (opened)="onMenuOpened()"
+          >
+            <button
+              mat-menu-item
+              *ngFor="let status of availableStatuses"
+              (click)="changeStatusTo(status)"
+            >
+              <span
+                class="status-menu-item"
+                [class]="getStatusBadgeClass(status)"
+                >{{ status }}</span
+              >
             </button>
           </mat-menu>
         </div>
@@ -49,32 +84,43 @@
             <section class="info-section">
               <h2>Información General</h2>
               <p class="description">{{ development.description }}</p>
-              
+
               <div class="info-grid">
                 <div class="info-item">
                   <label>Estado:</label>
-                  <span class="status-pill" [class]="getStatusBadgeClass(development.status)">{{ development.status }}</span>
+                  <span
+                    class="status-pill"
+                    [class]="getStatusBadgeClass(development.status)"
+                    >{{ development.status }}</span
+                  >
                 </div>
                 <div class="info-item">
                   <label>Progreso:</label>
                   <div class="inline-progress">
                     <div class="progress-bar-small">
-                      <div class="progress-fill" [style.width]="development.progress"></div>
+                      <div
+                        class="progress-fill"
+                        [style.width]="development.progress"
+                      ></div>
                     </div>
                     <span>{{ development.progress }}</span>
                   </div>
                 </div>
                 <div class="info-item">
                   <label>Creado:</label>
-                  <span>{{ formatDate(development.createdDate) }}</span>
+                  <span>{{ formatDate(development.createdAt) }}</span>
                 </div>
                 <div class="info-item">
                   <label>Última actualización:</label>
-                  <span>{{ formatDate(development.updatedDate) }}</span>
+                  <span>{{ formatDate(development.updatedAt) }}</span>
                 </div>
                 <div class="info-item full-width" *ngIf="development.jiraUrl">
                   <label>URL de Jira:</label>
-                  <a [href]="development.jiraUrl" target="_blank" class="jira-link">
+                  <a
+                    [href]="development.jiraUrl"
+                    target="_blank"
+                    class="jira-link"
+                  >
                     <mat-icon>link</mat-icon>
                     Ver en Jira
                   </a>
@@ -92,7 +138,9 @@
                   </div>
                   <div class="info-content">
                     <label>Tiempo desde creación:</label>
-                    <span>{{ calculateTimeElapsed(development.createdDate) }}</span>
+                    <span>{{
+                      calculateTimeElapsed(development.createdAt)
+                    }}</span>
                   </div>
                 </div>
                 <div class="quick-info-item">
@@ -110,51 +158,42 @@
 
           <!-- Columna Derecha -->
           <div class="right-column">
-            <!-- Detalle de Microservicios -->
-            <section class="microservices-section" *ngIf="development?.microservices && development.microservices.length > 0">
-              <h2>Detalle de Microservicios</h2>
-              <div class="microservices-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Tecnología</th>
-                      <th>Versión</th>
-                      <th>Progreso</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <ng-container *ngFor="let devMs of development.developmentMicroservices || []">
-                      <tr>
-                        <td>{{ devMs.microservice.name }}</td>
-                        <td>{{ devMs.microservice.technology || 'N/A' }}</td>
-                        <td>{{ devMs.version || 'N/A' }}</td>
-                        <td>
-                          <div class="progress-bar" *ngIf="devMs.progress !== undefined && devMs.progress !== null; else noProgressBlock">
-                            <div class="progress-fill" [style.width]="getMicroserviceProgressStyle(devMs.progress)"></div>
-                            <span>{{ devMs.progress }}%</span>
-                          </div>
-                          <ng-template #noProgressBlock>
-                            <span>N/A</span>
-                          </ng-template>
-                        </td>
-                      </tr>
-                    </ng-container>
-                    <!-- Fallback para usar solo microservicios si no hay detalle -->
-                    <ng-container *ngIf="!(development.developmentMicroservices && development.developmentMicroservices.length)">
-                      <tr *ngFor="let ms of development.microservices">
-                        <td>{{ ms.name }}</td>
-                        <td>{{ ms.technology || 'N/A' }}</td>
-                        <td>N/A</td>
-                        <td><span>N/A</span></td>
-                      </tr>
-                    </ng-container>
-                  </tbody>
-                </table>
-                <div class="microservices-notes">
-                  <ng-container *ngFor="let devMs of development.developmentMicroservices || []">
-                    <p *ngIf="devMs.notes"><strong>{{ devMs.microservice.name }}:</strong> {{ devMs.notes }}</p>
-                  </ng-container>
+            <!-- Detalles del Desarrollo -->
+            <section class="development-details-section">
+              <h2>Detalles del Desarrollo</h2>
+              <div class="details-grid">
+                <div class="detail-item">
+                  <label>Prioridad:</label>
+                  <span class="priority-badge" [class]="'priority-' + development.priority.toLowerCase()">
+                    {{ development.priority }}
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <label>Ambiente:</label>
+                  <span
+                    class="environment-badge"
+                    [style.background-color]="getEnvironmentColor()"
+                  >
+                    {{ getEnvironmentName() }}
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <label>Fecha de inicio:</label>
+                  <span>{{ formatDate(development.startDate) }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Fecha estimada:</label>
+                  <span>{{ formatDate(development.estimatedDate) }}</span>
+                </div>
+                <div class="detail-item" *ngIf="development.endDate">
+                  <label>Fecha de finalización:</label>
+                  <span>{{ formatDate(development.endDate) }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Rama:</label>
+                  <span class="branch-name">{{
+                    development.branch || "N/A"
+                  }}</span>
                 </div>
               </div>
             </section>
@@ -163,26 +202,24 @@
             <section class="status-section-left">
               <h2>Estado Actual</h2>
               <div class="status-info">
-                <div class="status-badge-large" [class]="getStatusBadgeClass(development.status)">
+                <div
+                  class="status-badge-large"
+                  [class]="getStatusBadgeClass(development.status)"
+                >
                   {{ development.status }}
                 </div>
-                
+
                 <!-- Componente de progreso con barra de progreso -->
                 <div class="progress-container">
                   <div class="progress-bar-horizontal">
-                    <div class="progress-fill" [ngStyle]="getProgressBarStyle()"></div>
-                    <span class="progress-label">{{ development.progress }}</span>
+                    <div
+                      class="progress-fill"
+                      [ngStyle]="getProgressBarStyle()"
+                    ></div>
+                    <span class="progress-label"
+                      >{{ development.progress }}%</span
+                    >
                   </div>
-                </div>
-                
-                <div class="status-details" *ngIf="development.developmentMicroservices?.length">
-                  <p class="status-detail-label">Detalle de progreso:</p>
-                  <ul class="status-detail-list">
-                    <li *ngFor="let devMs of development.developmentMicroservices">
-                      <span class="ms-name">{{ devMs.microservice.name }}:</span> 
-                      <span class="ms-progress">{{ devMs.progress }}%</span>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </section>
@@ -191,4 +228,4 @@
       </div>
     </div>
   </div>
-</div> 
+</div>

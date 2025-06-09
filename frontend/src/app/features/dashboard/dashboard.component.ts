@@ -12,16 +12,30 @@ import {
   Development,
   DevelopmentMetrics,
   DevelopmentStatus,
-  Environment,
+  DevelopmentEnvironment,
   RecentActivity,
   UpcomingDeployment
-} from '../developments/models/development.model';
+} from '../../shared/models/development.model';
 import { DevelopmentService } from '../developments/services/development.service';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MetricCardComponent, DevelopmentChartComponent],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatChipsModule,
+    MetricCardComponent,
+    DevelopmentChartComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,9 +43,10 @@ import { DevelopmentService } from '../developments/services/development.service
 export class DashboardComponent implements OnInit, OnDestroy {
   metrics: DevelopmentMetrics | null = null;
   developments: Development[] = [];
-  recentActivity: RecentActivity[] = [];
+  recentActivities: RecentActivity[] = [];
   upcomingDeployments: UpcomingDeployment[] = [];
   chartData: ChartData[] = [];
+  loading = false;
 
   private destroy$ = new Subject<void>();
 
@@ -53,15 +68,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // TrackBy functions para optimizar renderizado
   trackByDevelopment(index: number, item: Development): string {
-    return item.id;
+    return item.id.toString();
   }
 
   trackByActivity(index: number, item: RecentActivity): string {
-    return item.id;
+    return item.id.toString();
   }
 
   trackByDeployment(index: number, item: UpcomingDeployment): string {
-    return item.id;
+    return item.id.toString();
   }
 
   trackByChartData(index: number, item: ChartData): string {
@@ -69,35 +84,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadDashboardData(): void {
+    this.loading = true;
+    this.developmentService.getDashboardData().subscribe({
+      next: (data) => {
+        this.developments = data.developments;
+        this.recentActivities = data.recentActivities;
+        this.upcomingDeployments = data.upcomingDeployments;
+        this.loading = false;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (error) => {
+        console.error('Error loading dashboard data:', error);
+        this.loading = false;
+        this.changeDetectorRef.markForCheck();
+      }
+    });
+
     // Load metrics
     this.developmentService.getMetrics()
       .pipe(takeUntil(this.destroy$))
       .subscribe(metrics => {
         this.metrics = metrics;
-        this.changeDetectorRef.markForCheck();
-      });
-
-    // Load developments
-    this.developmentService.getDevelopments()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(developments => {
-        this.developments = developments;
-        this.changeDetectorRef.markForCheck();
-      });
-
-    // Load recent activity
-    this.developmentService.getRecentActivity()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(activity => {
-        this.recentActivity = activity;
-        this.changeDetectorRef.markForCheck();
-      });
-
-    // Load upcoming deployments
-    this.developmentService.getUpcomingDeployments()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(deployments => {
-        this.upcomingDeployments = deployments;
         this.changeDetectorRef.markForCheck();
       });
 
@@ -112,12 +119,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getStatusClass(status: DevelopmentStatus): string {
     switch (status) {
-      case DevelopmentStatus.DEVELOPMENT:
+      case DevelopmentStatus.IN_PROGRESS:
         return 'desarrollo';
-      case DevelopmentStatus.ARCHIVED:
+      case DevelopmentStatus.CANCELLED:
         return 'archivado';
       case DevelopmentStatus.COMPLETED:
         return 'completado';
+      case DevelopmentStatus.PLANNING:
+        return 'planificacion';
+      case DevelopmentStatus.TESTING:
+        return 'pruebas';
       default:
         return '';
     }
@@ -128,15 +139,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.badgeUtils.getStatusBadgeClass(status);
   }
 
-  getEnvironmentBadgeClass(environment: Environment): string {
+  getEnvironmentBadgeClass(environment: DevelopmentEnvironment): string {
     return this.badgeUtils.getEnvironmentBadgeClass(environment);
   }
 
-  getEnvironmentClass(environment: Environment): string {
+  getEnvironmentClass(environment: DevelopmentEnvironment): string {
     return this.badgeUtils.getEnvironmentClass(environment);
   }
 
   getActivityTypeClass(type: ActivityType): string {
     return this.badgeUtils.getActivityTypeClass(type);
+  }
+
+  formatDate(date: Date): string {
+    return this.badgeUtils.formatDate(date);
+  }
+
+  getStatusColor(status: DevelopmentStatus): string {
+    switch (status) {
+      case DevelopmentStatus.IN_PROGRESS:
+        return '#2196f3';
+      case DevelopmentStatus.CANCELLED:
+        return '#f44336';
+      case DevelopmentStatus.COMPLETED:
+        return '#4caf50';
+      case DevelopmentStatus.PLANNING:
+        return '#ff9800';
+      case DevelopmentStatus.TESTING:
+        return '#9c27b0';
+      default:
+        return '#757575';
+    }
   }
 }

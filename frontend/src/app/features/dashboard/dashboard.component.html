@@ -94,7 +94,7 @@
                     {{ development.environment }}
                   </span>
                 </td>
-                <td>{{ development.updatedDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ development.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>
                   <div class="actions">
                     <button class="btn-icon" title="Ver detalles">
@@ -123,16 +123,13 @@
       <!-- Actividad reciente -->
       <div class="content-section">
         <h3 class="section-title">Actividad Reciente</h3>
-        <div class="activity-list">
-          <div class="activity-item" *ngFor="let activity of recentActivity">
-            <div class="activity-icon" [ngClass]="getActivityTypeClass(activity.type)">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </div>
-            <div class="activity-content">
-              <p class="activity-description">{{ activity.description }}</p>
-              <span class="activity-time">{{ activity.date | date:'dd/MM HH:mm' }}</span>
+        <div class="recent-activities">
+          <div class="activity-list">
+            <div class="activity-item" *ngFor="let activity of recentActivities; trackBy: trackByActivity">
+              <div class="activity-content">
+                <p class="activity-description">{{ activity.description }}</p>
+                <span class="activity-time">{{ activity.createdAt | date:'dd/MM HH:mm' }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -141,15 +138,14 @@
       <!-- Próximos despliegues -->
       <div class="content-section">
         <h3 class="section-title">Próximos Despliegues</h3>
-        <div class="deployment-list">
-          <div class="deployment-item" *ngFor="let deployment of upcomingDeployments">
-            <div class="deployment-info">
-              <span class="deployment-name">{{ deployment.name }}</span>
-              <span class="deployment-date">{{ deployment.scheduledDate | date:'dd/MM/yyyy' }}</span>
+        <div class="upcoming-deployments">
+          <div class="deployment-list">
+            <div class="deployment-item" *ngFor="let deployment of upcomingDeployments; trackBy: trackByDeployment">
+              <div class="deployment-info">
+                <span class="deployment-name">{{ deployment.title }}</span>
+                <span class="deployment-date">{{ deployment.scheduledDate | date:'dd/MM/yyyy' }}</span>
+              </div>
             </div>
-            <span class="ambiente-badge" [ngClass]="getEnvironmentClass(deployment.environment)">
-              {{ deployment.environment }}
-            </span>
           </div>
         </div>
       </div>

@@ -1,37 +1,38 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { MatTableDataSource } from '@angular/material/table';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Subject, combineLatest } from 'rxjs';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { combineLatest, Subject } from 'rxjs';
 import {
-  takeUntil,
   debounceTime,
   distinctUntilChanged,
   startWith,
+  takeUntil
 } from 'rxjs/operators';
 
+import { NotificationService } from '../../core/services/notification.service';
 import { MaterialModule } from '../../shared/material.module';
 import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
-import { NotificationService } from '../../core/services/notification.service';
-import { DevelopmentService } from './services/development.service';
-import {
-  Development,
-  DevelopmentStatus,
-  Environment,
-  Microservice,
-} from './models/development.model';
 import { DevelopmentDetailsPanelComponent } from './components/development-details-panel/development-details-panel.component';
+import {
+  ComponentType,
+  Development,
+  Component as DevelopmentComponent,
+  DevelopmentStatus,
+  DevelopmentEnvironment,
+} from '../../shared/models/development.model';
+import { DevelopmentService } from './services/development.service';
 
 interface StatusOption {
   value: string;
@@ -65,19 +66,18 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     'status',
     'title',
     'description',
-    'microservices',
+    'components',
     'environment',
-    'createdDate',
-    'updatedDate',
+    'createdAt',
+    'updatedAt',
     'actions',
   ];
   displayedColumnsTablet: string[] = [
     'id',
     'status',
     'title',
-    'microservices',
+    'components',
     'environment',
-    'updatedDate',
     'actions',
   ];
 
@@ -90,17 +90,17 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   availableStatuses: StatusOption[] = [
     { value: 'all', label: 'Todos', count: 0 },
     { value: DevelopmentStatus.PLANNING, label: DevelopmentStatus.PLANNING, count: 0 },
-    { value: DevelopmentStatus.DEVELOPMENT, label: DevelopmentStatus.DEVELOPMENT, count: 0 },
+    { value: DevelopmentStatus.IN_PROGRESS, label: DevelopmentStatus.IN_PROGRESS, count: 0 },
     { value: DevelopmentStatus.TESTING, label: DevelopmentStatus.TESTING, count: 0 },
     { value: DevelopmentStatus.COMPLETED, label: DevelopmentStatus.COMPLETED, count: 0 },
-    { value: DevelopmentStatus.ARCHIVED, label: DevelopmentStatus.ARCHIVED, count: 0 },
+    { value: DevelopmentStatus.CANCELLED, label: DevelopmentStatus.CANCELLED, count: 0 },
   ];
 
-  availableEnvironments: string[] = [
-    Environment.DEVELOPMENT,
-    Environment.TESTING,
-    Environment.STAGING,
-    Environment.PRODUCTION,
+  availableEnvironments: DevelopmentEnvironment[] = [
+    DevelopmentEnvironment.DEVELOPMENT,
+    DevelopmentEnvironment.TESTING,
+    DevelopmentEnvironment.STAGING,
+    DevelopmentEnvironment.PRODUCTION,
   ];
 
   // Agregar estas propiedades para el panel de detalles
@@ -131,11 +131,11 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
 
   // TrackBy functions para optimizar renderizado
   trackByDevelopment(index: number, item: Development): string {
-    return item.id;
+    return item.id.toString();
   }
 
-  trackByMicroservice(index: number, item: Microservice): string {
-    return item.id;
+  trackByComponent(index: number, component: DevelopmentComponent): number {
+    return component.id;
   }
 
   trackByStatus(index: number, item: StatusOption): string {
@@ -239,7 +239,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
         (dev) =>
           dev.title.toLowerCase().includes(searchTerm) ||
           dev.description?.toLowerCase().includes(searchTerm) ||
-          dev.microservices.some((ms) =>
+          dev.components.some((ms) =>
             ms.name.toLowerCase().includes(searchTerm)
           )
       );
@@ -349,8 +349,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   getStatusesForChange(currentStatus: string): string[] {
     const allStatuses = [
       DevelopmentStatus.PLANNING,
-      DevelopmentStatus.DEVELOPMENT,
-      DevelopmentStatus.ARCHIVED,
+      DevelopmentStatus.IN_PROGRESS,
+      DevelopmentStatus.CANCELLED,
       DevelopmentStatus.COMPLETED,
       DevelopmentStatus.TESTING,
     ];
@@ -372,5 +372,31 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   onPageChange(): void {
     // La paginación se maneja automáticamente por MatTableDataSource
     this.changeDetectorRef.markForCheck();
+  }
+
+  getComponentTypeLabel(type: ComponentType): string {
+    switch (type) {
+      case ComponentType.MICROSERVICE:
+        return 'Microservicio';
+      case ComponentType.MICROFRONTEND:
+        return 'Microfrontend';
+      case ComponentType.MONOLITH:
+        return 'Monolito';
+      default:
+        return 'Componente';
+    }
+  }
+
+  getComponentTypeClass(type: ComponentType): string {
+    switch (type) {
+      case ComponentType.MICROSERVICE:
+        return 'component-microservice';
+      case ComponentType.MICROFRONTEND:
+        return 'component-microfrontend';
+      case ComponentType.MONOLITH:
+        return 'component-monolith';
+      default:
+        return 'component-default';
+    }
   }
 }

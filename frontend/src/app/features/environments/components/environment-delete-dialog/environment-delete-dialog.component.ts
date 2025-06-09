@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 import { EnvironmentService } from '../../../../core/services/environment.service';
-import { Environment } from '../../../../core/models/environment.model';
+import { Environment } from '../../../../shared/models/environment.model';
 import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
 
 @Component({

@@ -1,34 +1,35 @@
 import { Injectable } from '@angular/core';
-import { DevelopmentStatus, Environment, ActivityType } from '../../features/developments/models/development.model';
+import {
+  ActivityType,
+  DevelopmentStatus,
+  DevelopmentEnvironment,
+} from '../models/development.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BadgeUtilsService {
-
   /**
    * Obtiene la clase CSS para el badge de estado
    */
-  getStatusBadgeClass(status: DevelopmentStatus): string;
-  getStatusBadgeClass(status: string): string;
   getStatusBadgeClass(status: DevelopmentStatus | string): string {
     // Si es string, convertir a DevelopmentStatus equivalente
     if (typeof status === 'string') {
       switch (status) {
-        case DevelopmentStatus.DEVELOPMENT:
-        case 'En Desarrollo':
+        case DevelopmentStatus.IN_PROGRESS:
+        case 'in_progress':
           return 'badge-desarrollo';
-        case DevelopmentStatus.ARCHIVED:
-        case 'Archivado':
+        case DevelopmentStatus.CANCELLED:
+        case 'cancelled':
           return 'badge-archivado';
         case DevelopmentStatus.COMPLETED:
-        case 'Completado':
+        case 'completed':
           return 'badge-completado';
         case DevelopmentStatus.PLANNING:
-        case 'En Planificación':
+        case 'planning':
           return 'badge-planificacion';
         case DevelopmentStatus.TESTING:
-        case 'En Pruebas':
+        case 'testing':
           return 'badge-pruebas';
         default:
           return '';
@@ -36,9 +37,9 @@ export class BadgeUtilsService {
     }
 
     switch (status) {
-      case DevelopmentStatus.DEVELOPMENT:
+      case DevelopmentStatus.IN_PROGRESS:
         return 'badge-desarrollo';
-      case DevelopmentStatus.ARCHIVED:
+      case DevelopmentStatus.CANCELLED:
         return 'badge-archivado';
       case DevelopmentStatus.COMPLETED:
         return 'badge-completado';
@@ -54,15 +55,15 @@ export class BadgeUtilsService {
   /**
    * Obtiene la clase CSS para el badge de ambiente
    */
-  getEnvironmentBadgeClass(environment: Environment): string {
+  getEnvironmentBadgeClass(environment: DevelopmentEnvironment): string {
     switch (environment) {
-      case Environment.DEVELOPMENT:
+      case DevelopmentEnvironment.DEVELOPMENT:
         return 'ambiente-development';
-      case Environment.TESTING:
+      case DevelopmentEnvironment.TESTING:
         return 'ambiente-testing';
-      case Environment.STAGING:
+      case DevelopmentEnvironment.STAGING:
         return 'ambiente-staging';
-      case Environment.PRODUCTION:
+      case DevelopmentEnvironment.PRODUCTION:
         return 'ambiente-production';
       default:
         return '';
@@ -72,15 +73,15 @@ export class BadgeUtilsService {
   /**
    * Obtiene la clase CSS para el ambiente (versión legacy)
    */
-  getEnvironmentClass(environment: Environment): string {
+  getEnvironmentClass(environment: DevelopmentEnvironment): string {
     switch (environment) {
-      case Environment.DEVELOPMENT:
+      case DevelopmentEnvironment.DEVELOPMENT:
         return 'development';
-      case Environment.TESTING:
+      case DevelopmentEnvironment.TESTING:
         return 'testing';
-      case Environment.STAGING:
+      case DevelopmentEnvironment.STAGING:
         return 'staging';
-      case Environment.PRODUCTION:
+      case DevelopmentEnvironment.PRODUCTION:
         return 'production';
       default:
         return '';
@@ -92,14 +93,20 @@ export class BadgeUtilsService {
    */
   getActivityTypeClass(type: ActivityType): string {
     switch (type) {
-      case ActivityType.DEPLOYMENT:
-        return 'deployment';
-      case ActivityType.UPDATE:
+      case ActivityType.DEVELOPMENT_CREATED:
+        return 'creation';
+      case ActivityType.DEVELOPMENT_UPDATED:
         return 'update';
-      case ActivityType.REVIEW:
-        return 'review';
-      case ActivityType.COMPLETED:
-        return 'completed';
+      case ActivityType.STATUS_CHANGED:
+        return 'status';
+      case ActivityType.MICROSERVICE_ADDED:
+        return 'microservice-added';
+      case ActivityType.MICROSERVICE_REMOVED:
+        return 'microservice-removed';
+      case ActivityType.PROGRESS_UPDATED:
+        return 'progress';
+      case ActivityType.DEPLOYMENT_SCHEDULED:
+        return 'deployment';
       default:
         return '';
     }
@@ -114,7 +121,7 @@ export class BadgeUtilsService {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(new Date(date));
   }
 
@@ -123,6 +130,8 @@ export class BadgeUtilsService {
    */
   truncateText(text: string, maxLength: number): string {
     if (!text) return '';
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + '...'
+      : text;
   }
-} 
+}

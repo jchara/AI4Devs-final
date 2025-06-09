@@ -1,18 +1,18 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, OnDestroy, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { animate, animateChild, query, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { AfterViewInit, Component as AngularComponent, ChangeDetectionStrategy, ChangeDetectorRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
-import { Development, DevelopmentStatus } from '../../models/development.model';
-import { BadgeUtilsService } from '../../../../shared/services/badge-utils.service';
-import { Subject } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { memoize } from 'lodash';
+import { Subject } from 'rxjs';
+import { Development, DevelopmentEnvironment, DevelopmentStatus } from '../../../../shared/models/development.model';
+import { BadgeUtilsService } from '../../../../shared/services/badge-utils.service';
 
-@Component({
+@AngularComponent({
   selector: 'app-development-details-panel',
   standalone: true,
   imports: [
@@ -81,10 +81,10 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
   // Listado de estados disponibles
   availableStatuses = [
     DevelopmentStatus.PLANNING,
-    DevelopmentStatus.DEVELOPMENT,
+    DevelopmentStatus.IN_PROGRESS,
     DevelopmentStatus.TESTING,
     DevelopmentStatus.COMPLETED,
-    DevelopmentStatus.ARCHIVED
+    DevelopmentStatus.CANCELLED
   ];
 
   isMobile = window.innerWidth <= 768;
@@ -290,16 +290,12 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
    * Método para aplicar el progreso como estilo directamente en el HTML
    * para la barra principal de progreso
    */
-  getProgressBarStyle(): any {
-    let progressValue = this.development.progress;
+  getProgressBarStyle(): { width: string } {
+    const progressValue = this.development.progress;
     let numericProgress = 0;
     
     // Verificar el tipo de dato y procesarlo adecuadamente
-    if (typeof progressValue === 'string') {
-      // Eliminar el símbolo '%' si existe
-      progressValue = progressValue.replace('%', '');
-      numericProgress = parseFloat(progressValue);
-    } else if (typeof progressValue === 'number') {
+    if (typeof progressValue === 'number') {
       numericProgress = progressValue;
     }
     
@@ -410,5 +406,24 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
   private detectMobileDevice(): void {
     this.isMobile = window.innerWidth <= 768;
     this.changeDetectorRef.markForCheck();
+  }
+
+  getEnvironmentColor(): string {
+    switch (this.development?.environment) {
+      case DevelopmentEnvironment.DEVELOPMENT:
+        return '#4CAF50'; // Verde
+      case DevelopmentEnvironment.TESTING:
+        return '#2196F3'; // Azul
+      case DevelopmentEnvironment.STAGING:
+        return '#FF9800'; // Naranja
+      case DevelopmentEnvironment.PRODUCTION:
+        return '#F44336'; // Rojo
+      default:
+        return '#ccc';
+    }
+  }
+
+  getEnvironmentName(): string {
+    return this.development?.environment || 'No especificado';
   }
 } 

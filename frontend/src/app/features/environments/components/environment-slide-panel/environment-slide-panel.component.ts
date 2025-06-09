@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subject, takeUntil } from 'rxjs';
 import { EnvironmentService } from '../../../../core/services/environment.service';
-import { Environment, CreateEnvironmentDto, UpdateEnvironmentDto } from '../../../../core/models/environment.model';
+import { Environment, CreateEnvironmentDto, UpdateEnvironmentDto } from '../../../../shared/models/environment.model';
 import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
 import { memoize } from 'lodash';
 

@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, throwError, switchMap } from 'rxjs';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { NotificationService } from './notification.service';
-import { Environment, CreateEnvironmentDto, UpdateEnvironmentDto, EnvironmentFilter } from '../models/environment.model';
+import { Environment, CreateEnvironmentDto, UpdateEnvironmentDto, EnvironmentFilter } from '../../shared/models/environment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,24 @@ export class EnvironmentService {
 
   getEnvironments(filter?: EnvironmentFilter): Observable<Environment[]> {
     this.loadingSubject.next(true);
-    return this.apiService.get<Environment[]>('environments', filter).pipe(
+    return this.apiService.get<any>('environments', filter).pipe(
+      map(response => {
+        // Verificar si la respuesta es un array o tiene una propiedad data
+        const environments = Array.isArray(response) ? response : (response.data || []);
+        
+        // Asegurarse de que environments sea un array
+        if (!Array.isArray(environments)) {
+          console.error('La respuesta del servidor no es un array:', response);
+          return [];
+        }
+
+        return environments.map(env => ({
+          ...env,
+          createdAt: new Date(env.createdAt),
+          updatedAt: new Date(env.updatedAt),
+          deletedAt: env.deletedAt ? new Date(env.deletedAt) : undefined
+        }));
+      }),
       tap(environments => {
         // Ordenar por el campo order y luego por nombre
         const sortedEnvironments = environments.sort((a, b) => {
@@ -34,6 +51,7 @@ export class EnvironmentService {
         this.environmentsSubject.next(sortedEnvironments);
       }),
       catchError(error => {
+        console.error('Error al cargar ambientes:', error);
         this.notificationService.showError('Error al cargar los ambientes');
         return throwError(() => error);
       }),
@@ -43,8 +61,20 @@ export class EnvironmentService {
 
   getEnvironmentById(id: number): Observable<Environment> {
     this.loadingSubject.next(true);
-    return this.apiService.get<Environment>(`environments/${id}`).pipe(
+    return this.apiService.get<any>(`environments/${id}`).pipe(
+      map(response => {
+        // Verificar si la respuesta tiene una propiedad data
+        const env = response.data || response;
+        
+        return {
+          ...env,
+          createdAt: new Date(env.createdAt),
+          updatedAt: new Date(env.updatedAt),
+          deletedAt: env.deletedAt ? new Date(env.deletedAt) : undefined
+        };
+      }),
       catchError(error => {
+        console.error('Error al cargar ambiente:', error);
         this.notificationService.showError('Error al cargar el ambiente');
         return throwError(() => error);
       }),
@@ -54,13 +84,23 @@ export class EnvironmentService {
 
   createEnvironment(environment: CreateEnvironmentDto): Observable<Environment> {
     this.loadingSubject.next(true);
-    return this.apiService.post<Environment>('environments', environment).pipe(
+    return this.apiService.post<any>('environments', environment).pipe(
+      map(response => {
+        const env = response.data || response;
+        return {
+          ...env,
+          createdAt: new Date(env.createdAt),
+          updatedAt: new Date(env.updatedAt),
+          deletedAt: env.deletedAt ? new Date(env.deletedAt) : undefined
+        };
+      }),
       tap(newEnvironment => {
         const currentEnvironments = this.environmentsSubject.getValue();
         this.environmentsSubject.next([...currentEnvironments, newEnvironment]);
         this.notificationService.showSuccess('Ambiente creado correctamente');
       }),
       catchError(error => {
+        console.error('Error al crear ambiente:', error);
         this.notificationService.showError('Error al crear el ambiente');
         return throwError(() => error);
       }),
@@ -70,7 +110,16 @@ export class EnvironmentService {
 
   updateEnvironment(id: number, environment: UpdateEnvironmentDto): Observable<Environment> {
     this.loadingSubject.next(true);
-    return this.apiService.patch<Environment>(`environments/${id}`, environment).pipe(
+    return this.apiService.patch<any>(`environments/${id}`, environment).pipe(
+      map(response => {
+        const env = response.data || response;
+        return {
+          ...env,
+          createdAt: new Date(env.createdAt),
+          updatedAt: new Date(env.updatedAt),
+          deletedAt: env.deletedAt ? new Date(env.deletedAt) : undefined
+        };
+      }),
       tap(updatedEnvironment => {
         const currentEnvironments = this.environmentsSubject.getValue();
         const updatedEnvironments = currentEnvironments.map(env => 
@@ -80,6 +129,7 @@ export class EnvironmentService {
         this.notificationService.showSuccess('Ambiente actualizado correctamente');
       }),
       catchError(error => {
+        console.error('Error al actualizar ambiente:', error);
         this.notificationService.showError('Error al actualizar el ambiente');
         return throwError(() => error);
       }),
@@ -97,6 +147,7 @@ export class EnvironmentService {
         this.notificationService.showSuccess('Ambiente eliminado correctamente');
       }),
       catchError(error => {
+        console.error('Error al eliminar ambiente:', error);
         this.notificationService.showError('Error al eliminar el ambiente');
         return throwError(() => error);
       }),

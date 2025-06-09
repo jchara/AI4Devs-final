@@ -20,7 +20,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { EnvironmentService } from '../../core/services/environment.service';
-import { Environment } from '../../core/models/environment.model';
+import { Environment } from '../../shared/models/environment.model';
 import { EnvironmentDeleteDialogComponent } from './components/environment-delete-dialog/environment-delete-dialog.component';
 import { EnvironmentSlidePanelComponent } from './components/environment-slide-panel/environment-slide-panel.component';
 import { Router, NavigationStart } from '@angular/router';

@@ -165,23 +165,23 @@
         </mat-cell>
       </ng-container>
 
-      <!-- Columna Microservicios -->
-      <ng-container matColumnDef="microservices">
-        <mat-header-cell *matHeaderCellDef>Microservicios</mat-header-cell>
+      <!-- Columna Componentes -->
+      <ng-container matColumnDef="components">
+        <mat-header-cell *matHeaderCellDef>Componentes</mat-header-cell>
         <mat-cell *matCellDef="let development">
-          <div class="microservices-cell">
+          <div class="components-cell">
             <mat-chip-set>
               <mat-chip
                 *ngFor="
-                  let microservice of development.microservices;
+                  let component of development.components;
                   let i = index;
-                  trackBy: trackByMicroservice
+                  trackBy: trackByComponent
                 "
                 [matTooltip]="
-                  microservice.name + ' (' + microservice.technology + ')'
+                  component.name + ' (' + component.type + ' - ' + component.technology + ')'
                 "
               >
-                {{ microservice.name }}
+                {{ component.name }}
               </mat-chip>
             </mat-chip-set>
           </div>
@@ -204,25 +204,25 @@
       </ng-container>
 
       <!-- Columna Fecha Creación -->
-      <ng-container matColumnDef="createdDate">
+      <ng-container matColumnDef="createdAt">
         <mat-header-cell *matHeaderCellDef mat-sort-header
           >Fecha Creación</mat-header-cell
         >
         <mat-cell *matCellDef="let development">
           <span class="date-primary">{{
-            formatDate(development.createdDate)
+            formatDate(development.createdAt)
           }}</span>
         </mat-cell>
       </ng-container>
 
       <!-- Columna Fecha Actualización -->
-      <ng-container matColumnDef="updatedDate">
+      <ng-container matColumnDef="updatedAt">
         <mat-header-cell *matHeaderCellDef mat-sort-header
           >Última Actualización</mat-header-cell
         >
         <mat-cell *matCellDef="let development">
           <span class="date-primary">{{
-            formatDate(development.updatedDate)
+            formatDate(development.updatedAt)
           }}</span>
         </mat-cell>
       </ng-container>
@@ -292,26 +292,27 @@
             </div>
             <div class="info-item">
               <mat-icon>schedule</mat-icon>
-              <span class="update-time">{{ formatDate(development.updatedDate) }}</span>
+              <span class="update-time">{{ formatDate(development.updatedAt) }}</span>
             </div>
           </div>
 
           <div
-            class="card-microservices"
-            *ngIf="development.microservices.length > 0"
+            class="card-components"
+            *ngIf="development.components && development.components.length > 0"
           >
-            <label>Microservicios:</label>
-            <div class="microservices-list">
+            <label>Componentes:</label>
+            <div class="components-list">
               <mat-chip-set>
                 <mat-chip
-                  *ngFor="let microservice of development.microservices; trackBy: trackByMicroservice"
+                  *ngFor="let component of development.components; trackBy: trackByComponent"
                   [matTooltip]="
-                    microservice.name + ' (' + microservice.technology + ')'
+                    component.name + ' (' + getComponentTypeLabel(component.type) + ' - ' + component.technology + ')'
                   "
+                  [ngClass]="getComponentTypeClass(component.type)"
                   matTooltipPosition="above"
                   disabled="true"
                 >
-                  {{ microservice.name }}
+                  {{ component.name }}
                 </mat-chip>
               </mat-chip-set>
             </div>

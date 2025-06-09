@@ -7,6 +7,7 @@ export interface Environment {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
 }
 
 export interface CreateEnvironmentDto {
@@ -26,5 +27,6 @@ export interface UpdateEnvironmentDto {
 }
 
 export interface EnvironmentFilter {
+  search?: string;
   isActive?: boolean;
 } 

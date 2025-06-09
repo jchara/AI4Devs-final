@@ -1093,4 +1093,163 @@ button[mat-menu-item] {
       }
     }
   }
+}
+
+.development-details-section {
+  background: var(--surface-card);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      color: var(--text-color-secondary);
+      font-size: 0.875rem;
+    }
+
+    span {
+      color: var(--text-color);
+      font-weight: 500;
+    }
+  }
+
+  .priority-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.priority-high {
+      background-color: var(--red-100);
+      color: var(--red-700);
+    }
+
+    &.priority-medium {
+      background-color: var(--yellow-100);
+      color: var(--yellow-700);
+    }
+
+    &.priority-low {
+      background-color: var(--green-100);
+      color: var(--green-700);
+    }
+  }
+
+  .environment-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+  }
+
+  .branch-name {
+    font-family: monospace;
+    background: var(--surface-ground);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+}
+
+.team-info {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--surface-border);
+
+  h3 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+  }
+
+  .team-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .team-member {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      label {
+        color: var(--text-color-secondary);
+      }
+
+      .member-name {
+        font-weight: 500;
+        color: var(--text-color);
+      }
+    }
+
+    .member-email {
+      color: var(--text-color-secondary);
+      font-size: 0.875rem;
+    }
+  }
+
+  .team-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      color: var(--text-color-secondary);
+    }
+
+    .team-name {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .team-description {
+      color: var(--text-color-secondary);
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}
+
+.notes-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--surface-border);
+
+  h3 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+  }
+
+  .notes-content {
+    background: var(--surface-ground);
+    padding: 1rem;
+    border-radius: 8px;
+    color: var(--text-color);
+    white-space: pre-wrap;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
 } 

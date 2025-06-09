@@ -1,40 +1,85 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin, map, catchError } from 'rxjs';
-import { Development, DevelopmentMetrics, RecentActivity, UpcomingDeployment, ChartData, Microservice, DevelopmentFilter, DevelopmentSort, PaginatedResponse, DevelopmentStatus, Environment, ActivityType, DeploymentStatus } from '../models/development.model';
-import { ApiService } from '../../../core/services/api.service';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 import { DevelopmentMapper } from '../../../core/mappers/development.mapper';
-import { 
-  BackendDevelopmentResponse, 
-  BackendDevelopmentMetricsResponse,
-  BackendActivityResponse,
-  BackendMicroserviceResponse,
-  StatusToBackendMap
-} from '../../../core/models/backend-interfaces';
+import { ApiService } from '../../../core/services/api.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import {
+  BackendActivityResponse,
+  BackendComponentResponse,
+  BackendDevelopmentMetricsResponse,
+  BackendDevelopmentResponse,
+} from '../../../shared/interfaces/backend-interfaces';
+import {
+  ActivityType,
+  Component,
+  ComponentType,
+  DeploymentStatus,
+  Development,
+  DevelopmentFilter,
+  DevelopmentMetrics,
+  DevelopmentStatus,
+  DevelopmentEnvironment,
+  PaginatedResponse,
+  RecentActivity,
+  UpcomingDeployment,
+} from '../../../shared/models/development.model';
+import { Team, User } from '../../../shared/models/user.model';
+
+interface DashboardData {
+  developments: Development[];
+  recentActivities: RecentActivity[];
+  upcomingDeployments: UpcomingDeployment[];
+}
+
+interface ChartData {
+  environment: string;
+  count: number;
+  color: string;
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DevelopmentService {
+  private developmentsSubject = new BehaviorSubject<Development[]>([]);
+  developments$ = this.developmentsSubject.asObservable();
+
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  loading$ = this.loadingSubject.asObservable();
 
   constructor(
     private apiService: ApiService,
     private notificationService: NotificationService
-  ) { }
+  ) {}
 
   /**
    * Obtener todos los desarrollos
    */
-  getDevelopments(): Observable<Development[]> {
-    return this.apiService.get<BackendDevelopmentResponse[]>('developments').pipe(
-      map(developments => {
-        return developments.map(dev => 
-          DevelopmentMapper.mapDevelopmentFromBackend(dev)
-        );
+  getDevelopments(filter?: DevelopmentFilter): Observable<Development[]> {
+    this.loadingSubject.next(true);
+    return this.apiService.get<any>('developments', filter).pipe(
+      map((response) => {
+        console.log('Respuesta completa del backend:', response);
+        if (!response || !response.data || !Array.isArray(response.data)) {
+          console.error('La respuesta del backend no tiene el formato esperado:', response);
+          return [];
+        }
+        console.log('Datos de desarrollos:', response.data);
+        return response.data.map((dev: any) => {
+          console.log('Desarrollo individual:', dev);
+          console.log('Environment del desarrollo:', dev.environment);
+          return DevelopmentMapper.mapDevelopmentFromBackend(dev);
+        });
       }),
-      catchError(error => {
-        console.error('Error getting developments:', error);
-        return of(this.getFallbackDevelopments());
+      tap((developments) => {
+        this.developmentsSubject.next(developments);
+        this.loadingSubject.next(false);
+      }),
+      catchError((error) => {
+        console.error('Error al obtener desarrollos:', error);
+        this.notificationService.showError('Error al obtener desarrollos');
+        this.loadingSubject.next(false);
+        return of([]);
       })
     );
   }
@@ -43,60 +88,60 @@ export class DevelopmentService {
    * Obtener desarrollos paginados con filtros
    */
   getPaginatedDevelopments(
-    filters?: DevelopmentFilter,
-    pagination?: { page: number; pageSize: number },
-    sort?: DevelopmentSort
+    filter?: DevelopmentFilter,
+    page: number = 1,
+    pageSize: number = 10
   ): Observable<PaginatedResponse<Development>> {
-    // Construir parámetros para el backend
-    const params: any = {};
-    
-    if (filters?.search) params.search = filters.search;
-    if (filters?.status && filters.status !== 'all') {
-      params.status = StatusToBackendMap[filters.status as DevelopmentStatus];
-    }
-    
-    return this.apiService.get<BackendDevelopmentResponse[]>('developments', params).pipe(
-      map(developments => {
-        let mappedDevelopments = developments.map(dev => 
-          DevelopmentMapper.mapDevelopmentFromBackend(dev)
-        );
+    this.loadingSubject.next(true);
+    const params = { ...filter, page, pageSize };
 
-        // Aplicar filtros adicionales que no soporta el backend
-        if (filters?.environment) {
-          mappedDevelopments = mappedDevelopments.filter(d => d.environment === filters.environment);
+    return this.apiService.get<any>('developments', params).pipe(
+      map((response) => {
+        if (!response || !Array.isArray(response.data)) {
+          console.error(
+            'La respuesta del backend no tiene el formato esperado:',
+            response
+          );
+          return {
+            data: [],
+            pagination: {
+              page,
+              pageSize,
+              total: 0,
+              totalPages: 0,
+            },
+          };
         }
 
-        // Aplicar ordenamiento local
-        if (sort) {
-          mappedDevelopments.sort((a, b) => {
-            const aValue = this.getPropertyValue(a, sort.field);
-            const bValue = this.getPropertyValue(b, sort.field);
-            
-            const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-            return sort.direction === 'desc' ? -comparison : comparison;
-          });
-        }
-
-        // Aplicar paginación local
-        const { page = 0, pageSize = 20 } = pagination || {};
-        const total = mappedDevelopments.length;
+        const total = response.total || response.data.length;
         const totalPages = Math.ceil(total / pageSize);
-        const startIndex = page * pageSize;
-        const paginatedData = mappedDevelopments.slice(startIndex, startIndex + pageSize);
 
         return {
-          data: paginatedData,
+          data: response.data.map((dev: any) =>
+            DevelopmentMapper.mapDevelopmentFromBackend(dev)
+          ),
           pagination: {
             page,
             pageSize,
             total,
-            totalPages
-          }
+            totalPages,
+          },
         };
       }),
-      catchError(error => {
-        console.error('Error getting paginated developments:', error);
-        return of(this.getFallbackPaginatedResponse(pagination));
+      tap(() => this.loadingSubject.next(false)),
+      catchError((error) => {
+        console.error('Error al obtener desarrollos paginados:', error);
+        this.notificationService.showError('Error al obtener desarrollos');
+        this.loadingSubject.next(false);
+        return of({
+          data: [],
+          pagination: {
+            page,
+            pageSize,
+            total: 0,
+            totalPages: 0,
+          },
+        });
       })
     );
   }
@@ -105,77 +150,124 @@ export class DevelopmentService {
    * Obtener métricas de desarrollos
    */
   getMetrics(): Observable<DevelopmentMetrics> {
-    return this.apiService.get<BackendDevelopmentMetricsResponse>('developments/metrics').pipe(
-      map(backendMetrics => DevelopmentMapper.mapMetricsFromBackend(backendMetrics)),
-      catchError(error => {
-        console.error('Error getting metrics:', error);
-        return of(this.getFallbackMetrics());
-      })
-    );
+    return this.apiService
+      .get<BackendDevelopmentMetricsResponse>('developments/metrics')
+      .pipe(
+        map((backendMetrics) =>
+          DevelopmentMapper.mapMetricsFromBackend(backendMetrics)
+        ),
+        catchError((error) => {
+          console.error('Error getting metrics:', error);
+          return of({
+            total: 0,
+            inDevelopment: 0,
+            archived: 0,
+            completed: 0,
+          });
+        })
+      );
   }
 
   /**
    * Obtener actividades recientes
    */
   getRecentActivity(): Observable<RecentActivity[]> {
-    return this.apiService.get<BackendActivityResponse[]>('api/activities', { limit: 10 }).pipe(
-      map(activities => activities.map(activity => 
-        DevelopmentMapper.mapActivityFromBackend(activity)
-      )),
-      catchError(error => {
-        console.error('Error getting recent activities:', error);
-        return of(this.getFallbackRecentActivities());
-      })
-    );
+    return this.apiService
+      .get<BackendActivityResponse[]>('api/activities', { limit: 10 })
+      .pipe(
+        map((activities) =>
+          activities.map((activity) =>
+            DevelopmentMapper.mapActivityFromBackend(activity)
+          )
+        ),
+        catchError((error) => {
+          console.error('Error getting recent activities:', error);
+          return of([]);
+        })
+      );
   }
 
   /**
-   * Obtener próximos despliegues (temporalmente mock hasta que esté el endpoint)
+   * Obtener próximos despliegues
    */
   getUpcomingDeployments(): Observable<UpcomingDeployment[]> {
-    // TODO: Implementar cuando esté disponible el endpoint
-    return of(this.getFallbackUpcomingDeployments());
+    return this.apiService
+      .get<BackendDevelopmentResponse[]>('deployments/upcoming')
+      .pipe(
+        map((deployments) =>
+          deployments.map(this.mapUpcomingDeploymentFromBackend)
+        ),
+        catchError((error) => {
+          console.error('Error getting upcoming deployments:', error);
+          return of([]);
+        })
+      );
+  }
+
+  private mapUpcomingDeploymentFromBackend(
+    deployment: BackendDevelopmentResponse
+  ): UpcomingDeployment {
+    return {
+      id: deployment.id,
+      title: deployment.title,
+      environment: this.mapEnvironmentFromBackend(deployment.environment),
+      scheduledDate: new Date(deployment.createdAt),
+      status: DeploymentStatus.SCHEDULED,
+      isActive: deployment.isActive,
+      createdAt: new Date(deployment.createdAt),
+      updatedAt: new Date(deployment.updatedAt),
+      deployedBy: this.mapUserFromString(
+        deployment.assignedTo || 'Sin asignar'
+      ),
+      deploymentType: {
+        id: 1,
+        name: 'Regular',
+        description: 'Regular deployment',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    };
   }
 
   /**
    * Obtener datos para gráficos
    */
   getChartData(): Observable<ChartData[]> {
-    // Usar métricas para generar datos del gráfico
     return this.getDevelopments().pipe(
-      map(developments => {
+      map((developments) => {
         const environmentCounts = developments.reduce((acc, dev) => {
           const env = dev.environment;
           acc[env] = (acc[env] || 0) + 1;
           return acc;
-        }, {} as Record<Environment, number>);
+        }, {} as Record<DevelopmentEnvironment, number>);
 
         return [
           {
             environment: 'Local',
-            count: environmentCounts[Environment.DEVELOPMENT] || 0,
-            color: '#66C6EA'
+            count: environmentCounts[DevelopmentEnvironment.DEVELOPMENT] || 0,
+            color: '#66C6EA',
           },
           {
             environment: 'Testing',
-            count: environmentCounts[Environment.TESTING] || 0,
-            color: '#7D2BE3'
+            count: environmentCounts[DevelopmentEnvironment.TESTING] || 0,
+            color: '#7D2BE3',
           },
           {
             environment: 'QA',
-            count: environmentCounts[Environment.STAGING] || 0,
-            color: '#FF9800'
+            count: environmentCounts[DevelopmentEnvironment.STAGING] || 0,
+            color: '#FF9800',
           },
           {
             environment: 'Production',
-            count: environmentCounts[Environment.PRODUCTION] || 0,
-            color: '#4CAF50'
-          }
+            count: environmentCounts[DevelopmentEnvironment.PRODUCTION] || 0,
+            color: '#4CAF50',
+          },
         ];
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error getting chart data:', error);
-        return of(this.getFallbackChartData());
+        return of([]);
       })
     );
   }
@@ -183,35 +275,57 @@ export class DevelopmentService {
   /**
    * Obtener desarrollo por ID
    */
-  getDevelopmentById(id: string): Observable<Development | undefined> {
-    return this.apiService.get<BackendDevelopmentResponse>(`developments/${id}`).pipe(
-      map(development => 
-        DevelopmentMapper.mapDevelopmentFromBackend(development)
-      ),
-      catchError(error => {
-        console.error('Error getting development by id:', error);
-        return of(undefined);
+  getDevelopmentById(id: number): Observable<Development | null> {
+    this.loadingSubject.next(true);
+    return this.apiService.get<any>(`developments/${id}`).pipe(
+      map((response) => DevelopmentMapper.mapDevelopmentFromBackend(response)),
+      tap(() => this.loadingSubject.next(false)),
+      catchError((error) => {
+        console.error('Error al obtener desarrollo:', error);
+        this.notificationService.showError('Error al obtener desarrollo');
+        this.loadingSubject.next(false);
+        return of(null);
       })
     );
   }
 
   /**
-   * Obtener microservicios
+   * Obtener componentes
    */
-  getMicroservices(): Observable<Microservice[]> {
-    return this.getMicroservicesData();
+  getComponents(): Observable<Component[]> {
+    return this.apiService.get<BackendComponentResponse[]>('components').pipe(
+      map((components) =>
+        components.map((comp) =>
+          DevelopmentMapper.mapComponentFromBackend(comp)
+        )
+      ),
+      catchError((error) => {
+        console.error('Error getting components:', error);
+        return of([]);
+      })
+    );
   }
 
   /**
    * Crear desarrollo
    */
-  createDevelopment(development: Omit<Development, 'id' | 'createdDate' | 'updatedDate'>): Observable<Development> {
-    const backendData = DevelopmentMapper.mapDevelopmentToBackend(development);
-    
-    return this.apiService.post<BackendDevelopmentResponse>('developments', backendData).pipe(
-      map(response => {
+  createDevelopment(
+    development: Partial<Development>
+  ): Observable<Development | null> {
+    this.loadingSubject.next(true);
+    return this.apiService.post<any>('/developments', development).pipe(
+      map((response) => DevelopmentMapper.mapDevelopmentFromBackend(response)),
+      tap((newDevelopment) => {
+        const currentDevelopments = this.developmentsSubject.value;
+        this.developmentsSubject.next([...currentDevelopments, newDevelopment]);
         this.notificationService.showSuccess('Desarrollo creado exitosamente');
-        return DevelopmentMapper.mapDevelopmentFromBackend(response, development.microservices);
+        this.loadingSubject.next(false);
+      }),
+      catchError((error) => {
+        console.error('Error al crear desarrollo:', error);
+        this.notificationService.showError('Error al crear desarrollo');
+        this.loadingSubject.next(false);
+        return of(null);
       })
     );
   }
@@ -219,24 +333,56 @@ export class DevelopmentService {
   /**
    * Actualizar desarrollo
    */
-  updateDevelopment(id: string, development: Partial<Development>): Observable<Development> {
-    const backendData = DevelopmentMapper.mapDevelopmentToBackend(development);
-    
-    return this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}`, backendData).pipe(
-      map(response => {
-        this.notificationService.showSuccess('Desarrollo actualizado exitosamente');
-        return DevelopmentMapper.mapDevelopmentFromBackend(response);
+  updateDevelopment(
+    id: number,
+    development: Partial<Development>
+  ): Observable<Development | null> {
+    this.loadingSubject.next(true);
+    return this.apiService.patch<any>(`/developments/${id}`, development).pipe(
+      map((response) => DevelopmentMapper.mapDevelopmentFromBackend(response)),
+      tap((updatedDevelopment) => {
+        const currentDevelopments = this.developmentsSubject.value;
+        const index = currentDevelopments.findIndex((d) => d.id === id);
+        if (index !== -1) {
+          currentDevelopments[index] = updatedDevelopment;
+          this.developmentsSubject.next([...currentDevelopments]);
+        }
+        this.notificationService.showSuccess(
+          'Desarrollo actualizado exitosamente'
+        );
+        this.loadingSubject.next(false);
+      }),
+      catchError((error) => {
+        console.error('Error al actualizar desarrollo:', error);
+        this.notificationService.showError('Error al actualizar desarrollo');
+        this.loadingSubject.next(false);
+        return of(null);
       })
     );
   }
 
   /**
-   * Eliminar desarrollo
+   * Eliminar desarrollo (soft delete)
    */
-  deleteDevelopment(id: string): Observable<void> {
-    return this.apiService.delete<void>(`developments/${id}`).pipe(
-      map(() => {
-        this.notificationService.showSuccess('Desarrollo eliminado exitosamente');
+  deleteDevelopment(id: number): Observable<boolean> {
+    this.loadingSubject.next(true);
+    return this.apiService.delete(`/developments/${id}`).pipe(
+      map(() => true),
+      tap(() => {
+        const currentDevelopments = this.developmentsSubject.value;
+        this.developmentsSubject.next(
+          currentDevelopments.filter((d) => d.id !== id)
+        );
+        this.notificationService.showSuccess(
+          'Desarrollo eliminado exitosamente'
+        );
+        this.loadingSubject.next(false);
+      }),
+      catchError((error) => {
+        console.error('Error al eliminar desarrollo:', error);
+        this.notificationService.showError('Error al eliminar desarrollo');
+        this.loadingSubject.next(false);
+        return of(false);
       })
     );
   }
@@ -244,119 +390,212 @@ export class DevelopmentService {
   /**
    * Cambiar estado de desarrollo
    */
-  changeStatus(id: string, newStatus: DevelopmentStatus): Observable<Development> {
-    const backendStatus = StatusToBackendMap[newStatus];
-    
-    return this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}/status`, { 
-      status: backendStatus 
-    }).pipe(
-      map(response => {
-        this.notificationService.showSuccess(`Estado cambiado a: ${newStatus}`);
-        return DevelopmentMapper.mapDevelopmentFromBackend(response);
+  changeStatus(
+    id: number,
+    newStatus: DevelopmentStatus
+  ): Observable<Development> {
+    return this.apiService
+      .patch<BackendDevelopmentResponse>(`developments/${id}/status`, {
+        status: newStatus,
       })
-    );
+      .pipe(
+        map((response) => {
+          this.notificationService.showSuccess(
+            'Estado actualizado exitosamente'
+          );
+          return DevelopmentMapper.mapDevelopmentFromBackend(response);
+        })
+      );
   }
-
-  // =============================================================================
-  // MÉTODOS PRIVADOS Y FALLBACKS
-  // =============================================================================
 
   /**
-   * Obtener microservicios desde el backend
+   * Obtener valor de propiedad para ordenamiento
    */
-  private getMicroservicesData(): Observable<Microservice[]> {
-    // TODO: Cambiar cuando esté disponible el endpoint de microservicios
-    return of(this.getFallbackMicroservices());
-  }
-
   private getPropertyValue(obj: Development, field: keyof Development): any {
     return obj[field];
   }
 
-  // Fallbacks para cuando falla el backend
-  private getFallbackDevelopments(): Development[] {
-    return [
-      {
-        id: '1',
-        title: 'API de notificaciones push',
-        status: DevelopmentStatus.DEVELOPMENT,
-        environment: Environment.TESTING,
-        createdDate: new Date('2024-02-06T21:41:00'),
-        updatedDate: new Date('2024-03-06T08:09:00'),
-        description: 'Desarrollar sistema de notificaciones en tiempo real',
-        microservices: [
-          { id: '1', name: 'Auth Service', technology: 'NestJS' },
-          { id: '2', name: 'User Service', technology: 'Python' },
-          { id: '3', name: 'Payment Service', technology: 'Node.js' }
-        ],
-        progress: '25.00%',
-        jiraUrl: 'https://devtracker.atlassian.net/browse/DT-123'
-      }
-    ];
+  getDashboardData(): Observable<any> {
+    this.loadingSubject.next(true);
+    return this.apiService.get<any>('dashboard').pipe(
+      tap(() => this.loadingSubject.next(false)),
+      catchError((error) => {
+        console.error('Error al obtener datos del dashboard:', error);
+        this.notificationService.showError(
+          'Error al obtener datos del dashboard'
+        );
+        this.loadingSubject.next(false);
+        return of(null);
+      })
+    );
   }
 
-  private getFallbackPaginatedResponse(pagination?: { page: number; pageSize: number }): PaginatedResponse<Development> {
-    const fallbackData = this.getFallbackDevelopments();
-    const { page = 0, pageSize = 20 } = pagination || {};
-    
+  private mapDevelopmentFromBackend(
+    backendDev: BackendDevelopmentResponse
+  ): Development {
     return {
-      data: fallbackData,
-      pagination: {
-        page,
-        pageSize,
-        total: fallbackData.length,
-        totalPages: Math.ceil(fallbackData.length / pageSize)
-      }
+      id: backendDev.id,
+      title: backendDev.title,
+      description: backendDev.description,
+      status: this.mapStatusFromBackend(backendDev.status),
+      priority: backendDev.priority || 'MEDIUM',
+      environment: this.mapEnvironmentFromBackend(backendDev.environment),
+      progress: backendDev.progress,
+      isActive: backendDev.isActive,
+      jiraUrl: backendDev.jiraUrl,
+      branch: backendDev.branch,
+      notes: backendDev.notes,
+      startDate: new Date(backendDev.startDate || backendDev.createdAt),
+      endDate: backendDev.endDate ? new Date(backendDev.endDate) : undefined,
+      estimatedDate: new Date(backendDev.estimatedDate || backendDev.createdAt),
+      assignedTo: this.mapUserFromString(
+        backendDev.assignedTo || 'Sin asignar'
+      ),
+      team: this.mapTeamFromString(backendDev.team || 'Sin equipo'),
+      components:
+        backendDev.components?.map((comp: BackendComponentResponse) => ({
+          id: comp.id,
+          name: comp.name,
+          type: this.mapComponentTypeFromBackend(comp.type),
+          technology: comp.technology,
+          version: comp.version,
+          description: comp.description,
+          isActive: comp.isActive,
+          createdAt: new Date(comp.createdAt),
+          updatedAt: new Date(comp.updatedAt),
+        })) || [],
+      developmentComponents:
+        backendDev.developmentComponents?.map((devComp) => ({
+          id: devComp.id,
+          component: {
+            id: devComp.component.id,
+            name: devComp.component.name,
+            type: this.mapComponentTypeFromBackend(devComp.component.type),
+            technology: devComp.component.technology,
+            version: devComp.component.version,
+            description: devComp.component.description,
+            isActive: devComp.component.isActive,
+            createdAt: new Date(devComp.component.createdAt),
+            updatedAt: new Date(devComp.component.updatedAt),
+          },
+          changeType: devComp.changeType,
+          progress: devComp.progress,
+          notes: devComp.notes,
+          version: devComp.version,
+          isActive: devComp.isActive,
+          createdAt: new Date(devComp.createdAt),
+          updatedAt: new Date(devComp.updatedAt),
+        })) || [],
+      recentActivities: [],
+      upcomingDeployments: [],
+      createdAt: new Date(backendDev.createdAt),
+      updatedAt: new Date(backendDev.updatedAt),
+      deletedAt: backendDev.deletedAt ? new Date(backendDev.deletedAt) : undefined
     };
   }
 
-  private getFallbackMetrics(): DevelopmentMetrics {
+  private mapActivityFromBackend(
+    activity: BackendActivityResponse
+  ): RecentActivity {
     return {
-      total: 1,
-      inDevelopment: 1,
-      archived: 0,
-      completed: 0
+      id: activity.id,
+      type: this.mapActivityTypeFromBackend(activity.type),
+      description: activity.description,
+      user: this.mapUserFromString(activity.user),
+      timestamp: new Date(activity.timestamp),
+      createdAt: new Date(activity.timestamp),
+      developmentId: activity.developmentId,
+      isActive: activity.isActive,
     };
   }
 
-  private getFallbackRecentActivities(): RecentActivity[] {
-    return [
-      {
-        id: '1',
-        type: ActivityType.COMPLETED,
-        description: 'Sin actividad',
-        date: new Date(),
-        developmentId: '1'
-      }
-    ];
+  private mapUserFromString(userString: string): User {
+    return {
+      id: 0,
+      firstName: userString.split(' ')[0] || '',
+      lastName: userString.split(' ').slice(1).join(' ') || '',
+      email: '',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      role: 'DEVELOPER',
+    };
   }
 
-  private getFallbackUpcomingDeployments(): UpcomingDeployment[] {
-    return [
-      {
-        id: '1',
-        name: 'Sin despliegues',
-        environment: Environment.PRODUCTION,
-        scheduledDate: new Date(),
-        status: DeploymentStatus.SCHEDULED
-      }
-    ];
+  private mapTeamFromString(teamString: string): Team {
+    return {
+      id: 0,
+      name: teamString,
+      description: '',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
   }
 
-  private getFallbackChartData(): ChartData[] {
-    return [
-      { environment: 'Local', count: 0, color: '#66C6EA' },
-      { environment: 'Testing', count: 0, color: '#7D2BE3' },
-      { environment: 'QA', count: 0, color: '#FF9800' },
-      { environment: 'Production', count: 0, color: '#4CAF50' }
-    ];
+  private mapStatusFromBackend(status: string): DevelopmentStatus {
+    switch (status?.toUpperCase()) {
+      case 'PLANNING':
+        return DevelopmentStatus.PLANNING;
+      case 'IN_PROGRESS':
+        return DevelopmentStatus.IN_PROGRESS;
+      case 'TESTING':
+        return DevelopmentStatus.TESTING;
+      case 'COMPLETED':
+        return DevelopmentStatus.COMPLETED;
+      case 'CANCELLED':
+        return DevelopmentStatus.CANCELLED;
+      default:
+        return DevelopmentStatus.PLANNING;
+    }
   }
 
-  private getFallbackMicroservices(): Microservice[] {
-    return [
-      { id: '1', name: 'Auth Service', technology: 'NestJS' },
-      { id: '2', name: 'User Service', technology: 'Python' },
-      { id: '3', name: 'Payment Service', technology: 'Node.js' }
-    ];
+  private mapEnvironmentFromBackend(environment: string): DevelopmentEnvironment {
+    switch (environment?.toUpperCase()) {
+      case 'DEVELOPMENT':
+        return DevelopmentEnvironment.DEVELOPMENT;
+      case 'TESTING':
+        return DevelopmentEnvironment.TESTING;
+      case 'STAGING':
+        return DevelopmentEnvironment.STAGING;
+      case 'PRODUCTION':
+        return DevelopmentEnvironment.PRODUCTION;
+      default:
+        return DevelopmentEnvironment.DEVELOPMENT;
+    }
+  }
+
+  private mapComponentTypeFromBackend(type: string): ComponentType {
+    switch (type?.toUpperCase()) {
+      case 'MICROSERVICE':
+        return ComponentType.MICROSERVICE;
+      case 'MICROFRONTEND':
+        return ComponentType.MICROFRONTEND;
+      case 'MONOLITH':
+        return ComponentType.MONOLITH;
+      default:
+        return ComponentType.MICROSERVICE;
+    }
+  }
+
+  private mapActivityTypeFromBackend(type: string): ActivityType {
+    switch (type?.toUpperCase()) {
+      case 'DEVELOPMENT_CREATED':
+        return ActivityType.DEVELOPMENT_CREATED;
+      case 'DEVELOPMENT_UPDATED':
+        return ActivityType.DEVELOPMENT_UPDATED;
+      case 'STATUS_CHANGED':
+        return ActivityType.STATUS_CHANGED;
+      case 'MICROSERVICE_ADDED':
+        return ActivityType.MICROSERVICE_ADDED;
+      case 'MICROSERVICE_REMOVED':
+        return ActivityType.MICROSERVICE_REMOVED;
+      case 'PROGRESS_UPDATED':
+        return ActivityType.PROGRESS_UPDATED;
+      case 'DEPLOYMENT_SCHEDULED':
+        return ActivityType.DEPLOYMENT_SCHEDULED;
+      default:
+        return ActivityType.DEVELOPMENT_UPDATED;
+    }
   }
 }
