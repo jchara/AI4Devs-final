@@ -74,7 +74,7 @@ export interface BackendActivityResponse {
   isActive: boolean;
 }
 
-export interface BackendMicroserviceResponse {
+export interface BackendProjectResponse {
   id: number;
   name: string;
   description?: string;
@@ -169,7 +169,7 @@ export interface BackendEnvironment {
   deletedAt?: string;
 }
 
-export interface BackendMicroservice {
+export interface BackendProject {
   id: number;
   name: string;
   technology?: string;
@@ -180,9 +180,9 @@ export interface BackendMicroservice {
   updatedAt: string;
 }
 
-export interface BackendDevelopmentMicroservice {
+export interface BackendDevelopmentProject {
   id: number;
-  microservice: BackendMicroservice;
+  project: BackendProject;
   progress: number;
   notes?: string;
   version?: string;
@@ -199,7 +199,7 @@ export interface BackendDevelopment {
   startDate: string;
   endDate?: string;
   environment: BackendEnvironment;
-  developmentMicroservices: BackendDevelopmentMicroservice[];
+  developmentProjects: BackendDevelopmentProject[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

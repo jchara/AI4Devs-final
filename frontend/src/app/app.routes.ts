@@ -15,8 +15,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/developments/developments.component').then(m => m.DevelopmentsComponent)
   },
   {
-    path: 'microservices',
-    loadComponent: () => import('./features/microservices/microservices.component').then(m => m.MicroservicesComponent)
+    path: 'projects',
+    loadComponent: () => import('./features/projects/projects.component').then(m => m.ProjectsComponent)
   },
   {
     path: 'ambientes',

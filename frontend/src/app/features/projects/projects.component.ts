@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-microservices',
+  selector: 'app-projects',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './microservices.component.html',
-  styleUrl: './microservices.component.scss'
+  templateUrl: './projects.component.html',
+  styleUrl: './projects.component.scss'
 })
-export class MicroservicesComponent implements OnInit {
+export class ProjectsComponent implements OnInit {
 
   constructor() { }
 
