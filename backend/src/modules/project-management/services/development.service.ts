@@ -7,10 +7,14 @@ import { DevelopmentMetrics } from '../interfaces';
 import { DevelopmentRepository } from '../repositories/development.repository';
 import { DevelopmentFilters } from '../repositories/development.repository.interface';
 import { BaseService } from './base.service';
+import { EnvironmentRepository } from 'src/modules/infrastructure';
 
 @Injectable()
 export class DevelopmentService extends BaseService<Development> {
-  constructor(private readonly developmentRepository: DevelopmentRepository) {
+  constructor(
+    private readonly developmentRepository: DevelopmentRepository,
+    private readonly environmentRepository: EnvironmentRepository,
+  ) {
     super(developmentRepository);
   }
 
@@ -89,7 +93,21 @@ export class DevelopmentService extends BaseService<Development> {
   }
 
   async getMetrics(): Promise<DevelopmentMetrics> {
-    return await this.developmentRepository.getMetrics();
+    const metrics = await this.developmentRepository.getMetrics();
+    const environments = await this.environmentRepository.findAll();
+    const byEnvironment = environments.map((environment) => ({
+      environment: environment.name,
+      count: metrics.byEnvironment[environment.name] || 0,
+    }));
+    metrics.byEnvironment = byEnvironment.reduce(
+      (acc, curr) => {
+        acc[curr.environment] = curr.count;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    return metrics;
   }
 
   async getOverdue(): Promise<Development[]> {

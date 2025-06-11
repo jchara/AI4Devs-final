@@ -1102,237 +1102,419 @@ jobs:
 
 ```mermaid
 erDiagram
-    users {
+    User {
         int id PK
+        string firstName
+        string lastName
         string email
         string password
-        string first_name
-        string last_name
-        string role
-        bool is_active
-        datetime created_at
-        datetime updated_at
-        datetime last_login
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        int roleId FK
+        int teamId FK
     }
-    developments {
+    Role {
         int id PK
         string name
         string description
-        string status
-        string jira_key
-        int created_by
-        int assigned_to
-        datetime created_at
-        datetime updated_at
-        datetime deployed_at
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
     }
-    environments {
+    Team {
         int id PK
         string name
         string description
-        bool is_active
-        datetime created_at
-        datetime updated_at
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
     }
-    development_environments {
+    Development {
         int id PK
-        int development_id
-        int environment_id
-        string status
-        datetime deployed_at
-        datetime created_at
-        datetime updated_at
+        string title
+        text description
+        enum status
+        enum priority
+        date startDate
+        date endDate
+        date estimatedDate
+        decimal progress
+        string jiraUrl
+        string branch
+        text notes
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+        int environmentId FK
+        int assignedToId FK
+        int teamId FK
     }
-    microservices {
+    Environment {
         int id PK
         string name
         string description
-        string repository_url
-        bool is_active
-        datetime created_at
-        datetime updated_at
+        string color
+        int order
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
     }
-    development_microservices {
+    Project {
         int id PK
-        int development_id
-        int microservice_id
+        string name
+        string repositoryUrl
+        string type
+        text description
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+    }
+    Component {
+        int id PK
+        int projectId FK
+        string name
+        string type
+        text description
+        string technology
         string version
-        string changes
-        datetime created_at
-        datetime updated_at
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
     }
-    database_scripts {
+    Database {
         int id PK
-        int development_id
+        string name
+        string type
+        text description
+        string version
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+        int environmentId FK
+        int projectId FK
+    }
+    DevelopmentComponent {
+        int id PK
+        int developmentId FK
+        int componentId FK
+        string changeType
+        decimal progress
+        text notes
+        string version
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+    }
+    DevelopmentDatabase {
+        int id PK
+        int developmentId FK
+        int databaseId FK
+        string changeType
+        text scriptDescription
+        text notes
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+    }
+    UpcomingDeployment {
+        int id PK
+        string title
+        text description
+        enum status
+        datetime scheduledDate
+        datetime actualDate
+        string version
+        text notes
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        int developmentId FK
+        int environmentId FK
+        int deployedById FK
+        int deploymentTypeId FK
+    }
+    DeploymentType {
+        int id PK
         string name
         string description
-        string script_type
-        string script_content
-        bool is_executed
-        datetime executed_at
-        datetime created_at
-        datetime updated_at
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
     }
-    config_files {
+    RecentActivity {
         int id PK
-        int development_id
-        string name
-        string file_path
-        string file_type
-        string content
-        datetime created_at
-        datetime updated_at
-    }
-    audit_logs {
-        int id PK
-        int user_id
-        string action
-        string entity_type
-        int entity_id
-        string changes
-        datetime created_at
+        enum type
+        string description
+        json metadata
+        boolean isActive
+        datetime createdAt
+        int developmentId FK
+        int performedById FK
     }
 
-    users ||--o{ developments : creates
-    users ||--o{ developments : assigned_to
-    developments ||--o{ development_environments : has
-    environments ||--o{ development_environments : contains
-    developments ||--o{ development_microservices : includes
-    microservices ||--o{ development_microservices : modified_in
-    developments ||--o{ database_scripts : contains
-    developments ||--o{ config_files : contains
-    users ||--o{ audit_logs : performs
+    User }|--|| Role : "has"
+    User }|--|| Team : "belongs to"
+    User ||--o{ Development : "assigned to"
+    User ||--o{ RecentActivity : "performs"
+    User ||--o{ UpcomingDeployment : "deploys"
+    Team ||--o{ Development : "manages"
+    Development }|--|| Environment : "runs in"
+    Project ||--o{ Component : "contains"
+    Environment ||--o{ Database : "hosts"
+    Development ||--o{ DevelopmentComponent : "affects"
+    Component ||--o{ DevelopmentComponent : "is affected by"
+    Development ||--o{ DevelopmentDatabase : "modifies"
+    Database ||--o{ DevelopmentDatabase : "is modified by"
+    UpcomingDeployment }|--|| Environment : "targets"
+    UpcomingDeployment }|--|| DeploymentType : "has type"
+    UpcomingDeployment }|--|| Development : "deploys"
+    RecentActivity }|--|| Development : "tracks"
 ```
 
 ### **3.2. Descripción de entidades principales:**
 
-```markdown
-#### 1. users
-Tabla principal para la gestión de usuarios del sistema.
-- **id**: INTEGER (PK) - Identificador único del usuario (autoincremental)
-- **email**: VARCHAR(255) (UK, NOT NULL) - Email del usuario, debe ser único
+#### 👥 **Gestión de Usuarios y Equipos**
+
+##### **User** - Usuarios del sistema
+- **id**: INTEGER (PK) - Identificador único del usuario
+- **firstName**: VARCHAR(100) (NOT NULL) - Nombre del usuario
+- **lastName**: VARCHAR(100) (NOT NULL) - Apellido del usuario
+- **email**: VARCHAR(255) (UNIQUE, NOT NULL) - Email único del usuario
 - **password**: VARCHAR(255) (NOT NULL) - Contraseña encriptada
-- **first_name**: VARCHAR(100) - Nombre del usuario
-- **last_name**: VARCHAR(100) - Apellido del usuario
-- **role**: VARCHAR(50) (NOT NULL) - Rol del usuario (ADMIN, DEVELOPER, QA)
-- **is_active**: BOOLEAN (NOT NULL) - Estado de la cuenta
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
-- **last_login**: TIMESTAMP - Fecha del último inicio de sesión
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado activo del usuario
+- **roleId**: INTEGER (FK, NOT NULL) - Referencia al rol
+- **teamId**: INTEGER (FK, NOT NULL) - Referencia al equipo
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
 
-#### 2. developments
-Tabla principal para el seguimiento de desarrollos.
-- **id**: INTEGER (PK) - Identificador único del desarrollo (autoincremental)
-- **name**: VARCHAR(255) (NOT NULL) - Nombre del desarrollo
+##### **Role** - Roles de usuario
+- **id**: INTEGER (PK) - Identificador único del rol
+- **name**: VARCHAR(50) (UNIQUE, NOT NULL) - Nombre del rol (admin, developer, manager)
+- **description**: TEXT - Descripción del rol
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado del rol
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
+
+##### **Team** - Equipos de trabajo
+- **id**: INTEGER (PK) - Identificador único del equipo
+- **name**: VARCHAR(100) (UNIQUE, NOT NULL) - Nombre del equipo
+- **description**: TEXT - Descripción del equipo
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado del equipo
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
+
+#### 🚀 **Core del Sistema de Desarrollos**
+
+##### **Development** - Desarrollos del sistema
+- **id**: INTEGER (PK) - Identificador único del desarrollo
+- **title**: VARCHAR(255) (NOT NULL) - Título del desarrollo
 - **description**: TEXT - Descripción detallada
-- **status**: VARCHAR(50) (NOT NULL) - Estado actual (DRAFT, IN_PROGRESS, QA, PRODUCTION)
-- **jira_key**: VARCHAR(50) (UK) - Referencia a Jira
-- **created_by**: INTEGER (FK) - Usuario que creó el desarrollo
-- **assigned_to**: INTEGER (FK) - Usuario asignado
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
-- **deployed_at**: TIMESTAMP - Fecha del último despliegue
+- **status**: ENUM (NOT NULL) - Estado (planning, in_progress, testing, completed, cancelled)
+- **priority**: ENUM (NOT NULL) - Prioridad (low, medium, high, critical)
+- **startDate**: DATE - Fecha de inicio
+- **endDate**: DATE - Fecha de fin
+- **estimatedDate**: DATE - Fecha estimada
+- **progress**: DECIMAL(5,2) (DEFAULT 0) - Progreso del desarrollo
+- **jiraUrl**: VARCHAR(255) - URL del ticket de Jira
+- **branch**: VARCHAR(100) - Rama de desarrollo
+- **notes**: TEXT - Notas adicionales
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado activo
+- **environmentId**: INTEGER (FK) - Ambiente objetivo
+- **assignedToId**: INTEGER (FK) - Usuario asignado
+- **teamId**: INTEGER (FK) - Equipo responsable
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-#### 3. environments
-Tabla para la gestión de ambientes de despliegue.
-- **id**: INTEGER (PK) - Identificador único del ambiente (autoincremental)
-- **name**: VARCHAR(50) (NOT NULL, UK) - Nombre del ambiente
+##### **Environment** - Ambientes de despliegue
+- **id**: INTEGER (PK) - Identificador único del ambiente
+- **name**: VARCHAR(50) (UNIQUE, NOT NULL) - Nombre del ambiente
 - **description**: TEXT - Descripción del ambiente
-- **is_active**: BOOLEAN (NOT NULL) - Estado del ambiente
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
+- **color**: VARCHAR(7) - Color hexadecimal para identificación visual
+- **order**: INTEGER - Orden de despliegue
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado del ambiente
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-#### 4. development_environments
-Tabla de relación entre desarrollos y ambientes.
-- **id**: INTEGER (PK) - Identificador único (autoincremental)
-- **development_id**: INTEGER (FK, NOT NULL) - Referencia al desarrollo
-- **environment_id**: INTEGER (FK, NOT NULL) - Referencia al ambiente
-- **status**: VARCHAR(50) (NOT NULL) - Estado en este ambiente
-- **deployed_at**: TIMESTAMP - Fecha del despliegue
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
+#### 🏗️ **Arquitectura de Proyectos**
 
-#### 5. microservices
-Tabla para el catálogo de microservicios.
-- **id**: INTEGER (PK) - Identificador único del microservicio (autoincremental)
-- **name**: VARCHAR(100) (NOT NULL, UK) - Nombre del microservicio
-- **description**: TEXT - Descripción del microservicio
-- **repository_url**: VARCHAR(255) - URL del repositorio
-- **is_active**: BOOLEAN (NOT NULL) - Estado del microservicio
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
+##### **Project** - Repositorios de código
+- **id**: INTEGER (PK) - Identificador único del proyecto
+- **name**: VARCHAR(100) (UNIQUE, NOT NULL) - Nombre del proyecto
+- **repositoryUrl**: VARCHAR(255) (NOT NULL) - URL del repositorio
+- **type**: ENUM (NOT NULL) - Tipo (backend, frontend)
+- **description**: TEXT - Descripción del proyecto
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado del proyecto
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-#### 6. development_microservices
-Tabla de relación entre desarrollos y microservicios afectados.
-- **id**: INTEGER (PK) - Identificador único (autoincremental)
-- **development_id**: INTEGER (FK, NOT NULL) - Referencia al desarrollo
-- **microservice_id**: INTEGER (FK, NOT NULL) - Referencia al microservicio
-- **version**: VARCHAR(50) (NOT NULL) - Versión del microservicio
-- **changes**: TEXT (NOT NULL) - Descripción de los cambios
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
+##### **Component** - Componentes de los proyectos
+- **id**: INTEGER (PK) - Identificador único del componente
+- **projectId**: INTEGER (FK, NOT NULL) - Referencia al proyecto
+- **name**: VARCHAR(100) (NOT NULL) - Nombre del componente
+- **type**: ENUM (NOT NULL) - Tipo (microservice, microfrontend, monolith)
+- **description**: TEXT - Descripción del componente
+- **technology**: VARCHAR(50) (NOT NULL) - Tecnología utilizada
+- **version**: VARCHAR(20) - Versión actual
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado del componente
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-#### 7. database_scripts
-Tabla para el registro de scripts de base de datos.
-- **id**: INTEGER (PK) - Identificador único del script (autoincremental)
-- **development_id**: INTEGER (FK, NOT NULL) - Referencia al desarrollo
-- **name**: VARCHAR(255) (NOT NULL) - Nombre del script
-- **description**: TEXT - Descripción del script
-- **script_type**: VARCHAR(50) (NOT NULL) - Tipo de script (DDL, DML)
-- **script_content**: TEXT (NOT NULL) - Contenido del script
-- **is_executed**: BOOLEAN (NOT NULL) - Estado de ejecución
-- **executed_at**: TIMESTAMP - Fecha de ejecución
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
+#### 🗄️ **Gestión de Bases de Datos**
 
-#### 8. config_files
-Tabla para el registro de archivos de configuración.
-- **id**: INTEGER (PK) - Identificador único del archivo (autoincremental)
-- **development_id**: INTEGER (FK, NOT NULL) - Referencia al desarrollo
-- **name**: VARCHAR(255) (NOT NULL) - Nombre del archivo
-- **file_path**: VARCHAR(255) (NOT NULL) - Ruta del archivo
-- **file_type**: VARCHAR(50) (NOT NULL) - Tipo de archivo
-- **content**: TEXT (NOT NULL) - Contenido del archivo
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de creación
-- **updated_at**: TIMESTAMP (NOT NULL) - Fecha de última actualización
+##### **Database** - Bases de datos del sistema
+- **id**: INTEGER (PK) - Identificador único de la base de datos
+- **name**: VARCHAR(100) (NOT NULL) - Nombre de la base de datos
+- **type**: ENUM (NOT NULL) - Tipo (postgres, mysql)
+- **description**: TEXT - Descripción de la base de datos
+- **version**: VARCHAR(20) - Versión de la base de datos
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado de la base de datos
+- **environmentId**: INTEGER (FK, NOT NULL) - Ambiente donde se encuentra
+- **projectId**: INTEGER (FK) - Proyecto asociado
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-#### 9. audit_logs
-Tabla para el registro de auditoría.
-- **id**: INTEGER (PK) - Identificador único del log (autoincremental)
-- **user_id**: INTEGER (FK, NOT NULL) - Usuario que realizó la acción
-- **action**: VARCHAR(50) (NOT NULL) - Tipo de acción
-- **entity_type**: VARCHAR(50) (NOT NULL) - Tipo de entidad afectada
-- **entity_id**: INTEGER (NOT NULL) - ID de la entidad afectada
-- **changes**: JSONB (NOT NULL) - Cambios realizados
-- **created_at**: TIMESTAMP (NOT NULL) - Fecha de la acción
+#### 🔗 **Relaciones de Desarrollo**
 
-#### Índices y Restricciones
-1. **Índices**
-   - Índices B-tree en todas las claves primarias y foráneas
-   - Índices en campos de búsqueda frecuente (email, name, status)
-   - Índices parciales para registros activos
+##### **DevelopmentComponent** - Relación desarrollos-componentes
+- **id**: INTEGER (PK) - Identificador único
+- **developmentId**: INTEGER (FK, NOT NULL) - Referencia al desarrollo
+- **componentId**: INTEGER (FK, NOT NULL) - Referencia al componente
+- **changeType**: ENUM (NOT NULL) - Tipo de cambio (created, modified, deleted)
+- **progress**: DECIMAL(5,2) (DEFAULT 0) - Progreso del componente
+- **notes**: TEXT - Notas del desarrollo
+- **version**: VARCHAR(20) - Versión del componente
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado activo
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-2. **Restricciones**
-   - Claves foráneas con ON DELETE RESTRICT
-   - Valores únicos en campos críticos
-   - Valores NOT NULL en campos obligatorios
-   - Check constraints para validación de datos
+##### **DevelopmentDatabase** - Relación desarrollos-bases de datos
+- **id**: INTEGER (PK) - Identificador único
+- **developmentId**: INTEGER (FK, NOT NULL) - Referencia al desarrollo
+- **databaseId**: INTEGER (FK, NOT NULL) - Referencia a la base de datos
+- **changeType**: ENUM (NOT NULL) - Tipo de cambio (schema_change, data_migration, stored_procedure, function, trigger)
+- **scriptDescription**: TEXT (NOT NULL) - Descripción del script
+- **notes**: TEXT - Notas adicionales
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado activo
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
 
-3. **Triggers**
-   - Actualización automática de updated_at
-   - Registro automático en audit_logs
-   - Validación de estados de desarrollo
-   - Control de versiones de microservicios
+#### 📦 **Gestión de Despliegues**
 
+##### **UpcomingDeployment** - Despliegues programados
+- **id**: INTEGER (PK) - Identificador único del despliegue
+- **title**: VARCHAR(255) (NOT NULL) - Título del despliegue
+- **description**: TEXT - Descripción del despliegue
+- **status**: ENUM (NOT NULL) - Estado (scheduled, in_progress, completed, failed, cancelled)
+- **scheduledDate**: TIMESTAMP - Fecha programada
+- **actualDate**: TIMESTAMP - Fecha real de ejecución
+- **version**: VARCHAR(20) - Versión desplegada
+- **notes**: TEXT - Notas del despliegue
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado activo
+- **developmentId**: INTEGER (FK, NOT NULL) - Desarrollo asociado
+- **environmentId**: INTEGER (FK, NOT NULL) - Ambiente objetivo
+- **deployedById**: INTEGER (FK, NOT NULL) - Usuario que despliega
+- **deploymentTypeId**: INTEGER (FK, NOT NULL) - Tipo de despliegue
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+
+##### **DeploymentType** - Tipos de despliegue
+- **id**: INTEGER (PK) - Identificador único del tipo
+- **name**: VARCHAR(50) (UNIQUE, NOT NULL) - Nombre del tipo (hotfix, feature, release)
+- **description**: TEXT - Descripción del tipo
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado del tipo
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+- **updatedAt**: TIMESTAMP (NOT NULL) - Fecha de actualización
+- **deletedAt**: TIMESTAMP - Fecha de eliminación lógica
+
+##### **RecentActivity** - Registro de actividades
+- **id**: INTEGER (PK) - Identificador único de la actividad
+- **type**: ENUM (NOT NULL) - Tipo de actividad
+- **description**: VARCHAR(255) (NOT NULL) - Descripción de la actividad
+- **metadata**: JSONB - Metadatos adicionales
+- **isActive**: BOOLEAN (NOT NULL, DEFAULT true) - Estado activo
+- **developmentId**: INTEGER (FK, NOT NULL) - Desarrollo relacionado
+- **performedById**: INTEGER (FK, NOT NULL) - Usuario que realizó la acción
+- **createdAt**: TIMESTAMP (NOT NULL) - Fecha de creación
+
+#### 📊 **Enumeraciones del Sistema**
+
+##### **Estados de Desarrollo**
+- `planning`: En planificación
+- `in_progress`: En desarrollo
+- `testing`: En pruebas
+- `completed`: Completado
+- `cancelled`: Cancelado
+
+##### **Prioridades de Desarrollo**
+- `low`: Baja
+- `medium`: Media
+- `high`: Alta
+- `critical`: Crítica
+
+##### **Estados de Despliegue**
+- `scheduled`: Programado
+- `in_progress`: En progreso
+- `completed`: Completado
+- `failed`: Fallido
+- `cancelled`: Cancelado
+
+##### **Tipos de Actividad**
+- `development_created`: Desarrollo creado
+- `development_updated`: Desarrollo actualizado
+- `status_changed`: Estado cambiado
+- `microservice_added`: Microservicio agregado
+- `microservice_removed`: Microservicio removido
+- `progress_updated`: Progreso actualizado
+- `deployment_scheduled`: Despliegue programado
+
+#### 🔧 **Características Técnicas**
+
+##### **Soft Delete Implementation**
+Las siguientes entidades implementan eliminación lógica:
+- Role, Team, Development, Environment, Project, Component, Database, DeploymentType
+- DevelopmentComponent, DevelopmentDatabase
+
+##### **Índices Recomendados**
+```sql
+-- Índices para soft delete
+CREATE INDEX idx_developments_active ON developments(isActive, deletedAt);
+CREATE INDEX idx_projects_active ON projects(isActive, deletedAt);
+CREATE INDEX idx_components_active ON components(isActive, deletedAt);
+
+-- Índices para relaciones frecuentes
+CREATE INDEX idx_development_components_dev ON development_components(developmentId);
+CREATE INDEX idx_development_databases_dev ON development_databases(developmentId);
+CREATE INDEX idx_components_project ON components(projectId);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_developments_status ON developments(status);
+```
 
 Este modelo de datos está diseñado para:
-1. Mantener la integridad referencial
-2. Facilitar el seguimiento de cambios
-3. Optimizar las consultas frecuentes
-4. Mantener un historial de auditoría
-5. Escalar eficientemente
-
-```
+1. **Flexibilidad**: Soporta monolitos, microservicios y microfrontends
+2. **Trazabilidad**: Seguimiento completo de cambios
+3. **Escalabilidad**: Arquitectura preparada para crecimiento
+4. **Integridad**: Soft deletes y auditoría completa
+5. **Rendimiento**: Índices optimizados para consultas frecuentes
 ---
 
 ## 4. Especificación de la API

@@ -23,4 +23,7 @@ export class DevelopmentMetricsResponseDto {
 
   @ApiProperty({ description: 'Number of developments by priority' })
   byPriority: Record<DevelopmentPriority, number>;
+
+  @ApiProperty({ description: 'Number of developments by environment' })
+  byEnvironment: Record<string, number>;
 } 

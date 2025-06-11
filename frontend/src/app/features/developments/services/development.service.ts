@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+  tap,
+  forkJoin,
+} from 'rxjs';
 import { DevelopmentMapper } from '../../../core/mappers/development.mapper';
 import { ApiService } from '../../../core/services/api.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -26,9 +34,15 @@ import {
 import { Team, User } from '../../../shared/models/user.model';
 
 interface DashboardData {
+  metrics: {
+    total: number;
+    inDevelopment: number;
+    completed: number;
+    cancelled: number;
+  };
   developments: Development[];
+  chartData: ChartData[];
   recentActivities: RecentActivity[];
-  upcomingDeployments: UpcomingDeployment[];
 }
 
 interface ChartData {
@@ -59,15 +73,14 @@ export class DevelopmentService {
     this.loadingSubject.next(true);
     return this.apiService.get<any>('developments', filter).pipe(
       map((response) => {
-        console.log('Respuesta completa del backend:', response);
         if (!response || !response.data || !Array.isArray(response.data)) {
-          console.error('La respuesta del backend no tiene el formato esperado:', response);
+          console.error(
+            'La respuesta del backend no tiene el formato esperado:',
+            response
+          );
           return [];
         }
-        console.log('Datos de desarrollos:', response.data);
         return response.data.map((dev: any) => {
-          console.log('Desarrollo individual:', dev);
-          console.log('Environment del desarrollo:', dev.environment);
           return DevelopmentMapper.mapDevelopmentFromBackend(dev);
         });
       }),
@@ -161,7 +174,7 @@ export class DevelopmentService {
           return of({
             total: 0,
             inDevelopment: 0,
-            archived: 0,
+            cancelled: 0,
             completed: 0,
           });
         })
@@ -173,13 +186,24 @@ export class DevelopmentService {
    */
   getRecentActivity(): Observable<RecentActivity[]> {
     return this.apiService
-      .get<BackendActivityResponse[]>('api/activities', { limit: 10 })
+      .get<any>('api/activities/recent', { limit: 10 })
       .pipe(
-        map((activities) =>
-          activities.map((activity) =>
-            DevelopmentMapper.mapActivityFromBackend(activity)
-          )
-        ),
+        map((response) => {
+          console.log('[DEBUG] Recent activities response:', response);
+          
+          // Si la respuesta es un array directamente
+          if (Array.isArray(response)) {
+            return response.map((activity: any) => this.mapActivityFromBackend(activity));
+          }
+          
+          // Si la respuesta tiene una propiedad data
+          if (response && Array.isArray(response.data)) {
+            return response.data.map((activity: any) => this.mapActivityFromBackend(activity));
+          }
+          
+          // Si no hay datos, devolver array vacío
+          return [];
+        }),
         catchError((error) => {
           console.error('Error getting recent activities:', error);
           return of([]);
@@ -228,65 +252,6 @@ export class DevelopmentService {
         updatedAt: new Date(),
       },
     };
-  }
-
-  /**
-   * Obtener datos para gráficos
-   */
-  getChartData(): Observable<ChartData[]> {
-    return this.getDevelopments().pipe(
-      map((developments) => {
-        const environmentCounts = developments.reduce((acc, dev) => {
-          const env = dev.environment;
-          acc[env] = (acc[env] || 0) + 1;
-          return acc;
-        }, {} as Record<DevelopmentEnvironment, number>);
-
-        return [
-          {
-            environment: 'Local',
-            count: environmentCounts[DevelopmentEnvironment.DEVELOPMENT] || 0,
-            color: '#66C6EA',
-          },
-          {
-            environment: 'Testing',
-            count: environmentCounts[DevelopmentEnvironment.TESTING] || 0,
-            color: '#7D2BE3',
-          },
-          {
-            environment: 'QA',
-            count: environmentCounts[DevelopmentEnvironment.STAGING] || 0,
-            color: '#FF9800',
-          },
-          {
-            environment: 'Production',
-            count: environmentCounts[DevelopmentEnvironment.PRODUCTION] || 0,
-            color: '#4CAF50',
-          },
-        ];
-      }),
-      catchError((error) => {
-        console.error('Error getting chart data:', error);
-        return of([]);
-      })
-    );
-  }
-
-  /**
-   * Obtener desarrollo por ID
-   */
-  getDevelopmentById(id: number): Observable<Development | null> {
-    this.loadingSubject.next(true);
-    return this.apiService.get<any>(`developments/${id}`).pipe(
-      map((response) => DevelopmentMapper.mapDevelopmentFromBackend(response)),
-      tap(() => this.loadingSubject.next(false)),
-      catchError((error) => {
-        console.error('Error al obtener desarrollo:', error);
-        this.notificationService.showError('Error al obtener desarrollo');
-        this.loadingSubject.next(false);
-        return of(null);
-      })
-    );
   }
 
   /**
@@ -408,26 +373,60 @@ export class DevelopmentService {
       );
   }
 
-  /**
-   * Obtener valor de propiedad para ordenamiento
-   */
-  private getPropertyValue(obj: Development, field: keyof Development): any {
-    return obj[field];
-  }
-
-  getDashboardData(): Observable<any> {
+  getDashboardData(): Observable<DashboardData> {
     this.loadingSubject.next(true);
-    return this.apiService.get<any>('dashboard').pipe(
+
+    return forkJoin({
+      metrics: this.getMetrics(),
+      developments: this.getDevelopments(),
+      recentActivities: this.getRecentActivity(),
+    }).pipe(
+      map(({ metrics, developments, recentActivities }) => ({
+        metrics,
+        developments: Array.isArray(developments) ? developments : [],
+        recentActivities: Array.isArray(recentActivities)
+          ? recentActivities
+          : [],
+        chartData: this.generateChartDataFromMetrics(metrics),
+      })),
       tap(() => this.loadingSubject.next(false)),
       catchError((error) => {
-        console.error('Error al obtener datos del dashboard:', error);
-        this.notificationService.showError(
-          'Error al obtener datos del dashboard'
-        );
+        console.error('Error loading dashboard data:', error);
         this.loadingSubject.next(false);
-        return of(null);
+        return of({
+          metrics: {
+            total: 0,
+            inDevelopment: 0,
+            completed: 0,
+            cancelled: 0,
+          },
+          developments: [],
+          recentActivities: [],
+          chartData: [],
+        });
       })
     );
+  }
+
+  private generateChartDataFromMetrics(metrics: any): ChartData[] {
+    if (!metrics || !metrics.byEnvironment) return [];
+    const chartData = Object.entries(metrics.byEnvironment).map(
+      ([environment, count]) => ({
+        environment: environment as string,
+        count: Number(count),
+        color: this.getEnvironmentColor(environment),
+      })
+    );
+    return chartData;
+  }
+
+  private getEnvironmentColor(environment: string): string {
+    const env = environment.toLowerCase();
+    if (env.includes('dev') || env.includes('desar')) return '#2196f3';
+    if (env.includes('stag')) return '#ff9800';
+    if (env.includes('prod') || env.includes('produc')) return '#4caf50';
+    if (env.includes('test')) return '#9c27b0';
+    return '#757575';
   }
 
   private mapDevelopmentFromBackend(
@@ -490,20 +489,31 @@ export class DevelopmentService {
       upcomingDeployments: [],
       createdAt: new Date(backendDev.createdAt),
       updatedAt: new Date(backendDev.updatedAt),
-      deletedAt: backendDev.deletedAt ? new Date(backendDev.deletedAt) : undefined
+      deletedAt: backendDev.deletedAt
+        ? new Date(backendDev.deletedAt)
+        : undefined,
     };
   }
 
   private mapActivityFromBackend(
-    activity: BackendActivityResponse
+    activity: any
   ): RecentActivity {
     return {
       id: activity.id,
       type: this.mapActivityTypeFromBackend(activity.type),
       description: activity.description,
-      user: this.mapUserFromString(activity.user),
-      timestamp: new Date(activity.timestamp),
-      createdAt: new Date(activity.timestamp),
+      user: activity.performedBy ? {
+        id: activity.performedBy.id,
+        firstName: activity.performedBy.firstName || 'Usuario',
+        lastName: activity.performedBy.lastName || 'Desconocido',
+        email: activity.performedBy.email || '',
+        isActive: activity.performedBy.isActive || true,
+        createdAt: new Date(activity.performedBy.createdAt || new Date()),
+        updatedAt: new Date(activity.performedBy.updatedAt || new Date()),
+        role: activity.performedBy.role?.name || 'DEVELOPER',
+      } : this.mapUserFromString('Usuario Desconocido'),
+      timestamp: new Date(activity.createdAt),
+      createdAt: new Date(activity.createdAt),
       developmentId: activity.developmentId,
       isActive: activity.isActive,
     };
@@ -550,7 +560,9 @@ export class DevelopmentService {
     }
   }
 
-  private mapEnvironmentFromBackend(environment: string): DevelopmentEnvironment {
+  private mapEnvironmentFromBackend(
+    environment: string
+  ): DevelopmentEnvironment {
     switch (environment?.toUpperCase()) {
       case 'DEVELOPMENT':
         return DevelopmentEnvironment.DEVELOPMENT;

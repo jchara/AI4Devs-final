@@ -53,10 +53,15 @@ export interface BackendComponentResponse {
 }
 
 export interface BackendDevelopmentMetricsResponse {
-  total: number;
-  inDevelopment: number;
-  completed: number;
-  archived: number;
+  data: {
+    total: number;
+    byStatus: {
+      completed: number;
+      inDevelopment: number;
+      cancelled: number;
+    };
+    byEnvironment?: Record<string, number>;
+  };
 }
 
 export interface BackendActivityResponse {

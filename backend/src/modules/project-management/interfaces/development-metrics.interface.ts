@@ -2,13 +2,13 @@ export interface DevelopmentMetrics {
   total: number;
   byStatus: {
     completed: number;
-    inProgress: number;
-    planning: number;
-    testing: number;
+    inDevelopment: number;
+    cancelled: number;
   };
   byPriority: {
     high: number;
     medium: number;
     low: number;
   };
-} 
+  byEnvironment: { [key: string]: number };
+}

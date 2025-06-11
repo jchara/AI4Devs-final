@@ -182,10 +182,9 @@ export class DevelopmentMetricsResponseDto {
   @ApiProperty({
     description: 'Desarrollos por estado',
     example: {
-      PLANNING: 5,
-      IN_PROGRESS: 8,
-      TESTING: 4,
-      COMPLETED: 8
+      COMPLETED: 8,
+      CANCELLED: 2,
+      IN_DEVELOPMENT: 10,
     },
   })
   byStatus: Record<DevelopmentStatus, number>;

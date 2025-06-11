@@ -66,6 +66,11 @@ export class ThemeService {
       root.style.setProperty('--color-error-rgb', '255, 82, 82');
       root.style.setProperty('--border-color', '#404040');
       root.style.setProperty('--border-color-light', '#555555');
+      root.style.setProperty('--border-color-rgb', '64, 64, 64');
+      root.style.setProperty('--bg-primary-rgb', '35, 35, 35');
+      root.style.setProperty('--bg-secondary-rgb', '41, 41, 41');
+      root.style.setProperty('--bg-tertiary-rgb', '45, 45, 45');
+      root.style.setProperty('--text-secondary-rgb', '136, 136, 136');
       root.style.setProperty('--shadow', '0 4px 6px rgba(0, 0, 0, 0.3)');
       root.style.setProperty('--shadow-hover', '0 8px 25px rgba(0, 0, 0, 0.4)');
       root.style.setProperty('--text-on-warn', '#FFFFFF');
@@ -92,6 +97,11 @@ export class ThemeService {
       root.style.setProperty('--color-error-rgb', '244, 67, 54');
       root.style.setProperty('--border-color', '#E0E0E0');
       root.style.setProperty('--border-color-light', '#EEEEEE');
+      root.style.setProperty('--border-color-rgb', '224, 224, 224');
+      root.style.setProperty('--bg-primary-rgb', '255, 255, 255');
+      root.style.setProperty('--bg-secondary-rgb', '248, 249, 250');
+      root.style.setProperty('--bg-tertiary-rgb', '241, 243, 244');
+      root.style.setProperty('--text-secondary-rgb', '51, 51, 51');
       root.style.setProperty('--shadow', '0 4px 6px rgba(0, 0, 0, 0.1)');
       root.style.setProperty('--shadow-hover', '0 8px 25px rgba(0, 0, 0, 0.15)');
       root.style.setProperty('--text-on-warn', '#FFFFFF');

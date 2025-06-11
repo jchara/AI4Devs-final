@@ -1096,76 +1096,102 @@ button[mat-menu-item] {
 }
 
 .development-details-section {
-  background: var(--surface-card);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: var(--panel-padding);
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 
   h2 {
-    margin-bottom: 1.5rem;
-    color: var(--text-color);
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    position: relative;
+    padding-bottom: 0.75rem;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 2.5rem;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 3px;
+    }
   }
 
   .details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    margin-bottom: 2rem;
-  }
+    margin: 1rem 0;
 
-  .detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    label {
-      color: var(--text-color-secondary);
-      font-size: 0.875rem;
+    .full-width {
+      grid-column: 1 / -1;
     }
 
-    span {
-      color: var(--text-color);
-      font-weight: 500;
+    .detail-item {
+      label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        transition: color 0.2s ease;
+      }
+
+      span {
+        font-weight: 500;
+        color: var(--text-primary);
+        transition: color 0.2s ease;
+      }
+
+      &:hover label {
+        color: var(--color-primary);
+      }
     }
   }
 
   .priority-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.875rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
     font-weight: 500;
 
     &.priority-high {
-      background-color: var(--red-100);
-      color: var(--red-700);
+      background-color: rgba(var(--color-error-rgb), 0.15);
+      color: var(--color-error);
     }
 
     &.priority-medium {
-      background-color: var(--yellow-100);
-      color: var(--yellow-700);
+      background-color: rgba(var(--color-warning-rgb), 0.15);
+      color: var(--color-warning);
     }
 
     &.priority-low {
-      background-color: var(--green-100);
-      color: var(--green-700);
+      background-color: rgba(var(--color-success-rgb), 0.15);
+      color: var(--color-success);
     }
   }
 
   .environment-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.875rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
     font-weight: 500;
     color: white;
   }
 
   .branch-name {
     font-family: monospace;
-    background: var(--surface-ground);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    background: rgba(var(--bg-tertiary-rgb, 241, 243, 244), 0.5);
+    color: var(--text-primary);
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
   }
 }
 

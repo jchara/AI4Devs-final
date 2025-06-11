@@ -13,8 +13,7 @@ import {
   DevelopmentMetrics,
   DevelopmentStatus,
   DevelopmentEnvironment,
-  RecentActivity,
-  UpcomingDeployment
+  RecentActivity
 } from '../../shared/models/development.model';
 import { DevelopmentService } from '../developments/services/development.service';
 import { MatCardModule } from '@angular/material/card';
@@ -44,7 +43,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   metrics: DevelopmentMetrics | null = null;
   developments: Development[] = [];
   recentActivities: RecentActivity[] = [];
-  upcomingDeployments: UpcomingDeployment[] = [];
   chartData: ChartData[] = [];
   loading = false;
 
@@ -75,10 +73,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return item.id.toString();
   }
 
-  trackByDeployment(index: number, item: UpcomingDeployment): string {
-    return item.id.toString();
-  }
-
   trackByChartData(index: number, item: ChartData): string {
     return item.environment;
   }
@@ -87,9 +81,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.developmentService.getDashboardData().subscribe({
       next: (data) => {
+        console.log('[DEBUG] Dashboard data:', data);
+        this.metrics = data.metrics;
         this.developments = data.developments;
         this.recentActivities = data.recentActivities;
-        this.upcomingDeployments = data.upcomingDeployments;
+        this.chartData = data.chartData;
         this.loading = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -99,22 +95,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.changeDetectorRef.markForCheck();
       }
     });
-
-    // Load metrics
-    this.developmentService.getMetrics()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(metrics => {
-        this.metrics = metrics;
-        this.changeDetectorRef.markForCheck();
-      });
-
-    // Load chart data
-    this.developmentService.getChartData()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.chartData = data;
-        this.changeDetectorRef.markForCheck();
-      });
   }
 
   getStatusClass(status: DevelopmentStatus): string {
@@ -169,6 +149,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return '#9c27b0';
       default:
         return '#757575';
+    }
+  }
+
+  getActivityIcon(type: ActivityType): string {
+    switch (type) {
+      case ActivityType.DEVELOPMENT_CREATED:
+        return 'fiber_new';
+      case ActivityType.DEVELOPMENT_UPDATED:
+        return 'edit_note';
+      case ActivityType.STATUS_CHANGED:
+        return 'published_with_changes';
+      case ActivityType.MICROSERVICE_ADDED:
+        return 'add_circle_outline';
+      case ActivityType.MICROSERVICE_REMOVED:
+        return 'remove_circle_outline';
+      case ActivityType.PROGRESS_UPDATED:
+        return 'show_chart';
+      case ActivityType.DEPLOYMENT_SCHEDULED:
+        return 'rocket_launch';
+      default:
+        return 'notifications';
     }
   }
 }

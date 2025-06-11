@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartData } from '../../models/development.model';
 
@@ -10,32 +10,47 @@ import { ChartData } from '../../models/development.model';
   styleUrl: './development-chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DevelopmentChartComponent implements OnInit {
+export class DevelopmentChartComponent implements OnInit, OnChanges {
   @Input() data: ChartData[] = [];
-  @Input() title: string = 'Desarrollos por Ambiente';
+  @Input() title: string = '';
   @Input() showLegend: boolean = true;
   @Input() height: string = '200px';
 
-  constructor() { }
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    // Asegurar que los datos tengan colores asignados
     this.data = this.data.map(item => ({
       ...item,
       color: item.color || this.getRandomColor()
     }));
   }
 
-  // TrackBy function para optimizar renderizado
-  trackByEnvironment(index: number, item: ChartData): string {
-    return item.environment;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data'] && this.data) {
+      this.data = (this.data || []).map(item => ({
+        ...item,
+        color: item.color || this.getRandomColor()
+      }));
+      console.log('[DEBUG] Datos recibidos en development-chart (ngOnChanges):', this.data);
+      this.cdr.markForCheck();
+    }
   }
 
   getBarHeight(count: number): number {
     if (!this.data || this.data.length === 0) return 0;
+    if (count === 0) return 0;
     
+    console.log('[DEBUG] Calculando altura para count:', count);
     const maxValue = Math.max(...this.data.map(item => item.count));
-    return maxValue > 0 ? (count / maxValue) * 100 : 0;
+    console.log('[DEBUG] Max value:', maxValue);
+    
+    if (maxValue === 0) return 0;
+    
+    // Asegurar que las barras tengan al menos 15% de altura para ser visibles
+    const percentage = (count / maxValue) * 100;
+    const finalHeight = Math.max(percentage, 15);
+    console.log('[DEBUG] Altura calculada:', finalHeight, '%');
+    return finalHeight;
   }
 
   getTotalCount(): number {
@@ -45,6 +60,10 @@ export class DevelopmentChartComponent implements OnInit {
   getPercentage(count: number): number {
     const total = this.getTotalCount();
     return total > 0 ? (count / total) * 100 : 0;
+  }
+
+  trackByEnvironment(index: number, item: ChartData): string {
+    return item.environment;
   }
 
   private getRandomColor(): string {

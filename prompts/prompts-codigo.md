@@ -2,6 +2,7 @@
 > Modelo de IA utilizado: Claude 3.7 Sonnet
 
 ## Prompt 1: Configuración Inicial del Proyecto - FULLSTACK
+**HUS Relacionadas:** HT-001, HT-005
 
 ```
 Como desarrollador Senior, crea la base de un proyecto, utilizando las siguientes tecnologías:
@@ -19,6 +20,7 @@ Node 20
 ```
 
 ## Prompt 2: Configuración de Variables de Entorno - BACKEND
+**HUS Relacionadas:** HT-001
 
 ```
 @docker-compose.yml 
@@ -28,6 +30,7 @@ revisa mi archivo de docker y crea el archivo de .env y pasa las variables a all
 > Modelo de IA utilizado: Claude Sonnet 4
 
 ## Prompt 3: Dashboard moderno para sistema de seguimiento de microservicios - FRONTEND
+**HUS Relacionadas:** HU-023
 
 ```
 Como desarrollador front senior en angular y experto en UX/UI, diseña un dashboard moderno para un sistema de seguimiento de desarrollos de microservicios con las siguientes características:
@@ -66,6 +69,7 @@ Indícame el proceso a realizar, no realices código aún espera a que confirme 
 ```
 
 ## Prompt 4: Respuestas sobre implementación del dashboard - FRONTEND
+**HUS Relacionadas:** HU-023
 
 ```
 Respondiendo a tus preguntas antes de realizar la integración del Dashboard:
@@ -78,18 +82,21 @@ Respondiendo a tus preguntas antes de realizar la integración del Dashboard:
 ```
 
 ## Prompt 5: Ajustar sidebar para evitar superposición con header - FRONTEND
+**HUS Relacionadas:** HU-023, HT-005
 
 ```
 Necesito ajustar el sidebar ya que el header no deja ver bien el menú, el primer item de dashboard no se ve.
 ```
 
 ## Prompt 6: Eliminar línea azul del elemento activo del sidebar - FRONTEND
+**HUS Relacionadas:** HU-023, HT-005
 
 ```
 Cuando se selecciona un item del menú, cambia de color indicando que es el seleccionado, eso está bien, pero como ves en la imagen se muestra una línea azul dentro del item seleccionado, puedes quitar esa línea azul.
 ```
 
 ## Prompt 7: Vista de lista avanzada para gestionar desarrollos - FRONTEND
+**HUS Relacionadas:** HU-014
 
 ```
 Eres un experto desarrollador front senior en angular y experto en UX/UI, crea una vista de lista avanzada para gestionar desarrollos con funcionalidades de filtrado y búsqueda:
@@ -124,7 +131,8 @@ Ten cuenta buenas prácticas tanto de diseño como de seguridad.
 Indícame el proceso que vas a realizar, no realices código aún espera a que confirme que lo hagas. Si tienes alguna consulta, hazla primero.
 ```
 
-## Prompt 8: Respuestas sobre implementación de vista de desarrollos - FRONTEND
+## Prompt 8: Respuestas sobre implementación de vista de desarrollos - FRONTEND  
+**HUS Relacionadas:** HU-014
 
 ```
 Respondiendo tus preguntas para proceder con el desarrollo:
@@ -153,12 +161,14 @@ Adicionalmente:
 ```
 
 ## Prompt 9: Actualización de estados de desarrollos - FRONTEND
+**HUS Relacionadas:** HU-014
 
 ```
 En @development.model.ts del front quite el estado Rechazado para desarrollos, verifica y actualiza la app para que no genere error
 ```
 
 ## Prompt 10: Ajustes de UX en vista de desarrollos - FRONTEND
+**HUS Relacionadas:** HU-014
 
 ```
 En el componente @developments.component.html se debe ajustar lo siguiente:
@@ -167,18 +177,21 @@ En el componente @developments.component.html se debe ajustar lo siguiente:
 ```
 
 ## Prompt 11: Unificar estilos con Dashboard - FRONTEND
+**HUS Relacionadas:** HU-014, HU-023
 
 ```
 En el componente @developments.component.html el numero de desarrollos debe tener el mismo estilo que tiene la card con totales en el Dashboard
 ```
 
 ## Prompt 12: Arreglar modo oscuro en tabla de desarrollos - FRONTEND
+**HUS Relacionadas:** HU-014, HT-005
 
 ```
 La tabla de @developments.component.html se ve blanca en modo oscuro y el desplegable de acciones también, no debe ser asi, como desarrollador senior en angular analiza y realiza el ajuste correspondiente.
 ```
 
 ## Prompt 13: Centralización y optimización de estilos CSS - FRONTEND
+**HUS Relacionadas:** HT-005
 
 ```
 @frontend como desarrollador senior en angular y experto en ux/ui y css, analiza el proyecto frontend y verifica si se pueden centralizar los estilos y evitar redundancias o duplicidad.
@@ -188,12 +201,14 @@ Indícame el proceso que vas a realizar, no realices código aún espera a que c
 ```
 
 ## Prompt 14: Resolución de problemas de presupuesto CSS y optimización - FRONTEND
+**HUS Relacionadas:** HT-005
 
 ```
 Error de despliegue en Railway: el archivo developments.component.scss excede el límite de 8kB (tenía 10.81kB). Optimizar el CSS aplicando técnicas de reducción como eliminación de redundancias, simplificación de selectores y consolidación de reglas para cumplir con el budget de Angular.
 ```
 
 ## Prompt 15: Refactorización del modelo de datos - FRONTEND
+**HUS Relacionadas:** HU-014
 
 ```
 Actualizar el modelo de datos eliminando campos innecesarios:
@@ -203,6 +218,7 @@ Actualizar el modelo de datos eliminando campos innecesarios:
 ```
 
 ## Prompt 16: Mejoras en diseño de microservicios y fechas - FRONTEND
+**HUS Relacionadas:** HU-014, HU-023
 
 ```
 Implementar mejoras de UX en la vista de desarrollos:
@@ -219,6 +235,7 @@ Implementar mejoras de UX en la vista de desarrollos:
 ```
 
 ## Prompt 17: Diseño responsive optimizado con scroll horizontal - FRONTEND
+**HUS Relacionadas:** HU-014, HT-005
 
 ```
 Implementar diseño responsive de tres niveles:
@@ -236,6 +253,7 @@ Implementar diseño responsive de tres niveles:
 ```
 
 ## Prompt 18: Rediseño del menú de acciones con enfoque minimalista - FRONTEND
+**HUS Relacionadas:** HU-014
 
 ```
 @developments.component.html mejorar el diseño del menú de acciones con algo más minimalista y profesional manteniendo las mismas opciones:
@@ -253,12 +271,14 @@ Implementar diseño responsive de tres niveles:
 ```
 
 ## Prompt 19: Análisis de implementación de lazy loading en navegación del sidebar - FRONTEND
+**HUS Relacionadas:** HT-005
 
 ```
 Eres un experto desarrollador front senior en angular, @frontend analiza este proyecto y verifica que el lazy load esta bien implementado, que la precarga esté activada y que el use memory de material angular este bien gestionado, ya que al navegar en el sidebar la primer vez se siente lento.
 ```
 
 ## Prompt 20: Implementación de optimizaciones avanzadas de rendimiento - FRONTEND
+**HUS Relacionadas:** HT-005
 
 ```
 Implementa estas optimizaciones, sin perder la fluidez de las transiciones cuando se navega entre vistas:
@@ -271,6 +291,7 @@ Implementa estas optimizaciones, sin perder la fluidez de las transiciones cuand
 ```
 
 ## Prompt 21: Ajustar header y sidebar fijos con funcionalidad de toggle - FRONTEND
+**HUS Relacionadas:** HT-005
 
 ```
 Como experto desarrollador front senior en angular, analiza la estructura de los layout y realza los siguientes ajustes:
@@ -279,6 +300,7 @@ Como experto desarrollador front senior en angular, analiza la estructura de los
 ```
 
 ## Prompt 22: Análisis arquitectónico frontend y diseño de servicios backend - FULLSTACK
+**HUS Relacionadas:** HU-006, HU-007, HT-001
 
 ```
 Ahora como experto desarrollador full stack angular y nest, con amplio conocimiento en arquitectura de software y base de datos, analiza el proyecto de @frontend y dime que servicios se deben implementar en el @backend con la creación de las tablas correspondientes.
@@ -287,6 +309,7 @@ Si tienes alguna pregunta, hazla primero.
 ```
 
 ## Prompt 23: Definición de arquitectura backend con PostgreSQL - BACKEND
+**HUS Relacionadas:** HT-001, HT-002
 
 ```
 Para la definición de arquitectura ten presente lo siguiente:
@@ -298,6 +321,7 @@ Para la definición de arquitectura ten presente lo siguiente:
 ```
 
 ## Prompt 24: Ruta de implementación de servicios backend con TypeORM y PostgreSQL - BACKEND
+**HUS Relacionadas:** HU-006, HU-007, HU-010, HU-020, HT-001
 
 ```
 Como experto en arquitectura de software y desarrollador backend senior en NestJS y TypeORM, crea una ruta de implementación para la arquitectura y desarrollo del backend siguiendo estas especificaciones:
@@ -340,6 +364,7 @@ Como experto en arquitectura de software y desarrollador backend senior en NestJ
 ```
 
 ## Prompt 25: Implementación de servicios backend con TypeORM y PostgreSQL - BACKEND
+**HUS Relacionadas:** HU-006, HU-007, HU-010, HU-020, HT-001, HT-003
 
 ```
 De acuerdo al plan de implementación que se creó, ejecuta las siguientes fases:
@@ -384,6 +409,7 @@ De acuerdo al plan de implementación que se creó, ejecuta las siguientes fases
 ```
 
 ## Prompt 27: Análisis de error de conexión a base de datos - BACKEND
+**HUS Relacionadas:** HT-001
 
 ```
 Al ejecutar el proyecto @backend me sale este error de conexión de base de datos:
@@ -397,6 +423,7 @@ Si es necesario realiza los ajustes, si tienes alguna consulta, pregunta primero
 ```
 
 ## Prompt 28: Creación de nuevas entidades y ajustes de relaciones - BACKEND
+**HUS Relacionadas:** HU-001, HU-004, HU-005
 
 ```
 Como experto en arquitectura y backend con nestjs realizar los siguientes cambios y ajustes en la implementación @backend
@@ -414,6 +441,7 @@ Si tienes preguntas, realizarlas antes de hacer cambios en el código e indícam
 ```
 
 ## Prompt 29: Respuestas sobre ajuste de entidades - BACKEND
+**HUS Relacionadas:** HU-001, HU-004, HU-005
 
 ```
 Respondiendo a tus preguntas:
@@ -436,6 +464,7 @@ Adicionalmente crea la tabla rol, con id, nombre y descripción (desarrollador, 
 ```
 
 ## Prompt 31: Reorganización arquitectural por dominios - BACKEND
+**HUS Relacionadas:** HT-001, HT-002
 
 ```
 Como desarrollador senior y arquitecto, ayúdame a reajustar la arquitectura de @backend  teniendo en cuenta los siguientes puntos:
@@ -448,18 +477,21 @@ Como desarrollador senior y arquitecto, ayúdame a reajustar la arquitectura de 
 ```
 
 ## Prompt 32: Análisis de endpoints del proyecto backend y verificación de integración - BACKEND
+**HUS Relacionadas:** HT-003
 
 ```
 Como desarrollador backend, analiza el proyecto @backend y verifica que endpoints hay y cuales tienen integración y cuales no
 ```
 
 ## Prompt 33: Implementación de documentación Swagger en módulos faltantes - BACKEND
+**HUS Relacionadas:** HT-003
 
 ```
 De acuerdo al análisis, agregar Swagger a todos los módulos que falten, antes de hacer cualquier cambio haz un análisis de lo que debes hacer y si tienes alguna pregunta hazla primero
 ```
 
 ## Prompt 34: Análisis de endpoints para reemplazar mocks - FULLSTACK
+**HUS Relacionadas:** HU-014, HU-023
 
 ```
 Como desarrollador senior full stack, analiza los proyectos @backend  y @frontend  y dime que endpoints se pueden implementar en el front y quitar los mocks
@@ -468,6 +500,7 @@ no hagas código, solo dame la lista de los endpoints, y si es posible los curl 
 ```
 
 ## Prompt 35: Despliegue en Railway con Semillas Automáticas - BACKEND
+**HUS Relacionadas:** HT-001
 
 ```
 Como desarrollador senior full stack con conocimientos de infraestructura y despliegue en
@@ -478,6 +511,7 @@ que solo se ejecute cuando sea true
 ```
 
 ## Prompt 36: Integración completa de endpoints backend-frontend - FULLSTACK
+**HUS Relacionadas:** HU-014, HU-023
 
 ```
 Como desarrollador fullstack senior de Angular y Nestjs, realiza la integración de los endpoints que estén listos para integrarse y reemplazar los mocks, hazlo uno por uno y ve realizando las pruebas correspondientes.
@@ -497,6 +531,7 @@ Para dar respuesta a tus preguntas,
 ```
 
 ## Prompt 37: Verificar configuración de environments de producción en Angular - FRONTEND
+**HUS Relacionadas:** HT-005
 
 ```
 Analiza si la configuración environment de producción se está ejecutando correctamente, revisa la configuración actual de los dos archivos de environment (dev y prod) y el archivo de angular.json 
@@ -504,12 +539,14 @@ para ver si tienen la configuración del reemplazo de archivos de environment
 ```
 
 ## Prompt 38: Cambiar campo repository por URL de tarea de Jira - BACKEND
+**HUS Relacionadas:** HU-010, HU-011
 
 ```
 Necesito Ajustar la entidad de Development para cambiar el campo repository: por jiraUrl, al realizar este cambio, ajusta también el repositorio y las semillas
 ```
 
 ## Prompt 39: Análisis de endpoint detallado de desarrollo - BACKEND
+**HUS Relacionadas:** HU-015
 
 ```
 Eres un desarrollador senior backend con node, analiza el desarrollo @backend  e identifica el endpoint para consultar la información de un desarrollo.
@@ -518,6 +555,7 @@ dame un status del endpoint concreto, no hagas cambios.
 ```
 
 ## Prompt 40: Crear vista detallada de desarrollo en panel deslizante - FRONTEND
+**HUS Relacionadas:** HU-015
 
 ```
 Teniendo el contexto de lo que realiza el endpoint para ver detalles de un desarrollo, 
@@ -619,6 +657,7 @@ Indícame el proceso que vas a realizar, no realices código aún espera a que c
 ```
 
 ## Prompt 41: Respuestas sobre prioridades y panel deslizante - FRONTEND
+**HUS Relacionadas:** HU-015
 
 ```
 Respondiendo a tus preguntas:
@@ -680,6 +719,7 @@ Detección de cambios OnPush
 ```
 
 ## Prompt 42: Análisis y ajuste de entidad Development por cambio en desarrollo.repository.ts - BACKEND
+**HUS Relacionadas:** HU-012
 
 ```
 En el proyecto backend@development.repository.ts se agregó en la respuesta de los desarrollos incluir la información de los microservicios que tiene cada desarrollo.
@@ -689,18 +729,21 @@ Antes de hacer algo dame un análisis, y si tienes dudas pregúntame primero.
 ```
 
 ## Prompt 43: Corrección del modelo de microservicios en frontend - FRONTEND
+**HUS Relacionadas:** HU-015
 
 ```
 Con estos ajustes realizados a los endpoints de desarrollos en el back, toma el rol de experto en front Angular, analiza el proyecto @frontend  e identifica donde puedes hacer las mejoras para corregir donde se muestran los microservicios por desarrollo
 ```
 
 ## Prompt 44: Modernización de la interfaz del panel de detalles - FRONTEND
+**HUS Relacionadas:** HU-015
 
 ```
 Analiza los componentes y la información del panel de detalles de desarrollo, dale un estilo moderno como el que acabas de hacer con el ajuste anterior de los microservicios, importante no dañar la funcionalidad del panel.
 ```
 
 ## Prompt 45: Mejoras adicionales en usabilidad del panel de detalles - FRONTEND
+**HUS Relacionadas:** HU-015
 
 ```
 Analizando los cambios realizados, estos algunos ajustes que debes implementar:
@@ -712,6 +755,7 @@ Analizando los cambios realizados, estos algunos ajustes que debes implementar:
 ```
 
 ## Prompt 46: Ajustes finales en el panel de detalles de desarrollo - FRONTEND
+**HUS Relacionadas:** HU-015
 
 ```
 Algunos ajustes adicionales:
@@ -723,6 +767,7 @@ en el botón cambiar estado, el desplegable es mas delgado que el botón y los e
 ```
 
 ## Prompt 47: Implementación del CRUD para entidad environments - BACKEND
+**HUS Relacionadas:** HU-020
 
 ```
 Como desarrollador senior backend analiza el proyecto@/backend  y realiza el crud necesario para la entidad environments
@@ -731,12 +776,14 @@ si tienes alguna duda, pregunta primero, y muéstrame el plan de acción antes d
 ```
 
 ## Prompt 48: Ejecución de implementación del CRUD para entidad environments - BACKEND
+**HUS Relacionadas:** HU-020
 
 ```
 Ejecuta el plan de acción teniendo en cuenta buenas prácticas de programación y seguridad
 ```
 
 ## Prompt 49: Implementación de vista de Ambientes - FRONTEND
+**HUS Relacionadas:** HU-020
 
 ```
 ahora como desarrollador senior en angular y experto en UX/UI, implementa estos nuevos endpoints que se acaban de crear y crea una vista en el proyecto de front @/frontend 
@@ -760,6 +807,7 @@ Indícame el proceso que vas a realizar, no realices código aún espera a que c
 ```
 
 ## Prompt 50: Ajustes adicionales a la vista de Ambientes - FRONTEND
+**HUS Relacionadas:** HU-020, HT-005
 
 ```
 En la nueva vista de ambientes creada, se necesitan hacer los siguientes ajustes:
@@ -775,12 +823,14 @@ aplica las técnicas de optimización de las demás vistas ya implementadas
 ```
 
 ## Prompt 51: Ajustes modal de eliminar en la vista de Ambientes - FRONTEND
+**HUS Relacionadas:** HU-020
 
 ```
 En el modal que se creo para confirmar la eliminación de un ambiente se debe cerrar al navegar a otra ruta desde el sidebar
 ```
 
 ## Prompt 52: Ajustes de estilo en la vista de Ambientes - FRONTEND
+**HUS Relacionadas:** HU-020, HT-005
 
 ```
 Ahora se deben ajustar tres cosas en la vista de ambientes:
@@ -793,6 +843,7 @@ Ahora se deben ajustar tres cosas en la vista de ambientes:
 ```
 
 ## Prompt 53: Implementación de borrado lógico en entidad Environment - BACKEND
+**HUS Relacionadas:** HU-020
 
 ```
 Ahora como desarrollador senior en backend nestJS @environment.entity.ts  ajusta esta entidad para agregar la columna deletedAt para un borrado lógico
@@ -805,6 +856,7 @@ adicionalmente verifica el resto del proyecto @/backend  por si se debe ajustar 
 ```
 
 ## Prompt 54: Refactorización Arquitectural del Backend - BACKEND
+**HUS Relacionadas:** HT-001, HT-002
 
 ```
 Como arquitecto de software y desarrollador senior en NestJS, realiza una refactorización completa del backend siguiendo estos principios:
@@ -858,6 +910,7 @@ Como arquitecto de software y desarrollador senior en NestJS, realiza una refact
 ```
 
 ## Prompt 55: Implementación de Mejoras en la Base de Datos - BACKEND
+**HUS Relacionadas:** HT-001
 
 ```
 Como experto en bases de datos y desarrollador backend senior, implementa las siguientes mejoras en la base de datos:

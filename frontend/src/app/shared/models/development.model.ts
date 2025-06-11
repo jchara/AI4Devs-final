@@ -126,7 +126,8 @@ export interface DevelopmentMetrics {
   total: number;
   inDevelopment: number;
   completed: number;
-  archived: number;
+  cancelled: number;
+  byEnvironment?: Record<string, number>;
 }
 
 export interface DevelopmentFilter {
@@ -160,4 +161,16 @@ export interface ChartData {
   environment: string;
   count: number;
   color?: string;
+}
+
+export interface DashboardData {
+  metrics: {
+    total: number;
+    inDevelopment: number;
+    completed: number;
+    cancelled: number;
+  };
+  developments: Development[];
+  chartData: ChartData[];
+  recentActivities: RecentActivity[];
 }

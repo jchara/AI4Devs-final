@@ -152,32 +152,60 @@
 }
 
 .activity-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.2s ease;
   
-  &.deployment {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: #4CAF50;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
   
-  &.update {
-    background-color: rgba(125, 43, 227, 0.1);
-    color: #7D2BE3;
+  &.development_created {
+    background-color: rgba(var(--color-success-rgb), 0.15);
+    color: var(--color-success);
   }
   
-  &.review {
-    background-color: rgba(255, 152, 0, 0.1);
-    color: #FF9800;
+  &.development_updated {
+    background-color: rgba(var(--color-info-rgb), 0.15);
+    color: var(--color-info);
   }
   
-  &.completed {
-    background-color: rgba(102, 198, 234, 0.1);
-    color: #66C6EA;
+  &.status_changed {
+    background-color: rgba(var(--color-primary-rgb), 0.15);
+    color: var(--color-primary);
+  }
+  
+  &.microservice_added {
+    background-color: rgba(var(--color-success-rgb), 0.15);
+    color: var(--color-success);
+  }
+  
+  &.microservice_removed {
+    background-color: rgba(var(--color-error-rgb), 0.15);
+    color: var(--color-error);
+  }
+  
+  &.progress_updated {
+    background-color: rgba(var(--color-warning-rgb), 0.15);
+    color: var(--color-warning);
+  }
+  
+  &.deployment_scheduled {
+    background-color: rgba(var(--color-accent-rgb), 0.15);
+    color: var(--color-accent);
+  }
+  
+  // Fallback para tipos no definidos
+  &:not([class*="_"]) {
+    background-color: rgba(var(--text-secondary-rgb, 136, 136, 136), 0.1);
+    color: var(--text-secondary);
   }
 }
 
@@ -187,13 +215,48 @@
   .activity-description {
     font-size: var(--font-size-sm);
     color: var(--text-primary);
-    margin: 0 0 2px 0;
+    margin: 0 0 4px 0;
     line-height: var(--line-height-normal);
+  }
+  
+  .activity-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+  
+  .activity-user {
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
   }
   
   .activity-time {
     font-size: var(--font-size-xs);
     color: var(--text-secondary);
+  }
+}
+
+.no-activities {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  
+  mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: var(--spacing-sm);
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+    font-style: italic;
   }
 }
 

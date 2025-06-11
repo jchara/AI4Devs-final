@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Development } from '../entities/development.entity';
 import { BaseRepository } from '../../../shared/repositories/base.repository';
 import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
@@ -68,7 +68,7 @@ export class DevelopmentRepository extends BaseRepository<Development> {
         'team.isActive',
         'team.createdAt',
         'team.updatedAt',
-        'team.deletedAt'
+        'team.deletedAt',
       ])
       .where('development.isActive = :isActive', { isActive: true })
       .orderBy('development.id', 'ASC')
@@ -126,7 +126,7 @@ export class DevelopmentRepository extends BaseRepository<Development> {
         'team.isActive',
         'team.createdAt',
         'team.updatedAt',
-        'team.deletedAt'
+        'team.deletedAt',
       ])
       .where('development.isActive = :isActive', { isActive: true });
 
@@ -193,14 +193,18 @@ export class DevelopmentRepository extends BaseRepository<Development> {
     const completed = await this.developmentRepository.count({
       where: { status: DevelopmentStatus.COMPLETED },
     });
-    const inProgress = await this.developmentRepository.count({
-      where: { status: DevelopmentStatus.IN_PROGRESS },
+    const inDevelopment = await this.developmentRepository.count({
+      where: {
+        status: In([
+          DevelopmentStatus.IN_PROGRESS,
+          DevelopmentStatus.PLANNING,
+          DevelopmentStatus.TESTING,
+        ]),
+      },
     });
-    const planning = await this.developmentRepository.count({
-      where: { status: DevelopmentStatus.PLANNING },
-    });
-    const testing = await this.developmentRepository.count({
-      where: { status: DevelopmentStatus.TESTING },
+
+    const cancelled = await this.developmentRepository.count({
+      where: { status: DevelopmentStatus.CANCELLED },
     });
 
     const highPriority = await this.developmentRepository.count({
@@ -213,19 +217,31 @@ export class DevelopmentRepository extends BaseRepository<Development> {
       where: { priority: DevelopmentPriority.LOW },
     });
 
+    const developments = await this.developmentRepository
+      .createQueryBuilder('development')
+      .leftJoinAndSelect('development.environment', 'environment')
+      .where('development.isActive = :isActive', { isActive: true })
+      .getMany();
+
+    const byEnvironment: Record<string, number> = {};
+    for (const dev of developments) {
+      const env = dev.environment?.name || 'UNKNOWN';
+      byEnvironment[env] = (byEnvironment[env] || 0) + 1;
+    }
+
     return {
       total,
       byStatus: {
         completed,
-        inProgress,
-        planning,
-        testing,
+        inDevelopment,
+        cancelled,
       },
       byPriority: {
         high: highPriority,
         medium: mediumPriority,
         low: lowPriority,
       },
+      byEnvironment,
     };
   }
 }

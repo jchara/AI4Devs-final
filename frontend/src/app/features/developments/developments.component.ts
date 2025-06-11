@@ -335,6 +335,14 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
             this.developments[index] = updatedDev;
             this.updateStatusCounts();
             this.applyFilters();
+            
+            // Refrescar la tabla completa
+            this.loadDevelopments();
+            
+            // Si hay un desarrollo seleccionado en el panel, actualizarlo también
+            if (this.selectedDevelopment && this.selectedDevelopment.id === updatedDev.id) {
+              this.selectedDevelopment = updatedDev;
+            }
           }
           this.changeDetectorRef.markForCheck();
         },

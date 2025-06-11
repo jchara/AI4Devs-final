@@ -43,7 +43,7 @@
 
     <app-metric-card
       title="Archivados"
-      [value]="metrics?.archived || 0"
+      [value]="metrics?.cancelled || 0"
       iconColor="#9E9E9E"
       cardClass="secondary">
       <svg slot="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -116,37 +116,34 @@
     <div class="sidebar-content">
       <!-- Gráfico de desarrollos por ambiente -->
       <div class="content-section">
-        <h3 class="section-title">Desarrollos por Ambiente</h3>
-        <app-development-chart [data]="chartData"></app-development-chart>
+        <app-development-chart [data]="chartData" [title]="'Desarrollos por Ambiente'"></app-development-chart>
       </div>
 
       <!-- Actividad reciente -->
       <div class="content-section">
         <h3 class="section-title">Actividad Reciente</h3>
         <div class="recent-activities">
-          <div class="activity-list">
+          <div class="activity-list" *ngIf="recentActivities && recentActivities.length > 0; else noActivities">
             <div class="activity-item" *ngFor="let activity of recentActivities; trackBy: trackByActivity">
+              <div class="activity-icon" [class]="getActivityTypeClass(activity.type)">
+                <mat-icon>{{ getActivityIcon(activity.type) }}</mat-icon>
+              </div>
               <div class="activity-content">
                 <p class="activity-description">{{ activity.description }}</p>
-                <span class="activity-time">{{ activity.createdAt | date:'dd/MM HH:mm' }}</span>
+                <div class="activity-meta">
+                  <span class="activity-user" *ngIf="activity.user">{{ activity.user.firstName }} {{ activity.user.lastName }}</span>
+                  <span class="activity-time">{{ activity.createdAt | date:'dd/MM HH:mm' }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Próximos despliegues -->
-      <div class="content-section">
-        <h3 class="section-title">Próximos Despliegues</h3>
-        <div class="upcoming-deployments">
-          <div class="deployment-list">
-            <div class="deployment-item" *ngFor="let deployment of upcomingDeployments; trackBy: trackByDeployment">
-              <div class="deployment-info">
-                <span class="deployment-name">{{ deployment.title }}</span>
-                <span class="deployment-date">{{ deployment.scheduledDate | date:'dd/MM/yyyy' }}</span>
-              </div>
+          
+          <ng-template #noActivities>
+            <div class="no-activities">
+              <mat-icon>history</mat-icon>
+              <p>No hay actividades recientes</p>
             </div>
-          </div>
+          </ng-template>
         </div>
       </div>
     </div>

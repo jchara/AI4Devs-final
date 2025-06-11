@@ -106,10 +106,11 @@ export class DevelopmentMapper {
     backendMetrics: BackendDevelopmentMetricsResponse
   ): DevelopmentMetrics {
     return {
-      total: backendMetrics.total,
-      inDevelopment: backendMetrics.inDevelopment,
-      completed: backendMetrics.completed,
-      archived: backendMetrics.archived,
+      total: backendMetrics.data.total,
+      inDevelopment: backendMetrics.data.byStatus.inDevelopment,
+      completed: backendMetrics.data.byStatus.completed,
+      cancelled: backendMetrics.data.byStatus.cancelled,
+      byEnvironment: backendMetrics.data.byEnvironment ?? {},
     };
   }
 

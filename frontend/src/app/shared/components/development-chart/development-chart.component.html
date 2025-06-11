@@ -1,28 +1,30 @@
 <div class="chart-container" [style.height]="height">
   <h3 class="chart-title" *ngIf="title">{{ title }}</h3>
-  
+
   <div class="chart-content">
-    <div class="bars-container">
-      <div class="bar-item" *ngFor="let item of data; trackBy: trackByEnvironment">
-        <div class="bar-label">{{ item.environment }}</div>
+    <div class="bars-container" *ngIf="data && data.length > 0; else noData">
+      <div
+        class="bar-item"
+        *ngFor="let item of data; trackBy: trackByEnvironment"
+      >
         <div class="bar-wrapper">
-          <div class="bar" 
-               [style.height.%]="getBarHeight(item.count)"
-               [style.background-color]="item.color">
-            <span class="bar-value">{{ item.count }}</span>
+          <div
+            class="bar"
+            [style.height.%]="getBarHeight(item.count)"
+            [style.background-color]="item.color"
+          >
+            <span class="bar-value" *ngIf="item.count > 0">{{ item.count }}</span>
           </div>
         </div>
+        <div class="bar-label">{{ item.environment }}</div>
       </div>
     </div>
-
-    <div class="chart-legend" *ngIf="showLegend">
-      <div class="legend-item" *ngFor="let item of data; trackBy: trackByEnvironment">
-        <div class="legend-color" [style.background-color]="item.color"></div>
-        <div class="legend-label">
-          <span class="environment-name">{{ item.environment }}</span>
-          <span class="environment-count">({{ item.count }} - {{ getPercentage(item.count) | number:'1.0-0' }}%)</span>
-        </div>
+    
+    <ng-template #noData>
+      <div class="no-data">
+        <p>No hay datos disponibles</p>
       </div>
-    </div>
+    </ng-template>
   </div>
 </div>
+
