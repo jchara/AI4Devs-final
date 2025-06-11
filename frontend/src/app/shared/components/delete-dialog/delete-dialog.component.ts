@@ -6,12 +6,25 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
-import { EnvironmentService } from '../../../../core/services/environment.service';
-import { Environment } from '../../../../shared/models/environment.model';
 import { trigger, transition, style, animate, query, animateChild } from '@angular/animations';
 
+export interface DeleteDialogData {
+  title: string;
+  entityName: string;
+  entityType: string;
+  breadcrumbs: string[];
+  warningMessage?: string;
+  additionalInfo?: {
+    icon?: string;
+    label?: string;
+    value?: string;
+  }[];
+  onConfirm: () => void;
+  loading$?: Subject<boolean>;
+}
+
 @Component({
-  selector: 'app-environment-delete-dialog',
+  selector: 'app-delete-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -21,14 +34,15 @@ import { trigger, transition, style, animate, query, animateChild } from '@angul
     MatIconModule,
     MatTooltipModule
   ],
-  templateUrl: './environment-delete-dialog.component.html',
-  styleUrls: ['./environment-delete-dialog.component.scss'],
+  templateUrl: './delete-dialog.component.html',
+  styleUrls: ['./delete-dialog.component.scss'],
   animations: [
     trigger('panelState', [
       transition(':enter', [
         style({ 
           transform: 'translateY(50px)',
-          opacity: 0 
+          opacity: 0,
+          willChange: 'transform, opacity'
         }),
         animate('300ms cubic-bezier(0.4, 0, 0.2, 1)', 
           style({ 
@@ -43,40 +57,48 @@ import { trigger, transition, style, animate, query, animateChild } from '@angul
         animate('250ms cubic-bezier(0.4, 0, 0.2, 1)', 
           style({ 
             transform: 'translateY(50px)',
-            opacity: 0 
+            opacity: 0,
+            willChange: 'auto'
           })
         )
       ])
     ]),
     trigger('overlay', [
       transition(':enter', [
-        style({ opacity: 0 }),
+        style({ 
+          opacity: 0,
+          willChange: 'opacity'
+        }),
         animate('250ms cubic-bezier(0.4, 0, 0.2, 1)', 
           style({ opacity: 1 })
         )
       ]),
       transition(':leave', [
         animate('200ms cubic-bezier(0.4, 0, 0.2, 1)', 
-          style({ opacity: 0 })
+          style({ 
+            opacity: 0,
+            willChange: 'auto'
+          })
         )
       ])
     ])
   ]
 })
-export class EnvironmentDeleteDialogComponent implements OnDestroy {
+export class DeleteDialogComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
   loading = false;
   
   constructor(
-    private dialogRef: MatDialogRef<EnvironmentDeleteDialogComponent>,
-    private environmentService: EnvironmentService,
-    @Inject(MAT_DIALOG_DATA) public environment: Environment
+    private dialogRef: MatDialogRef<DeleteDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DeleteDialogData
   ) {
-    this.environmentService.loading$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(loading => {
-        this.loading = loading;
-      });
+    if (this.data.loading$) {
+      this.data.loading$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(loading => {
+          this.loading = loading;
+        });
+    }
   }
   
   ngOnDestroy(): void {
@@ -85,12 +107,8 @@ export class EnvironmentDeleteDialogComponent implements OnDestroy {
   }
   
   onConfirm(): void {
-    this.environmentService.deleteEnvironment(this.environment.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => {}
-      });
+    this.data.onConfirm();
+    this.dialogRef.close(true);
   }
   
   onCancel(): void {

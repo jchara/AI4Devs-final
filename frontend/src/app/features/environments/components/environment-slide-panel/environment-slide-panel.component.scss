@@ -3,7 +3,7 @@
   --section-spacing: 1.25rem;
   --card-radius: 10px;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --transition-standard: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-standard: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :host {
@@ -72,6 +72,7 @@
       .close-button {
         color: var(--text-primary);
         transition: var(--transition-standard);
+        will-change: transform;
         
         &:hover {
           transform: rotate(90deg);

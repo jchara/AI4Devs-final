@@ -23,7 +23,7 @@ import { Router, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ProjectService } from '../../core/services/project.service';
 import { Project, ProjectType } from '../../shared/models/project.model';
-import { ProjectDeleteDialogComponent } from './components/project-delete-dialog/project-delete-dialog.component';
+import { DeleteDialogComponent, DeleteDialogData } from '../../shared/components/delete-dialog';
 import { ProjectSlidePanelComponent } from './components/project-slide-panel/project-slide-panel.component';
 // import { ProjectDetailsPanelComponent } from './components/project-details-panel/project-details-panel.component';
 
@@ -194,10 +194,41 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
   
   openDeleteDialog(project: Project): void {
-    const dialogRef = this.dialog.open(ProjectDeleteDialogComponent, {
+    const dialogData: DeleteDialogData = {
+      title: 'Eliminar proyecto',
+      entityName: project.name,
+      entityType: 'el proyecto',
+      breadcrumbs: ['Dashboard', 'Proyectos', project.name],
+      warningMessage: 'Esta acción no se puede deshacer. Se eliminarán todos los componentes asociados a este proyecto.',
+      additionalInfo: [
+        {
+          icon: this.getProjectTypeIcon(project.type),
+          label: 'Tipo',
+          value: this.getProjectTypeLabel(project.type)
+        },
+        {
+          icon: 'link',
+          label: 'Repositorio',
+          value: project.repositoryUrl
+        }
+      ],
+      onConfirm: () => {
+        this.projectService.deleteProject(project.id).subscribe({
+          next: () => {
+            console.log('Proyecto eliminado exitosamente');
+          },
+          error: (error) => {
+            console.error('Error al eliminar proyecto:', error);
+          }
+        });
+      },
+      loading$: this.projectService.loading$ as any
+    };
+
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
       width: '500px',
       maxWidth: '90vw',
-      data: project,
+      data: dialogData,
       panelClass: 'delete-project-dialog',
       disableClose: true
     });

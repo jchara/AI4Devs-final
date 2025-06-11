@@ -21,7 +21,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { EnvironmentService } from '../../core/services/environment.service';
 import { Environment } from '../../shared/models/environment.model';
-import { EnvironmentDeleteDialogComponent } from './components/environment-delete-dialog/environment-delete-dialog.component';
+import { DeleteDialogComponent, DeleteDialogData } from '../../shared/components/delete-dialog';
 import { EnvironmentSlidePanelComponent } from './components/environment-slide-panel/environment-slide-panel.component';
 import { Router, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -178,14 +178,45 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
   }
   
   openDeleteDialog(environment: Environment): void {
-    const dialogRef = this.dialog.open(EnvironmentDeleteDialogComponent, {
+    const dialogData: DeleteDialogData = {
+      title: 'Eliminar ambiente',
+      entityName: environment.name,
+      entityType: 'el ambiente',
+      breadcrumbs: ['Dashboard', 'Ambientes', environment.name],
+      warningMessage: 'Esta acción no se puede deshacer. Los desarrollos asociados a este ambiente quedarán sin referencia.',
+      additionalInfo: [
+        {
+          icon: 'palette',
+          label: 'Color',
+          value: environment.color
+        },
+        {
+          icon: 'sort',
+          label: 'Orden',
+          value: environment.order.toString()
+        }
+      ],
+      onConfirm: () => {
+        this.environmentService.deleteEnvironment(environment.id).subscribe({
+          next: () => {
+            console.log('Ambiente eliminado exitosamente');
+          },
+          error: (error) => {
+            console.error('Error al eliminar ambiente:', error);
+          }
+        });
+      },
+      loading$: this.environmentService.loading$ as any
+    };
+
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
       width: '480px',
       height: 'auto',
       maxWidth: '95vw',
       panelClass: ['custom-dialog-container', 'environment-delete-dialog'],
       autoFocus: false,
       hasBackdrop: true,
-      data: environment
+      data: dialogData
     });
     
     dialogRef.afterClosed()

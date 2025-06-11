@@ -3,7 +3,7 @@
   --section-spacing: 1.25rem;
   --card-radius: 5px;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --transition-standard: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-standard: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   
   // Aseguramos que el diálogo tome el estilo propio, no el de Material
   ::ng-deep .mat-mdc-dialog-container {
@@ -66,6 +66,7 @@
     color: var(--text-primary);
     border-radius: 50%;
     transition: var(--transition-standard);
+    will-change: transform, background-color;
     &:hover {
       transform: rotate(90deg);
       background: var(--bg-secondary);
@@ -93,6 +94,40 @@
   strong {
     color: var(--color-primary);
     font-weight: 700;
+  }
+}
+
+.additional-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color-light);
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      color: var(--text-secondary);
+    }
+
+    .info-label {
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .info-value {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
   }
 }
 
@@ -128,8 +163,6 @@
   padding-top: 1rem;
   border-top: 1px solid var(--border-color-light, #eee);
 }
-
-/* Los estilos de botones ahora están definidos en el archivo _components.scss */
 
 .loading-overlay {
   position: absolute;

@@ -2,14 +2,13 @@
   <div class="panel-header">
     <div class="header-content">
       <div class="breadcrumbs">
-        <span>Dashboard</span>
-        <mat-icon>chevron_right</mat-icon>
-        <span>Ambientes</span>
-        <mat-icon>chevron_right</mat-icon>
-        <span>{{ environment.name }}</span>
+        <span *ngFor="let breadcrumb of data.breadcrumbs; let last = last">
+          {{ breadcrumb }}
+          <mat-icon *ngIf="!last">chevron_right</mat-icon>
+        </span>
       </div>
       <div class="header-title">
-        <h2>Eliminar ambiente</h2>
+        <h2>{{ data.title }}</h2>
       </div>
     </div>
     <button
@@ -29,17 +28,22 @@
 
     <div class="content-wrapper">
       <div class="delete-message">
-        ¿Estás seguro de que deseas eliminar el ambiente
-        <strong>{{ environment.name }}</strong
-        >?
+        ¿Estás seguro de que deseas eliminar {{ data.entityType }}
+        <strong>{{ data.entityName }}</strong>?
+      </div>
+
+      <!-- Información adicional opcional -->
+      <div *ngIf="data.additionalInfo && data.additionalInfo.length > 0" class="additional-info">
+        <div *ngFor="let info of data.additionalInfo" class="info-item">
+          <mat-icon *ngIf="info.icon">{{ info.icon }}</mat-icon>
+          <span class="info-label" *ngIf="info.label">{{ info.label }}:</span>
+          <span class="info-value">{{ info.value }}</span>
+        </div>
       </div>
 
       <div class="delete-warning">
         <mat-icon class="warning-icon">warning</mat-icon>
-        <span
-          >Esta acción no se puede deshacer. Los desarrollos asociados a este
-          ambiente quedarán sin referencia.</span
-        >
+        <span>{{ data.warningMessage || 'Esta acción no se puede deshacer.' }}</span>
       </div>
     </div>
 
@@ -63,4 +67,4 @@
       </button>
     </div>
   </div>
-</div>
+</div> 
