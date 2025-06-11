@@ -1,0 +1,103 @@
+<div *ngIf="isOpen" 
+  class="panel-overlay" 
+  (click)="closeOnBackdropClick($event)" 
+  [@overlay]>
+  <div class="slide-panel" 
+      [@panelState]="getPanelAnimationParams()"
+      [class.mobile]="isMobile">
+    <div class="panel-header">
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <mat-icon>chevron_right</mat-icon>
+        <span>Proyectos</span>
+        <mat-icon *ngIf="isEditMode">chevron_right</mat-icon>
+        <span *ngIf="isEditMode">{{ project?.name }}</span>
+      </div>
+      <button mat-icon-button (click)="close()" class="close-button" matTooltip="Cerrar panel">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="scrollable-content">
+      <!-- Título del panel -->
+      <div class="title-section">
+        <h1>{{ title }}</h1>
+      </div>
+      
+      <div class="panel-content">
+        <form [formGroup]="projectForm" class="project-form">
+          <!-- Estado de carga -->
+          <div *ngIf="loading" class="loading-overlay">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+          
+          <!-- Nombre del proyecto -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" placeholder="Ej. Mi Proyecto Backend" required>
+            <mat-error *ngIf="projectForm.get('name')?.invalid">
+              {{ getFormError('name') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- URL del repositorio -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>URL del Repositorio</mat-label>
+            <input matInput formControlName="repositoryUrl" placeholder="https://github.com/usuario/repo" required>
+            <mat-error *ngIf="projectForm.get('repositoryUrl')?.invalid">
+              {{ getFormError('repositoryUrl') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Tipo de proyecto -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo de Proyecto</mat-label>
+            <mat-select formControlName="type" required>
+              <mat-option *ngFor="let type of projectTypes" [value]="type">
+                {{ getProjectTypeLabel(type) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="projectForm.get('type')?.invalid">
+              {{ getFormError('type') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Descripción del proyecto -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="description" placeholder="Descripción del proyecto" rows="3"></textarea>
+            <mat-error *ngIf="projectForm.get('description')?.invalid">
+              {{ getFormError('description') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Estado (activo/inactivo) -->
+          <div class="toggle-field">
+            <mat-slide-toggle formControlName="isActive" color="primary">
+              Proyecto activo
+            </mat-slide-toggle>
+          </div>
+          
+          <!-- Botones de acción - ahora dentro del formulario -->
+          <div class="form-actions">
+            <button 
+              mat-stroked-button 
+              (click)="close()" 
+              [disabled]="loading" 
+              class="app-button cancel-button">
+              Cancelar
+            </button>
+            <button 
+              mat-flat-button 
+              color="primary" 
+              (click)="onSubmit()" 
+              [disabled]="projectForm.invalid || loading"
+              class="app-button primary-button">
+              {{ isEditMode ? 'Actualizar' : 'Crear' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> 

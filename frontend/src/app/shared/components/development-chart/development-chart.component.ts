@@ -31,7 +31,6 @@ export class DevelopmentChartComponent implements OnInit, OnChanges {
         ...item,
         color: item.color || this.getRandomColor()
       }));
-      console.log('[DEBUG] Datos recibidos en development-chart (ngOnChanges):', this.data);
       this.cdr.markForCheck();
     }
   }
@@ -40,16 +39,13 @@ export class DevelopmentChartComponent implements OnInit, OnChanges {
     if (!this.data || this.data.length === 0) return 0;
     if (count === 0) return 0;
     
-    console.log('[DEBUG] Calculando altura para count:', count);
     const maxValue = Math.max(...this.data.map(item => item.count));
-    console.log('[DEBUG] Max value:', maxValue);
     
     if (maxValue === 0) return 0;
     
     // Asegurar que las barras tengan al menos 15% de altura para ser visibles
     const percentage = (count / maxValue) * 100;
     const finalHeight = Math.max(percentage, 15);
-    console.log('[DEBUG] Altura calculada:', finalHeight, '%');
     return finalHeight;
   }
 

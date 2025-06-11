@@ -81,7 +81,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.developmentService.getDashboardData().subscribe({
       next: (data) => {
-        console.log('[DEBUG] Dashboard data:', data);
         this.metrics = data.metrics;
         this.developments = data.developments;
         this.recentActivities = data.recentActivities;

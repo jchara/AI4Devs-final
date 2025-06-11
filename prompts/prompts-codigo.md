@@ -950,3 +950,44 @@ Como experto en bases de datos y desarrollador backend senior, implementa las si
 - Documentar cambios
 - Actualizar seeds
 ```
+
+## Prompt 64: Cambiar nombre de microservicios a proyectos - FRONTEND
+**HUS Relacionadas:** HU-006, HU-007
+
+```
+Cambia el nombre de la vista de microservicios a proyectos y todo lo relacionado con esto
+```
+
+## Prompt 65: Continuar implementación de vista y paneles laterales para proyectos - FRONTEND
+**HUS Relacionadas:** HU-006, HU-007
+
+```
+Como experto en Angular y UX/UI en la vista de proyectos del @/frontend  crea el crud correspondiente para los proyectos, teniendo en cuenta estos puntos:
+
+- Un proyecto tiene varios componentes que tienen su crud por cada uno de los proyectos.
+- El diseño debe ser consistente al de la aplicación para editar y crear, toma como guía el panel utilizado en la vista de ambientes.
+- Conserva los estilos de la aplicación
+- reutilizar variables de estilos de la aplicación
+- garantizar el modo oscuro
+- realiza filtros por tipo de proyecto, al estilo de desarrollos
+- la cantidad de componentes de cada proyecto se muestra en el panel de detalles
+
+
+como base para que desarrolles toda la vista de proyectos analiza los endpoints creados en el @/backend  y la arquitectura de la BD @Arquitectura-BD.md 
+
+Si tienes alguna pregunta, hazla primero antes de hacer cualquier cambio.
+```
+
+## Prompt 66: Corrección de toggle y estilos en vista de proyectos - FRONTEND
+**HUS Relacionadas:** HU-006, HU-007
+
+```
+El toggle en la vista de proyectos no funciona, analiza porque el update no está funcionando
+```
+
+## Prompt 67: Unificación de diseño entre vistas de ambientes y proyectos - FRONTEND
+**HUS Relacionadas:** HU-006, HU-007, HU-020
+
+```
+Implementa el mismo diseño de la tabla y del panel y su formulario en proyectos. deben ser los mismos diseños, estilos de botones
+```

@@ -1,17 +1,330 @@
-<div class="page-container">
-  <div class="page-header">
-    <h1 class="page-title">Proyectos</h1>
-    <p class="page-subtitle">Gestión y monitoreo de proyectos</p>
-  </div>
-  
-  <div class="page-content">
-    <div class="coming-soon">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-      </svg>
-      <h2>Próximamente</h2>
-      <p>Esta sección estará disponible en futuras iteraciones.</p>
+<div class="projects-page">
+  <div class="content-wrapper fade-in">
+    <div class="page-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="page-title">
+            Proyectos
+            <span class="count-number">{{ filteredProjects.length }}</span>
+          </h1>
+          <p class="page-subtitle">
+            Gestiona y supervisa todos los proyectos del sistema
+          </p>
+        </div>
+
+        <div class="header-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            class="app-button primary-button"
+            (click)="openCreatePanel()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Nuevo Proyecto</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de filtros y búsqueda -->
+    <mat-card class="filter-card">
+      <div class="filter-content">
+        <form [formGroup]="searchForm" class="search-container">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Buscar proyecto</mat-label>
+            <input
+              matInput
+              formControlName="searchTerm"
+              placeholder="Buscar por nombre, descripción o URL"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Tipo de proyecto</mat-label>
+            <mat-select formControlName="typeFilter">
+              <mat-option value="">Todos los tipos</mat-option>
+              <mat-option *ngFor="let type of projectTypes" [value]="type">
+                <mat-icon>{{ getProjectTypeIcon(type) }}</mat-icon>
+                {{ getProjectTypeLabel(type) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button
+            mat-stroked-button
+            type="button"
+            class="clear-filters-button"
+            (click)="clearFilters()"
+            *ngIf="searchForm.get('searchTerm')?.value || searchForm.get('typeFilter')?.value"
+          >
+            <mat-icon>clear_all</mat-icon>
+            Limpiar filtros
+          </button>
+        </form>
+      </div>
+    </mat-card>
+
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando proyectos...</p>
+    </div>
+
+    <!-- Tabla de proyectos - Vista desktop y tablet -->
+    <div
+      *ngIf="!loading && filteredProjects.length > 0"
+      class="table-container"
+    >
+      <table
+        mat-table
+        [dataSource]="filteredProjects"
+        matSort
+        class="projects-table"
+      >
+        <!-- Columna de nombre -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let project" class="name-cell">
+            <div class="project-name-container">
+              <span class="project-name" (click)="openDetailsPanel(project)">{{ project.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna de tipo -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+          <td mat-cell *matCellDef="let project">
+            <mat-chip-set>
+              <mat-chip class="type-chip" [class]="'type-' + project.type">
+                <mat-icon matChipAvatar>{{ getProjectTypeIcon(project.type) }}</mat-icon>
+                {{ getProjectTypeLabel(project.type) }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Columna de repositorio -->
+        <ng-container matColumnDef="repositoryUrl">
+          <th mat-header-cell *matHeaderCellDef>Repositorio</th>
+          <td mat-cell *matCellDef="let project" class="repository-cell">
+            <a
+              [href]="project.repositoryUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="repository-link"
+              matTooltip="Abrir repositorio"
+            >
+              <mat-icon>open_in_new</mat-icon>
+              <span class="repository-text">{{ project.repositoryUrl | slice:0:50 }}{{ project.repositoryUrl.length > 50 ? '...' : '' }}</span>
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Columna de descripción -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let project" class="description-cell">
+            <span 
+              class="description-text"
+              [matTooltip]="project.description || 'Sin descripción'"
+            >
+              {{ project.description || 'Sin descripción' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Columna de estado -->
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let project">
+            <mat-slide-toggle
+              [checked]="project.isActive"
+              (change)="toggleActive(project)"
+              color="primary"
+            >
+              <span class="toggle-text">{{ getActiveStatusText(project.isActive) }}</span>
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <!-- Columna de acciones -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let project">
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Acciones de proyecto"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" class="actions-menu">
+              <div class="menu-section">
+                <button mat-menu-item (click)="openDetailsPanel(project)" class="menu-item">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Ver detalles</span>
+                </button>
+                <button mat-menu-item (click)="openEditPanel(project)" class="menu-item">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+              </div>
+              
+              <div class="menu-section">
+                <button
+                  mat-menu-item
+                  (click)="openDeleteDialog(project)"
+                  class="menu-item delete-action"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </div>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+      ></mat-paginator>
+    </div>
+
+    <!-- Vista para móviles - Tarjetas -->
+    <div
+      *ngIf="!loading && filteredProjects.length > 0"
+      class="mobile-container"
+    >
+      <div
+        class="project-card"
+        *ngFor="let project of filteredProjects"
+      >
+        <div class="card-header">
+          <mat-icon class="project-icon">{{ getProjectTypeIcon(project.type) }}</mat-icon>
+          <h3 class="project-name" (click)="openDetailsPanel(project)">{{ project.name }}</h3>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="mobileMenu"
+            aria-label="Acciones de proyecto"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #mobileMenu="matMenu" class="actions-menu mobile-menu">
+            <div class="menu-section">
+              <button mat-menu-item (click)="openDetailsPanel(project)" class="menu-item">
+                <mat-icon>visibility</mat-icon>
+                <span>Ver detalles</span>
+              </button>
+              <button mat-menu-item (click)="openEditPanel(project)" class="menu-item">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+            </div>
+            
+            <div class="menu-section">
+              <button
+                mat-menu-item
+                (click)="openDeleteDialog(project)"
+                class="menu-item delete-action"
+              >
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </mat-menu>
+        </div>
+
+        <div class="card-content">
+          <p class="project-description">{{ project.description || 'Sin descripción' }}</p>
+
+          <div class="project-details">
+            <div class="detail-item">
+              <span class="detail-label">Tipo:</span>
+              <mat-chip class="type-chip" [class]="'type-' + project.type">
+                {{ getProjectTypeLabel(project.type) }}
+              </mat-chip>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Repositorio:</span>
+              <a
+                [href]="project.repositoryUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="repository-link"
+              >
+                {{ project.repositoryUrl | slice:0:30 }}{{ project.repositoryUrl.length > 30 ? '...' : '' }}
+              </a>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Estado:</span>
+              <mat-slide-toggle
+                [checked]="project.isActive"
+                (change)="toggleActive(project)"
+                color="primary"
+              >
+                <span class="toggle-text">{{ getActiveStatusText(project.isActive) }}</span>
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div
+      *ngIf="!loading && filteredProjects.length === 0 && projects.length === 0"
+      class="empty-state"
+    >
+      <mat-icon class="empty-icon">folder_open</mat-icon>
+      <h2>No hay proyectos</h2>
+      <p>Comienza creando tu primer proyecto</p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreatePanel()"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Proyecto
+      </button>
+    </div>
+
+    <!-- Estado sin resultados de filtro -->
+    <div
+      *ngIf="!loading && filteredProjects.length === 0 && projects.length > 0"
+      class="no-results-state"
+    >
+      <mat-icon class="no-results-icon">search_off</mat-icon>
+      <h2>No se encontraron proyectos</h2>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+      <button
+        mat-stroked-button
+        (click)="clearFilters()"
+      >
+        <mat-icon>clear</mat-icon>
+        Limpiar filtros
+      </button>
     </div>
   </div>
+
+  <!-- Paneles laterales -->
+  <app-project-slide-panel
+    [isOpen]="isEditPanelOpen"
+    [project]="selectedProject"
+    (closePanel)="onEditPanelClosed($event)"
+  ></app-project-slide-panel>
+
+  <!-- TODO: Implementar panel de detalles -->
+  <!-- <app-project-details-panel
+    [isOpen]="isDetailsPanelOpen"
+    [project]="selectedProject"
+    (closed)="onDetailsPanelClosed()"
+  ></app-project-details-panel> -->
 </div> 

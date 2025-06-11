@@ -189,7 +189,6 @@ export class DevelopmentService {
       .get<any>('api/activities/recent', { limit: 10 })
       .pipe(
         map((response) => {
-          console.log('[DEBUG] Recent activities response:', response);
           
           // Si la respuesta es un array directamente
           if (Array.isArray(response)) {

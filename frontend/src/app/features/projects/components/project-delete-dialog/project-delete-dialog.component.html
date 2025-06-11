@@ -1,0 +1,68 @@
+<div class="delete-dialog">
+  <!-- Header del diálogo -->
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon class="warning-icon">warning</mat-icon>
+    </div>
+    <div class="header-content">
+      <h2 mat-dialog-title class="dialog-title">Eliminar Proyecto</h2>
+      <p class="dialog-subtitle">Esta acción no se puede deshacer</p>
+    </div>
+  </div>
+
+  <!-- Contenido del diálogo -->
+  <div mat-dialog-content class="dialog-content">
+    <div class="project-info">
+      <div class="project-header">
+        <mat-icon class="project-icon">{{ getProjectTypeIcon(project.type) }}</mat-icon>
+        <div class="project-details">
+          <h3 class="project-name">{{ project.name }}</h3>
+          <span class="project-type">{{ getProjectTypeLabel(project.type) }}</span>
+        </div>
+      </div>
+      
+      <div class="project-description" *ngIf="project.description">
+        <p>{{ project.description }}</p>
+      </div>
+      
+      <div class="project-repository">
+        <mat-icon>link</mat-icon>
+        <span class="repository-url">{{ project.repositoryUrl }}</span>
+      </div>
+    </div>
+
+    <div class="warning-message">
+      <mat-icon class="warning-icon">info</mat-icon>
+      <div class="warning-text">
+        <p><strong>¿Estás seguro de que deseas eliminar este proyecto?</strong></p>
+        <p>Se eliminarán todos los datos asociados, incluyendo componentes y configuraciones.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones del diálogo -->
+  <div mat-dialog-actions class="dialog-actions">
+    <button
+      mat-stroked-button
+      type="button"
+      class="cancel-button"
+      (click)="onCancel()"
+      [disabled]="loading"
+    >
+      Cancelar
+    </button>
+    
+    <button
+      mat-raised-button
+      color="warn"
+      type="button"
+      class="delete-button"
+      (click)="onConfirm()"
+      [disabled]="loading"
+    >
+      <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+      <mat-icon *ngIf="!loading">delete</mat-icon>
+      <span>{{ loading ? 'Eliminando...' : 'Eliminar Proyecto' }}</span>
+    </button>
+  </div>
+</div> 
