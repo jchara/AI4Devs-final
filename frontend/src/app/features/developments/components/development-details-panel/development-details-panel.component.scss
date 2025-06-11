@@ -1131,19 +1131,19 @@ button[mat-menu-item] {
 
     .full-width {
       grid-column: 1 / -1;
-    }
+  }
 
-    .detail-item {
-      label {
+  .detail-item {
+    label {
         display: block;
         color: var(--text-secondary);
-        font-size: 0.875rem;
+      font-size: 0.875rem;
         margin-bottom: 0.25rem;
         transition: color 0.2s ease;
-      }
+    }
 
-      span {
-        font-weight: 500;
+    span {
+      font-weight: 500;
         color: var(--text-primary);
         transition: color 0.2s ease;
       }
