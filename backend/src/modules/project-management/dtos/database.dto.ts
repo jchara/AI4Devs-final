@@ -31,6 +31,11 @@ export class CreateDatabaseDto {
   @ApiProperty({ description: 'ID of the project this database belongs to' })
   @IsNumber()
   projectId: number;
+
+  @ApiProperty({ description: 'ID of the environment this database belongs to' })
+  @IsNumber()
+  @IsOptional()
+  environmentId?: number;
 }
 
 export class UpdateDatabaseDto {
@@ -64,6 +69,11 @@ export class UpdateDatabaseDto {
   @IsNumber()
   @IsOptional()
   projectId?: number;
+
+  @ApiProperty({ description: 'ID of the environment this database belongs to', required: false })
+  @IsNumber()
+  @IsOptional()
+  environmentId?: number;
 }
 
 export class DatabaseResponseDto extends BaseDto {

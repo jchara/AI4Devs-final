@@ -37,7 +37,18 @@ export class DatabaseService {
     
     return this.http.get<any>(this.apiUrl).pipe(
       tap(response => {
-        const databases = response.data || response;
+        // Asegurar que siempre obtenemos un array
+        let databases: Database[] = [];
+        
+        if (response && response.data && Array.isArray(response.data)) {
+          databases = response.data;
+        } else if (Array.isArray(response)) {
+          databases = response;
+        } else {
+          console.warn('Respuesta inesperada del servidor:', response);
+          databases = [];
+        }
+        
         this.databasesSubject.next(databases);
         this.loadingSubject.next(false);
       }),
@@ -55,7 +66,18 @@ export class DatabaseService {
   getDatabasesByEnvironment(environmentId: number): Observable<Database[]> {
     return this.http.get<any>(`${this.apiUrl}/environment/${environmentId}`).pipe(
       tap(response => {
-        const databases = response.data || response;
+        // Asegurar que siempre obtenemos un array
+        let databases: Database[] = [];
+        
+        if (response && response.data && Array.isArray(response.data)) {
+          databases = response.data;
+        } else if (Array.isArray(response)) {
+          databases = response;
+        } else {
+          console.warn('Respuesta inesperada del servidor:', response);
+          databases = [];
+        }
+        
         return databases;
       }),
       catchError(error => {
@@ -109,7 +131,18 @@ export class DatabaseService {
 
     return this.http.get<any>(`${this.apiUrl}/search`, { params }).pipe(
       tap(response => {
-        const databases = response.data || response;
+        // Asegurar que siempre obtenemos un array
+        let databases: Database[] = [];
+        
+        if (response && response.data && Array.isArray(response.data)) {
+          databases = response.data;
+        } else if (Array.isArray(response)) {
+          databases = response;
+        } else {
+          console.warn('Respuesta inesperada del servidor:', response);
+          databases = [];
+        }
+        
         return databases;
       }),
       catchError(error => {
@@ -195,13 +228,8 @@ export class DatabaseService {
    * Alternar estado activo/inactivo de la base de datos
    */
   toggleDatabaseStatus(database: Database): Observable<Database> {
+    // Solo enviar el campo que queremos cambiar para evitar errores de validación
     const updateData: UpdateDatabaseRequest = {
-      name: database.name,
-      description: database.description,
-      type: database.type,
-      version: database.version,
-      environmentId: database.environmentId,
-      projectId: database.projectId,
       isActive: !database.isActive
     };
 

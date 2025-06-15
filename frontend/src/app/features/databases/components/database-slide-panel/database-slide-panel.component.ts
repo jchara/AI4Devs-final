@@ -159,34 +159,35 @@ export class DatabaseSlidePanelComponent implements OnInit, OnDestroy, AfterView
 
 
   onSubmit(): void {
-    if (this.databaseForm.valid && !this.loading) {
-      const formValue = this.databaseForm.value;
-
-      if (this.isEditMode && this.database) {
-        this.updateDatabase(formValue);
-      } else {
-        this.createDatabase(formValue);
-      }
+    if (this.databaseForm.invalid) {
+      return;
+    }
+    
+    const formData = this.databaseForm.value;
+    
+    if (this.isEditMode && this.database) {
+      this.updateDatabase(formData);
     } else {
-      this.markFormGroupTouched();
+      this.createDatabase(formData);
     }
   }
 
-  private createDatabase(formValue: any): void {
+  private createDatabase(formData: any): void {
     const createRequest: CreateDatabaseRequest = {
-      name: formValue.name.trim(),
-      description: formValue.description.trim(),
-      type: formValue.type,
-      version: formValue.version?.trim() || undefined,
-      environmentId: formValue.environmentId || undefined,
-      projectId: formValue.projectId || undefined
+      name: formData.name.trim(),
+      description: formData.description.trim(),
+      type: formData.type,
+      version: formData.version?.trim() || undefined,
+      environmentId: formData.environmentId || undefined,
+      projectId: formData.projectId || undefined,
+      isActive: formData.isActive
     };
 
     this.databaseService.createDatabase(createRequest)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.onClose(true);
+          this.close(true);
         },
         error: (error) => {
           console.error('Error al crear base de datos:', error);
@@ -195,24 +196,24 @@ export class DatabaseSlidePanelComponent implements OnInit, OnDestroy, AfterView
       });
   }
 
-  private updateDatabase(formValue: any): void {
+  private updateDatabase(formData: any): void {
     if (!this.database) return;
 
     const updateRequest: UpdateDatabaseRequest = {
-      name: formValue.name.trim(),
-      description: formValue.description.trim(),
-      type: formValue.type,
-      version: formValue.version?.trim() || undefined,
-      environmentId: formValue.environmentId || undefined,
-      projectId: formValue.projectId || undefined,
-      isActive: formValue.isActive
+      name: formData.name.trim(),
+      description: formData.description.trim(),
+      type: formData.type,
+      version: formData.version?.trim() || undefined,
+      environmentId: formData.environmentId || undefined,
+      projectId: formData.projectId || undefined,
+      isActive: formData.isActive
     };
 
     this.databaseService.updateDatabase(this.database.id, updateRequest)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.onClose(true);
+          this.close(true);
         },
         error: (error) => {
           console.error('Error al actualizar base de datos:', error);
@@ -221,13 +222,7 @@ export class DatabaseSlidePanelComponent implements OnInit, OnDestroy, AfterView
       });
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.databaseForm.controls).forEach(key => {
-      const control = this.databaseForm.get(key);
-      control?.markAsTouched();
-    });
-    this.cdr.markForCheck();
-  }
+
 
   close(result: boolean = false): void {
     this.onClose(result);
@@ -275,30 +270,34 @@ export class DatabaseSlidePanelComponent implements OnInit, OnDestroy, AfterView
   private initializeForm(): void {
     this.isEditMode = !!this.database;
     this.title = this.isEditMode ? 'Editar Base de Datos' : 'Nueva Base de Datos';
-
+    
+    // Resetear el formulario para evitar mezclar datos entre sesiones
+    this.databaseForm.reset({
+      name: '',
+      description: '',
+      type: DatabaseType.POSTGRES,
+      version: '',
+      environmentId: '',
+      projectId: '',
+      isActive: true
+    });
+    
     if (this.isEditMode && this.database) {
-      this.databaseForm.patchValue({
-        name: this.database.name,
-        description: this.database.description,
-        type: this.database.type,
-        version: this.database.version || '',
-        environmentId: this.database.environmentId || '',
-        projectId: this.database.projectId || '',
-        isActive: this.database.isActive
-      });
-    } else {
-      this.databaseForm.reset({
-        name: '',
-        description: '',
-        type: DatabaseType.POSTGRES,
-        version: '',
-        environmentId: '',
-        projectId: '',
-        isActive: true
+      // Usar setTimeout para asegurar que el cambio se aplique después de que Angular haya terminado
+      // el ciclo de renderizado actual
+      setTimeout(() => {
+        this.databaseForm.patchValue({
+          name: this.database?.name || '',
+          description: this.database?.description || '',
+          type: this.database?.type || DatabaseType.POSTGRES,
+          version: this.database?.version || '',
+          environmentId: this.database?.environmentId || '',
+          projectId: this.database?.projectId || '',
+          isActive: this.database?.isActive !== undefined ? this.database.isActive : true
+        });
+        this.cdr.markForCheck();
       });
     }
-
-    this.cdr.markForCheck();
   }
 
   private setupServiceSubscriptions(): void {

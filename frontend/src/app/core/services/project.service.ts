@@ -36,7 +36,18 @@ export class ProjectService {
     
     return this.http.get<any>(this.apiUrl).pipe(
       tap(response => {
-        const projects = response.data || response;
+        // Asegurar que siempre obtenemos un array
+        let projects: Project[] = [];
+        
+        if (response && response.data && Array.isArray(response.data)) {
+          projects = response.data;
+        } else if (Array.isArray(response)) {
+          projects = response;
+        } else {
+          console.warn('Respuesta inesperada del servidor:', response);
+          projects = [];
+        }
+        
         this.projectsSubject.next(projects);
         this.loadingSubject.next(false);
       }),
@@ -80,7 +91,18 @@ export class ProjectService {
 
     return this.http.get<any>(`${this.apiUrl}/search`, { params }).pipe(
       tap(response => {
-        const projects = response.data || response;
+        // Asegurar que siempre obtenemos un array
+        let projects: Project[] = [];
+        
+        if (response && response.data && Array.isArray(response.data)) {
+          projects = response.data;
+        } else if (Array.isArray(response)) {
+          projects = response;
+        } else {
+          console.warn('Respuesta inesperada del servidor:', response);
+          projects = [];
+        }
+        
         return projects;
       }),
       catchError(error => {

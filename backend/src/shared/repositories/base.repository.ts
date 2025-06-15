@@ -11,7 +11,6 @@ export abstract class BaseRepository<T extends ObjectLiteral> implements BaseRep
 
     return this.repository.find({
       where: {
-        isActive: true,
         ...(hasDeletedAt ? { deletedAt: IsNull() } : {}),
       } as unknown as FindOptionsWhere<T>,
     });

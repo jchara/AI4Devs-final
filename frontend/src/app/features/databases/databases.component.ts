@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { MatTableModule, MatTable } from '@angular/material/table';
@@ -27,7 +34,10 @@ import { ProjectService } from '../../core/services/project.service';
 import { Database, DatabaseType } from '../../shared/models/database.model';
 import { Environment } from '../../shared/models/environment.model';
 import { Project } from '../../shared/models/project.model';
-import { DeleteDialogComponent, DeleteDialogData } from '../../shared/components/delete-dialog';
+import {
+  DeleteDialogComponent,
+  DeleteDialogData,
+} from '../../shared/components/delete-dialog';
 import { DatabaseSlidePanelComponent } from './components/database-slide-panel/database-slide-panel.component';
 
 @Component({
@@ -53,40 +63,47 @@ import { DatabaseSlidePanelComponent } from './components/database-slide-panel/d
     MatChipsModule,
     MatDialogModule,
     MatSlideToggleModule,
-    DatabaseSlidePanelComponent
+    DatabaseSlidePanelComponent,
   ],
   templateUrl: './databases.component.html',
   styleUrls: ['./databases.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatabasesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   databases: Database[] = [];
   filteredDatabases: Database[] = [];
   environments: Environment[] = [];
   projects: Project[] = [];
   loading = false;
-  
-  displayedColumns: string[] = ['name', 'type', 'version', 'environment', 'project', 'isActive', 'actions'];
+
+  displayedColumns: string[] = [
+    'name',
+    'type',
+    'version',
+    'environment',
+    'project',
+    'isActive',
+    'actions',
+  ];
   displayedColumnsMobile: string[] = ['name', 'type', 'actions'];
-  
+
   // Paneles laterales
   isEditPanelOpen = false;
-  isDetailsPanelOpen = false;
   selectedDatabase: Database | null = null;
-  
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<Database>;
-  
+
   searchForm = new FormGroup({
     searchTerm: new FormControl(''),
     typeFilter: new FormControl<DatabaseType | ''>(''),
     environmentFilter: new FormControl<number | ''>(''),
-    projectFilter: new FormControl<number | ''>('')
+    projectFilter: new FormControl<number | ''>(''),
   });
-  
+
   // Opciones para filtros
   databaseTypes = Object.values(DatabaseType);
 
@@ -97,20 +114,23 @@ export class DatabasesComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private router: Router
-  ) { 
+  ) {
     // Cerrar diálogos cuando hay navegación
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationStart),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.dialog.closeAll();
-    });
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationStart),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.dialog.closeAll();
+      });
   }
-  
+
   ngOnInit(): void {
     // Carga inicial diferida para mejorar el tiempo de carga
     setTimeout(() => {
       this.loadDatabases();
+      // Cargar todos los ambientes y proyectos para los formularios
       this.loadEnvironments();
       this.loadProjects();
     });
@@ -118,15 +138,20 @@ export class DatabasesComponent implements OnInit, OnDestroy {
     // Suscripción reactiva a la lista de bases de datos
     this.databaseService.databases$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(databases => {
-        this.databases = databases;
+      .subscribe((databases) => {
+        // Asegurar que databases sea siempre un array
+        this.databases = Array.isArray(databases) ? databases : [];
+
+        // Extraer ambientes y proyectos únicos de las bases de datos
+        this.extractEnvironmentsAndProjects();
+
         this.filterDatabases();
         this.cdr.markForCheck();
       });
 
     this.databaseService.loading$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(loading => {
+      .subscribe((loading) => {
         this.loading = loading;
         this.cdr.markForCheck();
       });
@@ -139,116 +164,180 @@ export class DatabasesComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
+
   loadDatabases(): void {
     if (this.loading) return;
-    this.databaseService.getDatabases().pipe(takeUntil(this.destroy$)).subscribe();
+    this.databaseService
+      .getDatabases()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
   }
 
   loadEnvironments(): void {
-    this.environmentService.getEnvironments().pipe(takeUntil(this.destroy$)).subscribe(environments => {
-      this.environments = environments;
-      this.cdr.markForCheck();
-    });
+    this.environmentService
+      .getEnvironments()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((environments) => {
+        // Filtrar solo ambientes activos
+        this.environments = Array.isArray(environments)
+          ? environments.filter((env) => env.isActive)
+          : [];
+        this.cdr.markForCheck();
+      });
   }
 
   loadProjects(): void {
-    this.projectService.getProjects().pipe(takeUntil(this.destroy$)).subscribe(projects => {
-      this.projects = projects;
-      this.cdr.markForCheck();
-    });
+    this.projectService
+      .getProjects()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((projects) => {
+        // Extraer el array de datos y filtrar solo proyectos activos
+        const projectsArray = (projects as any)?.data || projects || [];
+        this.projects = Array.isArray(projectsArray)
+          ? projectsArray.filter((proj) => proj.isActive)
+          : [];
+        this.cdr.markForCheck();
+      });
   }
-  
-  filterDatabases(): void {
-    const searchTerm = this.searchForm.get('searchTerm')?.value?.toLowerCase().trim() || '';
-    const typeFilter = this.searchForm.get('typeFilter')?.value || '';
-    const environmentFilter = this.searchForm.get('environmentFilter')?.value || '';
-    const projectFilter = this.searchForm.get('projectFilter')?.value || '';
-    
-    this.filteredDatabases = this.databases.filter(database => {
-      const matchesSearch = !searchTerm || 
-        database.name.toLowerCase().includes(searchTerm) || 
-        database.description?.toLowerCase().includes(searchTerm);
-      
-      const matchesType = !typeFilter || database.type === typeFilter;
-      const matchesEnvironment = !environmentFilter || database.environmentId === environmentFilter;
-      const matchesProject = !projectFilter || database.projectId === projectFilter;
-      
-      return matchesSearch && matchesType && matchesEnvironment && matchesProject;
+
+  extractEnvironmentsAndProjects(): void {
+    // Validar que databases sea un array antes de procesar
+    if (!Array.isArray(this.databases)) {
+      console.warn('databases no es un array:', this.databases);
+      return;
+    }
+
+    // Extraer ambientes únicos de las bases de datos para los filtros
+    const environmentsFromDBMap = new Map();
+    const projectsFromDBMap = new Map();
+
+    this.databases.forEach((database) => {
+      if (database.environment) {
+        environmentsFromDBMap.set(
+          database.environment.id,
+          database.environment
+        );
+      }
+      if (database.project) {
+        projectsFromDBMap.set(database.project.id, database.project);
+      }
     });
-    
+
+    // Combinar con los ambientes y proyectos ya cargados (para mantener todos disponibles)
+    const allEnvironmentsMap = new Map();
+    const allProjectsMap = new Map();
+
+    // Agregar los ya existentes (ya están filtrados por activos)
+    if (Array.isArray(this.environments)) {
+      this.environments.forEach((env) => allEnvironmentsMap.set(env.id, env));
+    }
+    if (Array.isArray(this.projects)) {
+      this.projects.forEach((proj) => allProjectsMap.set(proj.id, proj));
+    }
+
+    // Agregar los extraídos de las bases de datos
+    environmentsFromDBMap.forEach((env, id) => allEnvironmentsMap.set(id, env));
+    projectsFromDBMap.forEach((proj, id) => allProjectsMap.set(id, proj));
+
+    this.environments = Array.from(allEnvironmentsMap.values());
+    this.projects = Array.from(allProjectsMap.values());
+  }
+
+  filterDatabases(): void {
+    // Validar que databases sea un array antes de filtrar
+    if (!Array.isArray(this.databases)) {
+      this.filteredDatabases = [];
+      return;
+    }
+
+    const searchTerm =
+      this.searchForm.get('searchTerm')?.value?.toLowerCase().trim() || '';
+    const typeFilter = this.searchForm.get('typeFilter')?.value || '';
+    const environmentFilter =
+      this.searchForm.get('environmentFilter')?.value || '';
+    const projectFilter = this.searchForm.get('projectFilter')?.value || '';
+
+    this.filteredDatabases = this.databases.filter((database) => {
+      const matchesSearch =
+        !searchTerm ||
+        database.name.toLowerCase().includes(searchTerm) ||
+        database.description?.toLowerCase().includes(searchTerm);
+
+      const matchesType = !typeFilter || database.type === typeFilter;
+      const matchesEnvironment =
+        !environmentFilter || database.environmentId === environmentFilter;
+      const matchesProject =
+        !projectFilter || database.projectId === projectFilter;
+
+      return (
+        matchesSearch && matchesType && matchesEnvironment && matchesProject
+      );
+    });
+
     if (this.table) {
       this.table.renderRows();
     }
-    
+
     this.cdr.markForCheck();
   }
-  
+
   openCreatePanel(): void {
     this.selectedDatabase = null;
     this.isEditPanelOpen = true;
     this.cdr.markForCheck();
   }
-  
+
   openEditPanel(database: Database): void {
     this.selectedDatabase = database;
     this.isEditPanelOpen = true;
     this.cdr.markForCheck();
   }
-  
-  openDetailsPanel(database: Database): void {
-    // TODO: Implementar panel de detalles
-    console.log('Ver detalles de la base de datos:', database);
-  }
-  
+
   onEditPanelClosed(result: boolean): void {
     this.isEditPanelOpen = false;
     this.selectedDatabase = null;
-    
+
     if (result) {
       this.loadDatabases();
     }
-    
+
     this.cdr.markForCheck();
   }
-  
-  onDetailsPanelClosed(): void {
-    // TODO: Implementar cierre de panel de detalles
-  }
-  
+
   openDeleteDialog(database: Database): void {
     const dialogData: DeleteDialogData = {
       title: 'Eliminar base de datos',
       entityName: database.name,
       entityType: 'la base de datos',
       breadcrumbs: ['Dashboard', 'Bases de Datos', database.name],
-      warningMessage: 'Esta acción no se puede deshacer. Se eliminará la base de datos y todas sus referencias.',
+      warningMessage:
+        'Esta acción no se puede deshacer. Se eliminará la base de datos y todas sus referencias.',
       additionalInfo: [
         {
           icon: this.getDatabaseTypeIcon(database.type),
           label: 'Tipo',
-          value: this.getDatabaseTypeLabel(database.type)
+          value: this.getDatabaseTypeLabel(database.type),
         },
         {
           icon: 'info',
           label: 'Versión',
-          value: database.version || 'N/A'
+          value: database.version || 'N/A',
         },
         {
           icon: 'environment',
           label: 'Ambiente',
-          value: this.getEnvironmentName(database.environmentId)
+          value: this.getEnvironmentName(database.environmentId, database),
         },
         {
           icon: 'folder',
           label: 'Proyecto',
-          value: this.getProjectName(database.projectId)
-        }
+          value: this.getProjectName(database.projectId, database),
+        },
       ],
       onConfirm: () => {
         this.databaseService.deleteDatabase(database.id).subscribe({
@@ -257,10 +346,10 @@ export class DatabasesComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             console.error('Error al eliminar base de datos:', error);
-          }
+          },
         });
       },
-      loading$: this.databaseService.loading$ as any
+      loading$: this.databaseService.loading$ as any,
     };
 
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -268,67 +357,74 @@ export class DatabasesComponent implements OnInit, OnDestroy {
       maxWidth: '90vw',
       data: dialogData,
       panelClass: 'delete-database-dialog',
-      disableClose: true
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadDatabases();
       }
     });
   }
-  
+
   toggleActive(database: Database): void {
-    // Usar el método específico del servicio para alternar estado
-    this.databaseService.toggleDatabaseStatus(database)
+    this.databaseService
+      .updateDatabase(database.id, { isActive: !database.isActive })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (updatedDatabase) => {
-          // El servicio ya actualiza la lista reactiva, solo necesitamos refrescar la vista
-          this.filterDatabases();
-          this.cdr.markForCheck();
+        next: () => {
+          this.loadDatabases();
         },
         error: (error) => {
           console.error('Error al cambiar estado de la base de datos:', error);
-          // Revertir el cambio en caso de error
-          database.isActive = !database.isActive;
-          this.cdr.markForCheck();
-        }
+        },
       });
   }
-  
+
   getDatabaseTypeLabel(type: DatabaseType): string {
     // TODO: Implementar mapeo de etiquetas
     return type;
   }
-  
+
   getDatabaseTypeIcon(type: DatabaseType): string {
     // TODO: Implementar mapeo de iconos
     return 'storage';
   }
-  
+
   getActiveStatusText(isActive: boolean): string {
     return isActive ? 'Activo' : 'Inactivo';
   }
-  
-  getEnvironmentName(environmentId?: number): string {
+
+  getEnvironmentName(environmentId?: number, database?: Database): string {
+    // Si tenemos la base de datos con la relación cargada, usarla directamente
+    if (database?.environment) {
+      return database.environment.name;
+    }
+
+    // Fallback: buscar en la lista de ambientes extraídos
     if (!environmentId) return 'Sin ambiente';
-    const environment = this.environments.find(e => e.id === environmentId);
+    const environment = this.environments.find((e) => e.id === environmentId);
     return environment?.name || 'Sin ambiente';
   }
-  
-  getProjectName(projectId?: number): string {
+
+  getProjectName(projectId?: number, database?: Database): string {
+    // Si tenemos la base de datos con la relación cargada, usarla directamente
+    if (database?.project) {
+      return database.project.name;
+    }
+
+    // Fallback: buscar en la lista de proyectos extraídos
     if (!projectId) return 'Sin proyecto';
-    const project = this.projects.find(p => p.id === projectId);
+    const project = this.projects.find((p) => p.id === projectId);
     return project?.name || 'Sin proyecto';
   }
-  
+
   clearFilters(): void {
     this.searchForm.reset({
       searchTerm: '',
       typeFilter: '',
       environmentFilter: '',
-      projectFilter: ''
+      projectFilter: '',
     });
   }
-} 
+}

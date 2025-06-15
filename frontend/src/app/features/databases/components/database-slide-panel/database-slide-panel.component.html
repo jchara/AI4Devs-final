@@ -1,234 +1,131 @@
 <!-- Overlay -->
-<div 
-  *ngIf="isOpen" 
-  class="panel-overlay"
-  [@overlay]
-  (click)="closeOnBackdropClick($event)"
->
-  <!-- Panel lateral -->
-  <div 
-    class="slide-panel"
-    [@panelState]="getPanelAnimationParams()"
-    (click)="onBackdropClick($event)"
-  >
-    <!-- Header del panel -->
+<div *ngIf="isOpen" 
+  class="panel-overlay" 
+  (click)="closeOnBackdropClick($event)" 
+  [@overlay]>
+  <div class="slide-panel" 
+      [@panelState]="getPanelAnimationParams()"
+      [class.mobile]="isMobile">
     <div class="panel-header">
-      <div class="header-content">
-        <!-- Breadcrumbs -->
-        <div class="breadcrumbs">
-          <span class="breadcrumb-item">Dashboard</span>
-          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
-          <span class="breadcrumb-item">Bases de Datos</span>
-          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
-          <span class="breadcrumb-item current">{{ title }}</span>
-        </div>
-
-        <!-- Título y botón cerrar -->
-        <div class="header-title-section">
-          <h2 class="panel-title">{{ title }}</h2>
-          <button 
-            mat-icon-button 
-            class="close-button"
-            (click)="close(false)"
-            aria-label="Cerrar panel"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <mat-icon>chevron_right</mat-icon>
+        <span>Bases de Datos</span>
+        <mat-icon *ngIf="isEditMode">chevron_right</mat-icon>
+        <span *ngIf="isEditMode">{{ database?.name }}</span>
       </div>
+      <button mat-icon-button (click)="close()" class="close-button" matTooltip="Cerrar panel">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
-
-    <!-- Contenido del panel -->
-    <div class="panel-content">
-      <div class="scrollable-content">
-        <form [formGroup]="databaseForm" (ngSubmit)="onSubmit()" class="database-form">
-          <!-- Información básica -->
-          <div class="form-section">
-            <h3 class="section-title">Información básica</h3>
-            
-            <!-- Nombre -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nombre de la base de datos</mat-label>
-              <input 
-                matInput 
-                formControlName="name"
-                placeholder="Ej: users-db, inventory-database"
-                maxlength="100"
-              >
-              <mat-hint>Nombre único de la base de datos</mat-hint>
-              <mat-error *ngIf="nameControl?.errors && nameControl?.touched">
-                {{ getNameErrorMessage() }}
-              </mat-error>
-            </mat-form-field>
-
-            <!-- Descripción -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Descripción</mat-label>
-              <textarea 
-                matInput 
-                formControlName="description"
-                placeholder="Describe el propósito de la base de datos..."
-                rows="3"
-                maxlength="500"
-              ></textarea>
-              <mat-hint>Descripción detallada de la base de datos</mat-hint>
-              <mat-error *ngIf="descriptionControl?.errors && descriptionControl?.touched">
-                {{ getDescriptionErrorMessage() }}
-              </mat-error>
-            </mat-form-field>
-
-            <!-- Tipo de base de datos -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Tipo de base de datos</mat-label>
-              <mat-select formControlName="type">
-                <mat-option *ngFor="let type of databaseTypes" [value]="type">
-                  <div class="type-option">
-                    <mat-icon class="type-icon">{{ getDatabaseTypeIcon(type) }}</mat-icon>
-                    <span>{{ getDatabaseTypeLabel(type) }}</span>
-                  </div>
-                </mat-option>
-              </mat-select>
-              <mat-hint>Selecciona el tipo de base de datos</mat-hint>
-              <mat-error *ngIf="typeControl?.errors && typeControl?.touched">
-                El tipo de base de datos es requerido
-              </mat-error>
-            </mat-form-field>
+    
+    <div class="scrollable-content">
+      <!-- Título del panel -->
+      <div class="title-section">
+        <h1>{{ title }}</h1>
+      </div>
+      
+      <div class="panel-content">
+        <form [formGroup]="databaseForm" class="database-form">
+          <!-- Estado de carga -->
+          <div *ngIf="loading" class="loading-overlay">
+            <mat-spinner diameter="40"></mat-spinner>
           </div>
-
-          <!-- Información técnica -->
-          <div class="form-section">
-            <h3 class="section-title">Información técnica</h3>
-            
-            <!-- Versión -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Versión</mat-label>
-              <input 
-                matInput 
-                formControlName="version"
-                placeholder="Ej: 16.1, 8.0.35"
-                maxlength="50"
-              >
-              <mat-hint>Versión de la base de datos (opcional)</mat-hint>
-              <mat-error *ngIf="versionControl?.errors && versionControl?.touched">
-                {{ getVersionErrorMessage() }}
-              </mat-error>
-            </mat-form-field>
+          
+          <!-- Nombre de la base de datos -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" placeholder="Ej. users-db, inventory-database" required>
+            <mat-error *ngIf="databaseForm.get('name')?.invalid">
+              {{ getFormError('name') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Descripción -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="description" placeholder="Describe el propósito de la base de datos..." rows="3" required></textarea>
+            <mat-error *ngIf="databaseForm.get('description')?.invalid">
+              {{ getFormError('description') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Tipo de base de datos -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo de Base de Datos</mat-label>
+            <mat-select formControlName="type" required>
+              <mat-option *ngFor="let type of databaseTypes" [value]="type">
+                {{ getDatabaseTypeLabel(type) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="databaseForm.get('type')?.invalid">
+              {{ getFormError('type') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Versión -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Versión</mat-label>
+            <input matInput formControlName="version" placeholder="Ej: 16.1, 8.0.35">
+            <mat-error *ngIf="databaseForm.get('version')?.invalid">
+              {{ getFormError('version') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Ambiente -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Ambiente</mat-label>
+            <mat-select formControlName="environmentId">
+              <mat-option value="">Sin ambiente específico</mat-option>
+              <mat-option *ngFor="let environment of environments" [value]="environment.id">
+                {{ environment.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="databaseForm.get('environmentId')?.invalid">
+              {{ getFormError('environmentId') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Proyecto -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Proyecto</mat-label>
+            <mat-select formControlName="projectId">
+              <mat-option value="">Sin proyecto específico</mat-option>
+              <mat-option *ngFor="let project of projects" [value]="project.id">
+                {{ project.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="databaseForm.get('projectId')?.invalid">
+              {{ getFormError('projectId') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Estado (activo/inactivo) -->
+          <div class="toggle-field">
+            <mat-slide-toggle formControlName="isActive" color="primary">
+              Base de datos activa
+            </mat-slide-toggle>
           </div>
-
-          <!-- Relaciones -->
-          <div class="form-section">
-            <h3 class="section-title">Relaciones</h3>
-            
-            <!-- Ambiente -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Ambiente</mat-label>
-              <mat-select formControlName="environmentId">
-                <mat-option value="">Sin ambiente específico</mat-option>
-                <mat-option *ngFor="let environment of environments" [value]="environment.id">
-                  {{ environment.name }}
-                </mat-option>
-              </mat-select>
-              <mat-hint>Ambiente donde se ejecuta la base de datos (opcional)</mat-hint>
-            </mat-form-field>
-
-            <!-- Proyecto -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Proyecto</mat-label>
-              <mat-select formControlName="projectId">
-                <mat-option value="">Sin proyecto específico</mat-option>
-                <mat-option *ngFor="let project of projects" [value]="project.id">
-                  {{ project.name }}
-                </mat-option>
-              </mat-select>
-              <mat-hint>Proyecto al que pertenece la base de datos (opcional)</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <!-- Estado -->
-          <div class="form-section" *ngIf="isEditMode">
-            <h3 class="section-title">Estado</h3>
-            
-            <div class="toggle-field">
-              <mat-slide-toggle formControlName="isActive" color="primary">
-                <span class="toggle-label">Base de datos activa</span>
-              </mat-slide-toggle>
-              <p class="toggle-hint">Las bases de datos inactivas no aparecerán en las listas principales</p>
-            </div>
-          </div>
-
-          <!-- Vista previa -->
-          <div class="form-section preview-section" *ngIf="databaseForm.get('name')?.value">
-            <h3 class="section-title">Vista previa</h3>
-            
-            <div class="database-preview">
-              <div class="preview-header">
-                <mat-icon class="preview-icon">{{ getDatabaseTypeIcon(databaseForm.get('type')?.value) }}</mat-icon>
-                <div class="preview-info">
-                  <h4 class="preview-name">{{ databaseForm.get('name')?.value }}</h4>
-                  <p class="preview-type">{{ getDatabaseTypeLabel(databaseForm.get('type')?.value) }}</p>
-                </div>
-              </div>
-              
-              <div class="preview-details">
-                <div class="preview-item" *ngIf="databaseForm.get('version')?.value">
-                  <span class="preview-label">Versión:</span>
-                  <span class="preview-value">{{ databaseForm.get('version')?.value }}</span>
-                </div>
-                
-                <div class="preview-item" *ngIf="databaseForm.get('environmentId')?.value">
-                  <span class="preview-label">Ambiente:</span>
-                  <span class="preview-value">{{ getEnvironmentName(databaseForm.get('environmentId')?.value) }}</span>
-                </div>
-                
-                <div class="preview-item" *ngIf="databaseForm.get('projectId')?.value">
-                  <span class="preview-label">Proyecto:</span>
-                  <span class="preview-value">{{ getProjectName(databaseForm.get('projectId')?.value) }}</span>
-                </div>
-                
-                <div class="preview-item" *ngIf="databaseForm.get('description')?.value">
-                  <span class="preview-label">Descripción:</span>
-                  <span class="preview-value">{{ databaseForm.get('description')?.value }}</span>
-                </div>
-              </div>
-            </div>
+          
+          <!-- Botones de acción - ahora dentro del formulario -->
+          <div class="form-actions">
+            <button 
+              mat-stroked-button 
+              (click)="close()" 
+              [disabled]="loading" 
+              class="app-button cancel-button">
+              Cancelar
+            </button>
+            <button 
+              mat-flat-button 
+              color="primary" 
+              (click)="onSubmit()" 
+              [disabled]="databaseForm.invalid || loading"
+              class="app-button primary-button">
+              {{ isEditMode ? 'Actualizar' : 'Crear' }}
+            </button>
           </div>
         </form>
-      </div>
-    </div>
-
-    <!-- Footer del panel -->
-    <div class="panel-footer">
-      <div class="footer-actions">
-        <button 
-          mat-stroked-button 
-          type="button"
-          (click)="close(false)"
-          [disabled]="loading"
-          class="cancel-button"
-        >
-          Cancelar
-        </button>
-        
-        <button 
-          mat-flat-button 
-          color="primary"
-          type="submit"
-          (click)="onSubmit()"
-          [disabled]="!databaseForm.valid || loading"
-          class="app-button primary-button submit-button"
-        >
-          <mat-spinner 
-            *ngIf="loading" 
-            diameter="20" 
-            class="button-spinner"
-          ></mat-spinner>
-          <span *ngIf="!loading">
-            {{ isEditMode ? 'Actualizar' : 'Crear' }} Base de Datos
-          </span>
-          <span *ngIf="loading">
-            {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
-          </span>
-        </button>
       </div>
     </div>
   </div>
