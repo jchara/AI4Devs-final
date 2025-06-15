@@ -45,12 +45,34 @@ export abstract class BaseRepository<T extends ObjectLiteral> implements BaseRep
   }
 
   async remove(id: number): Promise<void> {
-    const entity = await this.findOne(id);
+    // Buscar directamente en la base de datos sin filtrar por deletedAt
+    const entity = await this.findOneWithoutFilters(id);
+    
     if (!entity) {
       throw new Error(`Entity with ID ${id} not found`);
     }
-    Object.assign(entity, { isActive: false });
+    
+    // Soft delete: establecer deletedAt y isActive: false
+    const hasDeletedAt = this.repository.metadata.columns.some(
+      column => column.propertyName === 'deletedAt'
+    );
+    
+    if (hasDeletedAt) {
+      Object.assign(entity, { 
+        deletedAt: new Date(),
+        isActive: false 
+      });
+    } else {
+      Object.assign(entity, { isActive: false });
+    }
+    
     await this.repository.save(entity);
+  }
+
+  protected async findOneWithoutFilters(id: number): Promise<T | null> {
+    return this.repository.findOne({
+      where: { id } as unknown as FindOptionsWhere<T>
+    });
   }
 
   async findBy(criteria: Partial<T>): Promise<T[]> {

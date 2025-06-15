@@ -104,7 +104,6 @@ export class ComponentService extends BaseService<Component> {
   }
 
   async delete(id: number): Promise<void> {
-    await this.findOne(id); // Verificar que existe antes de eliminar
     await this.componentRepository.remove(id);
   }
 
