@@ -179,14 +179,15 @@ export class ComponentSlidePanelComponent implements OnInit, OnDestroy, AfterVie
       type: formValue.type,
       technology: formValue.technology.trim(),
       version: formValue.version?.trim() || undefined,
-      projectId: formValue.projectId
+      projectId: formValue.projectId,
+      isActive: true
     };
 
     this.componentService.createComponent(createRequest)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.onClose(true);
+          this.close(true);
         },
         error: (error) => {
           console.error('Error al crear componente:', error);
@@ -212,7 +213,7 @@ export class ComponentSlidePanelComponent implements OnInit, OnDestroy, AfterVie
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.onClose(true);
+          this.close(true);
         },
         error: (error) => {
           console.error('Error al actualizar componente:', error);
@@ -230,16 +231,12 @@ export class ComponentSlidePanelComponent implements OnInit, OnDestroy, AfterVie
   }
 
   close(result: boolean = false): void {
-    this.onClose(result);
-  }
-
-  onClose(result: boolean = false): void {
     this.closed.emit(result);
   }
 
   closeOnBackdropClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) {
-      this.onClose(false);
+      this.close(false);
     }
   }
 

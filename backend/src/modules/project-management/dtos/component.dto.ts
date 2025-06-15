@@ -11,8 +11,7 @@ export class CreateComponentDto {
 
   @ApiProperty({ description: 'Description of the component' })
   @IsString()
-  @IsOptional()
-  description?: string;
+  description: string;
 
   @ApiProperty({ enum: ComponentType, description: 'Type of the component' })
   @IsEnum(ComponentType)

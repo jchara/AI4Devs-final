@@ -110,12 +110,20 @@
   
   .filter-content {
     padding: var(--spacing-lg);
+    
+    @media (max-width: 768px) {
+      padding: var(--spacing-md);
+    }
   }
   
   .search-container {
     display: flex;
     gap: var(--spacing-md);
     align-items: flex-end;
+    
+    @media (max-width: 1024px) {
+      flex-wrap: wrap;
+    }
     
     @media (max-width: 768px) {
       flex-direction: column;
@@ -127,6 +135,11 @@
       flex: 2;
       min-width: 300px;
       
+      @media (max-width: 1024px) {
+        flex: 1 1 100%;
+        min-width: unset;
+      }
+      
       @media (max-width: 768px) {
         min-width: unset;
       }
@@ -136,7 +149,13 @@
       flex: 1;
       min-width: 200px;
       
+      @media (max-width: 1024px) {
+        flex: 1 1 calc(50% - var(--spacing-sm));
+        min-width: 180px;
+      }
+      
       @media (max-width: 768px) {
+        flex: 1 1 100%;
         min-width: unset;
       }
     }
@@ -144,10 +163,17 @@
     .clear-filters-button {
       height: 56px;
       min-width: 120px;
+      white-space: nowrap;
+      
+      @media (max-width: 1024px) {
+        flex: 1 1 100%;
+        margin-top: var(--spacing-sm);
+      }
       
       @media (max-width: 768px) {
         height: 48px;
         min-width: unset;
+        margin-top: 0;
       }
     }
   }

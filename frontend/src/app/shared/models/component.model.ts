@@ -30,7 +30,7 @@ export interface CreateComponentRequest {
   version?: string;
   technology: string;
   projectId: number;
-  isActive?: boolean;
+  isActive: boolean;
 }
 
 export interface UpdateComponentRequest {
