@@ -388,6 +388,13 @@
     (editDevelopment)="onEditFromPanel()"
     (changeStatus)="onChangeStatusFromPanel()">
   </app-development-details-panel>
+
+  <!-- Panel de formulario -->
+  <app-development-form-panel
+    [development]="selectedDevelopmentForEdit"
+    [isOpen]="isFormPanelOpen"
+    (closed)="onFormPanelClosed($event)">
+  </app-development-form-panel>
 </div>
 
 <!-- Menú de acciones desktop -->

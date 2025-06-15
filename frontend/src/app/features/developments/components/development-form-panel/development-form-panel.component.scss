@@ -1,0 +1,468 @@
+:host {
+  --panel-padding: 1.5rem;
+  --section-spacing: 1.25rem;
+  --card-radius: 10px;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --transition-standard: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  pointer-events: all;
+  height: 100vh;
+}
+
+.slide-panel {
+  width: 50%;
+  height: 100%;
+  background-color: var(--bg-primary);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  pointer-events: all;
+  z-index: 1;
+  height: 100vh;
+  
+  @media (max-width: 1200px) {
+    width: 60%;
+  }
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+  
+  &.mobile {
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// PANEL HEADER
+// =============================================================================
+
+.panel-header {
+  flex: 0 0 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--panel-padding);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 2;
+  background-color: var(--bg-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    
+    span {
+      &:last-child {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+    }
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  .close-button {
+    color: var(--text-primary);
+    transition: var(--transition-standard);
+    will-change: transform;
+    
+    &:hover {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+// =============================================================================
+// SCROLLABLE CONTENT
+// =============================================================================
+
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg-secondary);
+  scroll-behavior: smooth;
+  padding-bottom: 80px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-primary);
+    }
+  }
+}
+
+.title-section {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--panel-padding);
+  
+  h1 {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    margin: 0;
+  }
+}
+
+.panel-content {
+  padding: var(--panel-padding);
+  background: var(--bg-secondary);
+  
+  .development-form {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: var(--bg-primary);
+    padding: var(--panel-padding);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: var(--spacing-xl);
+    
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      border-radius: var(--card-radius);
+      
+      [data-theme="dark"] & {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+    }
+  }
+}
+
+// =============================================================================
+// FORM SECTIONS
+// =============================================================================
+
+.form-section {
+  margin-bottom: var(--spacing-xl);
+  
+  &:last-of-type {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+  }
+}
+
+// =============================================================================
+// FORM FIELDS
+// =============================================================================
+
+.form-field {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+  
+  ::ng-deep {
+    .mat-mdc-form-field-subscript-wrapper {
+      margin-top: 4px;
+    }
+    
+    .mat-mdc-form-field-error {
+      color: var(--error-color);
+      font-size: 12px;
+    }
+    
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--bg-primary);
+    }
+    
+    .mat-mdc-form-field-focus-overlay {
+      background-color: transparent;
+    }
+    
+    .mat-mdc-select-panel {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .mat-mdc-option {
+      color: var(--text-primary);
+      
+      &:hover {
+        background-color: var(--bg-hover);
+      }
+      
+      &.mdc-list-item--selected {
+        background-color: var(--primary-color-light);
+        color: var(--primary-color);
+      }
+    }
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+// =============================================================================
+// SPECIAL FIELDS
+// =============================================================================
+
+.progress-field {
+  margin-bottom: var(--spacing-lg);
+  
+  .progress-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .progress-slider {
+    width: 100%;
+    
+    ::ng-deep {
+      .mat-slider-track-fill {
+        background-color: var(--primary-color);
+      }
+      
+      .mat-slider-thumb {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+      
+      .mat-slider-thumb-label {
+        background-color: var(--primary-color);
+      }
+    }
+  }
+}
+
+.toggle-field {
+  margin: var(--spacing-md) 0 var(--spacing-lg) 0;
+  
+  ::ng-deep {
+    .mat-slide-toggle {
+      .mat-slide-toggle-label {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+      
+      &.mat-checked {
+        .mat-slide-toggle-thumb {
+          background-color: var(--primary-color);
+        }
+        
+        .mat-slide-toggle-bar {
+          background-color: var(--primary-color-light);
+        }
+      }
+    }
+  }
+}
+
+// =============================================================================
+// FORM ACTIONS
+// =============================================================================
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--spacing-lg);
+  
+  .app-button {
+    min-width: 120px;
+    height: 40px;
+    font-weight: 500;
+    border-radius: var(--button-radius);
+    text-transform: none;
+    
+    &.cancel-button {
+      color: var(--text-secondary);
+      border-color: var(--border-color);
+      
+      &:hover {
+        background-color: var(--bg-hover);
+        border-color: var(--text-secondary);
+      }
+    }
+    
+    &.primary-button {
+      background-color: var(--primary-color);
+      color: white;
+      
+      &:hover:not(:disabled) {
+        background-color: var(--primary-color-dark);
+      }
+      
+      &:disabled {
+        background-color: var(--bg-disabled);
+        color: var(--text-disabled);
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    
+    .app-button {
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// DATE PICKER CUSTOMIZATION
+// =============================================================================
+
+::ng-deep {
+  .mat-datepicker-popup {
+    .mat-calendar {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    
+    .mat-calendar-header {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .mat-calendar-body-selected {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+      border-color: var(--primary-color);
+    }
+  }
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN
+// =============================================================================
+
+@media (max-width: 768px) {
+  .panel-overlay {
+    .slide-panel {
+      width: 100%;
+    }
+  }
+  
+  .panel-header {
+    padding: 0 var(--spacing-md);
+    
+    .breadcrumbs {
+      font-size: 12px;
+      
+      .breadcrumb-separator {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .scrollable-content {
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-md) + 80px);
+    
+    .title-section {
+      padding: var(--spacing-md);
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  }
+  
+  .panel-content {
+    padding: var(--spacing-md);
+    
+    .development-form {
+      padding: var(--spacing-md);
+    }
+  }
+  
+  .form-section {
+    .section-title {
+      font-size: 16px;
+    }
+  }
+}
+
+// =============================================================================
+// DARK MODE SUPPORT
+// =============================================================================
+
+[data-theme="dark"] {
+  .panel-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .slide-panel {
+    background: var(--bg-primary);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .development-form {
+    .loading-overlay {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+  }
+} 

@@ -277,7 +277,7 @@ export class DevelopmentService {
     development: Partial<Development>
   ): Observable<Development | null> {
     this.loadingSubject.next(true);
-    return this.apiService.post<any>('/developments', development).pipe(
+    return this.apiService.post<any>('developments', development).pipe(
       map((response) => DevelopmentMapper.mapDevelopmentFromBackend(response)),
       tap((newDevelopment) => {
         const currentDevelopments = this.developmentsSubject.value;
@@ -302,7 +302,7 @@ export class DevelopmentService {
     development: Partial<Development>
   ): Observable<Development | null> {
     this.loadingSubject.next(true);
-    return this.apiService.patch<any>(`/developments/${id}`, development).pipe(
+    return this.apiService.patch<any>(`developments/${id}`, development).pipe(
       map((response) => DevelopmentMapper.mapDevelopmentFromBackend(response)),
       tap((updatedDevelopment) => {
         const currentDevelopments = this.developmentsSubject.value;
@@ -330,7 +330,7 @@ export class DevelopmentService {
    */
   deleteDevelopment(id: number): Observable<boolean> {
     this.loadingSubject.next(true);
-    return this.apiService.delete(`/developments/${id}`).pipe(
+    return this.apiService.delete(`developments/${id}`).pipe(
       map(() => true),
       tap(() => {
         const currentDevelopments = this.developmentsSubject.value;

@@ -25,6 +25,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { MaterialModule } from '../../shared/material.module';
 import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
 import { DevelopmentDetailsPanelComponent } from './components/development-details-panel/development-details-panel.component';
+import { DevelopmentFormPanelComponent } from './components/development-form-panel/development-form-panel.component';
 import {
   ComponentType,
   Development,
@@ -43,7 +44,7 @@ interface StatusOption {
 @Component({
   selector: 'app-developments',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MaterialModule, DevelopmentDetailsPanelComponent],
+  imports: [CommonModule, ReactiveFormsModule, MaterialModule, DevelopmentDetailsPanelComponent, DevelopmentFormPanelComponent],
   templateUrl: './developments.component.html',
   styleUrl: './developments.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -103,9 +104,13 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     DevelopmentEnvironment.PRODUCTION,
   ];
 
-  // Agregar estas propiedades para el panel de detalles
+  // Propiedades para el panel de detalles
   selectedDevelopment: Development | null = null;
   isPanelOpen = false;
+
+  // Propiedades para el panel de formulario
+  selectedDevelopmentForEdit: Development | null = null;
+  isFormPanelOpen = false;
 
   private destroy$ = new Subject<void>();
 
@@ -283,8 +288,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
 
   // Métodos de acción
   newDevelopment(): void {
-    // TODO: Implementar modal de creación
-    this.notificationService.showInfo('Funcionalidad en desarrollo');
+    this.selectedDevelopmentForEdit = null;
+    this.isFormPanelOpen = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   viewDetails(development: Development): void {
@@ -296,6 +302,18 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   onClosePanel(): void {
     this.isPanelOpen = false;
     this.selectedDevelopment = null;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  onFormPanelClosed(result: boolean): void {
+    this.isFormPanelOpen = false;
+    this.selectedDevelopmentForEdit = null;
+    
+    if (result) {
+      // Recargar desarrollos si se guardó exitosamente
+      this.loadDevelopments();
+    }
+    
     this.changeDetectorRef.markForCheck();
   }
 
@@ -313,8 +331,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   editDevelopment(development: Development): void {
-    // TODO: Implementar modal de edición
-    this.notificationService.showInfo(`Editar: ${development.title}`);
+    this.selectedDevelopmentForEdit = development;
+    this.isFormPanelOpen = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   deleteDevelopment(development: Development): void {

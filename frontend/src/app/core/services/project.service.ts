@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../environments/environment';
 import { 
@@ -35,7 +35,7 @@ export class ProjectService {
     this.loadingSubject.next(true);
     
     return this.http.get<any>(this.apiUrl).pipe(
-      tap(response => {
+      map((response: any): Project[] => {
         // Asegurar que siempre obtenemos un array
         let projects: Project[] = [];
         
@@ -48,6 +48,9 @@ export class ProjectService {
           projects = [];
         }
         
+        return projects;
+      }),
+      tap((projects: Project[]) => {
         this.projectsSubject.next(projects);
         this.loadingSubject.next(false);
       }),

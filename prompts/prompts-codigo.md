@@ -1017,3 +1017,133 @@ Después de analizarlo, ajusta las vistas componente y base de datos con esa mis
 
 Si tienes alguna pregunta hazla antes de hacer cualquier cambio.
 ```
+
+## Prompt 70: Implementación de panel de editar y crear desarrollos - FRONTEND
+**HUS Relacionadas:** HU-014, HU-015
+
+```
+Como experto desarrollador frontend senior en Angular y experto en UX/UI, implementa el panel de editar y crear desarrollos para la vista de desarrollos en @/frontend siguiendo la misma estructura y diseño de los paneles de proyectos, ambientes, componentes y bases de datos.
+
+**Contexto del Backend:**
+Tengo los siguientes endpoints disponibles:
+- POST /api/developments - Crear nuevo desarrollo
+- PUT /api/developments/:id - Actualizar desarrollo existente
+- GET /api/projects - Obtener lista de proyectos para selector
+- GET /api/environments - Obtener lista de ambientes para selector
+- GET /api/users - Obtener lista de usuarios para asignación
+- GET /api/teams - Obtener lista de equipos
+
+**Estructura del Formulario:**
+El formulario debe incluir los siguientes campos basados en la entidad Development:
+
+**Campos Principales:**
+- **Título** (title): Input text requerido, máximo 200 caracteres
+- **Descripción** (description): Textarea requerido, máximo 1000 caracteres
+- **Estado** (status): Select con opciones del enum DevelopmentStatus
+- **Prioridad** (priority): Select con opciones del enum DevelopmentPriority
+- **Progreso** (progress): Slider de 0-100 con indicador visual
+- **URL de Jira** (jiraUrl): Input URL opcional
+- **Rama** (branch): Input text opcional
+
+**Campos de Relación:**
+- **Proyecto** (projectId): Select con lista de proyectos activos
+- **Ambiente** (environmentId): Select con lista de ambientes activos
+- **Usuario Asignado** (assignedUserId): Select con lista de usuarios activos
+- **Equipo** (teamId): Select con lista de equipos activos
+
+**Campos de Fecha:**
+- **Fecha de Inicio** (startDate): Date picker
+- **Fecha Estimada** (estimatedDate): Date picker
+- **Fecha de Fin** (endDate): Date picker (solo en modo edición si está completado)
+
+**Campos Adicionales:**
+- **Notas** (notes): Textarea opcional, máximo 2000 caracteres
+- **Estado Activo** (isActive): Toggle switch
+
+**Especificaciones del Panel:**
+
+**Comportamiento:**
+- Panel deslizante desde la derecha (igual que otros paneles)
+- Ancho: 50% en desktop, 60% en tablet, 100% en móvil
+- Animación suave de entrada/salida con backdrop
+- Scroll independiente del contenido principal
+- Cierre con ESC, botón X, o clic en backdrop
+
+**Header del Panel:**
+- Breadcrumbs: Dashboard > Desarrollos > [Nuevo Desarrollo / Editar: {título}]
+- Botón de cerrar (X) en esquina superior derecha
+- Título dinámico: "Nuevo Desarrollo" o "Editar Desarrollo"
+
+**Estructura del Formulario:**
+- Formulario reactivo con validaciones
+- Campos agrupados en secciones lógicas:
+  1. **Información Básica**: título, descripción, estado, prioridad
+  2. **Configuración**: proyecto, ambiente, usuario, equipo
+  3. **Planificación**: fechas, progreso, rama
+  4. **Detalles Adicionales**: URL Jira, notas, estado activo
+
+**Validaciones Requeridas:**
+- Título: requerido, mínimo 3 caracteres, máximo 200
+- Descripción: requerida, mínimo 10 caracteres, máximo 1000
+- Estado: requerido, valor del enum
+- Prioridad: requerida, valor del enum
+- Progreso: número entre 0-100
+- URL Jira: formato URL válido si se proporciona
+- Fechas: fecha de inicio <= fecha estimada <= fecha fin
+- Proyecto: requerido, debe existir en la lista
+- Usuario: requerido, debe existir en la lista
+- Equipo: requerido, debe existir en la lista
+
+**Funcionalidades Específicas:**
+- **Modo Crear**: Formulario vacío con valores por defecto
+- **Modo Editar**: Formulario pre-poblado con datos existentes
+- **Estados de carga**: Skeleton/spinner durante carga de datos
+- **Manejo de errores**: Mensajes específicos por campo y errores HTTP
+- **Confirmación**: Modal de confirmación para cambios no guardados
+- **Autoguardado**: Opcional - guardar borrador cada 30 segundos
+
+**Integración con Backend:**
+- Usar servicios HTTP existentes del proyecto
+- Implementar manejo de errores con toasts/notificaciones
+- Actualizar lista de desarrollos después de crear/editar
+- Mantener estado de filtros y paginación después de operaciones
+
+**Consideraciones de UX/UI:**
+- **Diseño consistente** con otros paneles del proyecto
+- **Campos dependientes**: ambiente filtrado por proyecto seleccionado
+- **Indicadores visuales**: campos requeridos, estados de validación
+- **Responsive**: adaptación a diferentes tamaños de pantalla
+- **Accesibilidad**: labels, ARIA, navegación por teclado
+- **Feedback visual**: estados hover, focus, disabled
+
+**Consideraciones Técnicas:**
+- Reutilizar componentes y estilos existentes del proyecto
+- Implementar patrón unsubscribe para observables
+- Usar ChangeDetectionStrategy.OnPush para rendimiento
+- Tipado TypeScript estricto para DTOs y responses
+- Lazy loading del panel para optimización
+- Manejo de memoria y cleanup en ngOnDestroy
+
+**Estados del Panel:**
+- **Loading**: Cargando datos iniciales (usuarios, proyectos, etc.)
+- **Ready**: Formulario listo para interacción
+- **Submitting**: Enviando datos al backend
+- **Success**: Operación completada exitosamente
+- **Error**: Error en validación o comunicación
+
+**Integración con Vista Principal:**
+- Abrir panel desde botón "Nuevo Desarrollo" en header
+- Abrir panel desde acción "Editar" en menú de tabla
+- Cerrar panel y refrescar datos después de operaciones exitosas
+- Mantener estado de la tabla (filtros, página, ordenamiento)
+
+**Reutilización de Código:**
+- Usar mismos patrones de otros paneles del proyecto
+- Reutilizar servicios HTTP existentes
+- Aplicar mismas variables CSS y clases de utilidad
+- Mantener consistencia en animaciones y transiciones
+
+Ten en cuenta buenas prácticas de desarrollo, seguridad y rendimiento. Mantén la consistencia visual y funcional con el resto de la aplicación.
+
+Antes de implementar, analiza el proyecto existente y confirma el plan de implementación. Si tienes alguna consulta, hazla primero.
+```
