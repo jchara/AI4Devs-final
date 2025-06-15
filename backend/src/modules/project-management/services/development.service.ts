@@ -95,13 +95,20 @@ export class DevelopmentService extends BaseService<Development> {
   async getMetrics(): Promise<DevelopmentMetrics> {
     const metrics = await this.developmentRepository.getMetrics();
     const environments = await this.environmentRepository.findAll();
-    const byEnvironment = environments.map((environment) => ({
-      environment: environment.name,
-      count: metrics.byEnvironment[environment.name] || 0,
-    }));
+    const byEnvironment = environments.map((environment) => {
+      if(environment.isActive){
+        return {
+          environment: environment.name,
+          count: metrics.byEnvironment[environment.name] || 0,
+        }
+      }
+    });
+
     metrics.byEnvironment = byEnvironment.reduce(
       (acc, curr) => {
-        acc[curr.environment] = curr.count;
+        if(curr){
+          acc[curr.environment] = curr.count;
+        }
         return acc;
       },
       {} as Record<string, number>,

@@ -54,14 +54,15 @@
     }
     
     .panel-header {
-      flex: 0 0 auto;
+      flex: 0 0 64px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: var(--spacing-md) var(--panel-padding);
+      padding: 0 var(--panel-padding);
       border-bottom: 1px solid var(--border-color);
       z-index: 2;
       background-color: var(--bg-primary);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       
       .breadcrumbs {
         display: flex;
@@ -101,6 +102,7 @@
       overflow-x: hidden;
       background: var(--bg-secondary);
       scroll-behavior: smooth;
+      padding-bottom: 80px;
 
       &::-webkit-scrollbar {
         width: 8px;
@@ -135,39 +137,8 @@
 }
 
 .panel-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
   padding: var(--panel-padding);
-  position: relative;
-  -webkit-overflow-scrolling: touch;
   background: var(--bg-secondary);
-  -ms-overflow-style: none;
-  scrollbar-width: thin;
-  padding-bottom: calc(var(--panel-padding) + 80px);
-  
-  @media (max-width: 768px) {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-    overscroll-behavior: contain;
-  }
-  
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
-    
-    &:hover {
-      background: var(--color-primary);
-    }
-  }
   
   .project-form {
     display: flex;

@@ -339,35 +339,41 @@ export class ComponentSlidePanelComponent implements OnInit, OnDestroy, AfterVie
   }
 
   private handlePanelOpen(): void {
-    document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = this.getScrollbarWidth() + 'px';
-    
-    const currentScrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${currentScrollY}px`;
-    document.body.style.width = '100%';
-    
-    document.body.setAttribute('data-scroll-y', currentScrollY.toString());
-    
-    this.setupScrollHandlers();
+    // Usar requestAnimationFrame para asegurar que las operaciones DOM se realicen en un frame óptimo
+    requestAnimationFrame(() => {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+      
+      const panel = document.querySelector('.slide-panel');
+      const scrollableContent = document.querySelector('.scrollable-content');
+      
+      if (panel) panel.scrollTop = 0;
+      if (scrollableContent) scrollableContent.scrollTop = 0;
+      
+      this.setupScrollHandlers();
+      this.cdr.markForCheck();
+    });
   }
 
   private handlePanelClose(): void {
-    this.resetBodyStyles();
+    requestAnimationFrame(() => {
+      this.resetBodyStyles();
+      this.cdr.markForCheck();
+    });
   }
 
   private resetBodyStyles(): void {
-    const scrollY = document.body.getAttribute('data-scroll-y');
-    
+    const scrollY = document.body.style.top;
     document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
     document.body.style.position = '';
-    document.body.style.top = '';
     document.body.style.width = '';
+    document.body.style.top = '';
     
+    // Restaurar la posición de scroll
     if (scrollY) {
-      window.scrollTo(0, parseInt(scrollY, 10));
-      document.body.removeAttribute('data-scroll-y');
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
     
     document.removeEventListener('wheel', this.handleWheel);
