@@ -1,0 +1,236 @@
+<!-- Overlay -->
+<div 
+  *ngIf="isOpen" 
+  class="panel-overlay"
+  [@overlay]
+  (click)="closeOnBackdropClick($event)"
+>
+  <!-- Panel lateral -->
+  <div 
+    class="slide-panel"
+    [@panelState]="getPanelAnimationParams()"
+    (click)="onBackdropClick($event)"
+  >
+    <!-- Header del panel -->
+    <div class="panel-header">
+      <div class="header-content">
+        <!-- Breadcrumbs -->
+        <div class="breadcrumbs">
+          <span class="breadcrumb-item">Dashboard</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">Componentes</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item current">{{ title }}</span>
+        </div>
+
+        <!-- Título y botón cerrar -->
+        <div class="header-title-section">
+          <h2 class="panel-title">{{ title }}</h2>
+          <button 
+            mat-icon-button 
+            class="close-button"
+            (click)="close(false)"
+            aria-label="Cerrar panel"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido del panel -->
+    <div class="panel-content">
+      <div class="scrollable-content">
+        <form [formGroup]="componentForm" (ngSubmit)="onSubmit()" class="component-form">
+          <!-- Información básica -->
+          <div class="form-section">
+            <h3 class="section-title">Información básica</h3>
+            
+            <!-- Nombre -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nombre del componente</mat-label>
+              <input 
+                matInput 
+                formControlName="name"
+                placeholder="Ej: user-service, auth-frontend"
+                maxlength="100"
+              >
+              <mat-hint>Nombre único del componente</mat-hint>
+              <mat-error *ngIf="nameControl?.errors && nameControl?.touched">
+                {{ getNameErrorMessage() }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Descripción -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descripción</mat-label>
+              <textarea 
+                matInput 
+                formControlName="description"
+                placeholder="Describe la funcionalidad del componente..."
+                rows="3"
+                maxlength="500"
+              ></textarea>
+              <mat-hint>Descripción detallada del componente</mat-hint>
+              <mat-error *ngIf="descriptionControl?.errors && descriptionControl?.touched">
+                {{ getDescriptionErrorMessage() }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Tipo de componente -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Tipo de componente</mat-label>
+              <mat-select formControlName="type">
+                <mat-option *ngFor="let type of componentTypes" [value]="type">
+                  <div class="type-option">
+                    <mat-icon class="type-icon">{{ getComponentTypeIcon(type) }}</mat-icon>
+                    <span>{{ getComponentTypeLabel(type) }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-hint>Selecciona el tipo de componente</mat-hint>
+              <mat-error *ngIf="typeControl?.errors && typeControl?.touched">
+                El tipo de componente es requerido
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Información técnica -->
+          <div class="form-section">
+            <h3 class="section-title">Información técnica</h3>
+            
+            <!-- Tecnología -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Tecnología</mat-label>
+              <input 
+                matInput 
+                formControlName="technology"
+                placeholder="Ej: Node.js, Angular, React, Python"
+                maxlength="100"
+              >
+              <mat-hint>Tecnología principal utilizada</mat-hint>
+              <mat-error *ngIf="technologyControl?.errors && technologyControl?.touched">
+                {{ getTechnologyErrorMessage() }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Versión -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Versión</mat-label>
+              <input 
+                matInput 
+                formControlName="version"
+                placeholder="Ej: 1.0.0, v2.1.3"
+                maxlength="50"
+              >
+              <mat-hint>Versión actual del componente (opcional)</mat-hint>
+              <mat-error *ngIf="versionControl?.errors && versionControl?.touched">
+                {{ getVersionErrorMessage() }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Proyecto -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Proyecto</mat-label>
+              <mat-select formControlName="projectId">
+                <mat-option value="">Seleccionar proyecto</mat-option>
+                <mat-option *ngFor="let project of projects" [value]="project.id">
+                  {{ project.name }}
+                </mat-option>
+              </mat-select>
+              <mat-hint>Proyecto al que pertenece el componente</mat-hint>
+              <mat-error *ngIf="projectIdControl?.errors && projectIdControl?.touched">
+                {{ getProjectErrorMessage() }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Estado -->
+          <div class="form-section" *ngIf="isEditMode">
+            <h3 class="section-title">Estado</h3>
+            
+            <div class="toggle-field">
+              <mat-slide-toggle formControlName="isActive" color="primary">
+                <span class="toggle-label">Componente activo</span>
+              </mat-slide-toggle>
+              <p class="toggle-hint">Los componentes inactivos no aparecerán en las listas principales</p>
+            </div>
+          </div>
+
+          <!-- Vista previa -->
+          <div class="form-section preview-section" *ngIf="componentForm.get('name')?.value">
+            <h3 class="section-title">Vista previa</h3>
+            
+            <div class="component-preview">
+              <div class="preview-header">
+                <mat-icon class="preview-icon">{{ getComponentTypeIcon(componentForm.get('type')?.value) }}</mat-icon>
+                <div class="preview-info">
+                  <h4 class="preview-name">{{ componentForm.get('name')?.value }}</h4>
+                  <p class="preview-type">{{ getComponentTypeLabel(componentForm.get('type')?.value) }}</p>
+                </div>
+              </div>
+              
+              <div class="preview-details">
+                <div class="preview-item" *ngIf="componentForm.get('technology')?.value">
+                  <span class="preview-label">Tecnología:</span>
+                  <span class="preview-value">{{ componentForm.get('technology')?.value }}</span>
+                </div>
+                
+                <div class="preview-item" *ngIf="componentForm.get('version')?.value">
+                  <span class="preview-label">Versión:</span>
+                  <span class="preview-value">{{ componentForm.get('version')?.value }}</span>
+                </div>
+                
+                <div class="preview-item" *ngIf="componentForm.get('projectId')?.value">
+                  <span class="preview-label">Proyecto:</span>
+                  <span class="preview-value">{{ getProjectName(componentForm.get('projectId')?.value) }}</span>
+                </div>
+                
+                <div class="preview-item" *ngIf="componentForm.get('description')?.value">
+                  <span class="preview-label">Descripción:</span>
+                  <span class="preview-value">{{ componentForm.get('description')?.value }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer del panel -->
+    <div class="panel-footer">
+      <div class="footer-actions">
+        <button 
+          mat-stroked-button 
+          type="button"
+          (click)="close(false)"
+          [disabled]="loading"
+          class="cancel-button"
+        >
+          Cancelar
+        </button>
+        
+        <button 
+          mat-flat-button 
+          color="primary"
+          type="submit"
+          (click)="onSubmit()"
+          [disabled]="!componentForm.valid || loading"
+          class="app-button primary-button submit-button"
+        >
+          <mat-spinner 
+            *ngIf="loading" 
+            diameter="20" 
+            class="button-spinner"
+          ></mat-spinner>
+          <span *ngIf="!loading">
+            {{ isEditMode ? 'Actualizar' : 'Crear' }} Componente
+          </span>
+          <span *ngIf="loading">
+            {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

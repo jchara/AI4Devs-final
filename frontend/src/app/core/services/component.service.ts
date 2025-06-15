@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,8 +8,9 @@ import {
   Component, 
   ComponentType, 
   CreateComponentRequest, 
-  UpdateComponentRequest 
-} from '../../shared/models/project.model';
+  UpdateComponentRequest,
+  ComponentSearchFilters
+} from '../../shared/models/component.model';
 
 @Injectable({
   providedIn: 'root'
@@ -34,8 +35,9 @@ export class ComponentService {
   getComponents(): Observable<Component[]> {
     this.loadingSubject.next(true);
     
-    return this.http.get<Component[]>(this.apiUrl).pipe(
-      tap(components => {
+    return this.http.get<any>(this.apiUrl).pipe(
+      tap(response => {
+        const components = response.data || response;
         this.componentsSubject.next(components);
         this.loadingSubject.next(false);
       }),
@@ -51,7 +53,11 @@ export class ComponentService {
    * Obtener componentes por proyecto
    */
   getComponentsByProject(projectId: number): Observable<Component[]> {
-    return this.http.get<Component[]>(`${this.apiUrl}/project/${projectId}`).pipe(
+    return this.http.get<any>(`${this.apiUrl}/project/${projectId}`).pipe(
+      tap(response => {
+        const components = response.data || response;
+        return components;
+      }),
       catchError(error => {
         this.handleError('Error al cargar componentes del proyecto', error);
         return throwError(() => error);
@@ -60,12 +66,54 @@ export class ComponentService {
   }
 
   /**
-   * Obtener componente por ID
+   * Obtener componente por ID con detalles completos
    */
-  getComponent(id: number): Observable<Component> {
-    return this.http.get<Component>(`${this.apiUrl}/${id}`).pipe(
+  getComponentWithDetails(id: number): Observable<Component> {
+    return this.http.get<any>(`${this.apiUrl}/${id}/details`).pipe(
+      tap(response => {
+        const component = response.data || response;
+        return component;
+      }),
       catchError(error => {
-        this.handleError('Error al cargar componente', error);
+        this.handleError('Error al cargar detalles del componente', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Buscar componentes por filtros
+   */
+  searchComponents(filters: ComponentSearchFilters): Observable<Component[]> {
+    let params = new HttpParams();
+    
+    if (filters.name) {
+      params = params.set('name', filters.name);
+    }
+    
+    if (filters.type) {
+      params = params.set('type', filters.type);
+    }
+
+    if (filters.technology) {
+      params = params.set('technology', filters.technology);
+    }
+
+    if (filters.projectId) {
+      params = params.set('projectId', filters.projectId.toString());
+    }
+
+    if (filters.isActive !== undefined) {
+      params = params.set('isActive', filters.isActive.toString());
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/search`, { params }).pipe(
+      tap(response => {
+        const components = response.data || response;
+        return components;
+      }),
+      catchError(error => {
+        this.handleError('Error al buscar componentes', error);
         return throwError(() => error);
       })
     );
@@ -77,8 +125,9 @@ export class ComponentService {
   createComponent(component: CreateComponentRequest): Observable<Component> {
     this.loadingSubject.next(true);
     
-    return this.http.post<Component>(this.apiUrl, component).pipe(
-      tap(newComponent => {
+    return this.http.post<any>(this.apiUrl, component).pipe(
+      tap(response => {
+        const newComponent = response.data || response;
         const currentComponents = this.componentsSubject.value;
         this.componentsSubject.next([...currentComponents, newComponent]);
         this.loadingSubject.next(false);
@@ -98,8 +147,9 @@ export class ComponentService {
   updateComponent(id: number, component: UpdateComponentRequest): Observable<Component> {
     this.loadingSubject.next(true);
     
-    return this.http.patch<Component>(`${this.apiUrl}/${id}`, component).pipe(
-      tap(updatedComponent => {
+    return this.http.patch<any>(`${this.apiUrl}/${id}`, component).pipe(
+      tap(response => {
+        const updatedComponent = response.data || response;
         const currentComponents = this.componentsSubject.value;
         const index = currentComponents.findIndex(c => c.id === id);
         
@@ -142,6 +192,23 @@ export class ComponentService {
   }
 
   /**
+   * Alternar estado activo/inactivo del componente
+   */
+  toggleComponentStatus(component: Component): Observable<Component> {
+    const updateData: UpdateComponentRequest = {
+      name: component.name,
+      description: component.description,
+      type: component.type,
+      version: component.version,
+      technology: component.technology,
+      projectId: component.projectId,
+      isActive: !component.isActive
+    };
+
+    return this.updateComponent(component.id, updateData);
+  }
+
+  /**
    * Obtener tipos de componente disponibles
    */
   getComponentTypes(): ComponentType[] {
@@ -166,9 +233,9 @@ export class ComponentService {
    */
   getComponentTypeIcon(type: ComponentType): string {
     const icons: Record<ComponentType, string> = {
-      [ComponentType.MICROSERVICE]: 'api',
+      [ComponentType.MICROSERVICE]: 'dns',
       [ComponentType.MICROFRONTEND]: 'web',
-      [ComponentType.MONOLITH]: 'layers'
+      [ComponentType.MONOLITH]: 'storage'
     };
     
     return icons[type] || 'code';
@@ -176,15 +243,7 @@ export class ComponentService {
 
   private handleError(message: string, error: any): void {
     console.error(message, error);
-    
-    let errorMessage = message;
-    if (error?.error?.message) {
-      errorMessage += `: ${error.error.message}`;
-    } else if (error?.message) {
-      errorMessage += `: ${error.message}`;
-    }
-    
-    this.snackBar.open(errorMessage, 'Cerrar', {
+    this.snackBar.open(message, 'Cerrar', {
       duration: 5000,
       panelClass: ['error-snackbar']
     });

@@ -52,6 +52,40 @@
       </a>
 
       <a 
+        routerLink="/components" 
+        routerLinkActive="active"
+        class="nav-item"
+        title="Componentes"
+        [matTooltip]="shouldShowTooltip() ? 'Componentes' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <span class="nav-text">Componentes</span>
+      </a>
+
+      <a 
+        routerLink="/databases" 
+        routerLinkActive="active"
+        class="nav-item"
+        title="Bases de Datos"
+        [matTooltip]="shouldShowTooltip() ? 'Bases de Datos' : ''"
+        matTooltipPosition="right"
+        matTooltipClass="sidebar-tooltip"
+        (click)="onNavigate()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/>
+          <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/>
+          <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/>
+        </svg>
+        <span class="nav-text">Bases de Datos</span>
+      </a>
+
+      <a 
         routerLink="/ambientes" 
         routerLinkActive="active"
         class="nav-item"

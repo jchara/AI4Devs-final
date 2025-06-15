@@ -19,6 +19,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/projects/projects.component').then(m => m.ProjectsComponent)
   },
   {
+    path: 'components',
+    loadComponent: () => import('./features/components/components.component').then(m => m.ComponentsComponent)
+  },
+  {
+    path: 'databases',
+    loadComponent: () => import('./features/databases/databases.component').then(m => m.DatabasesComponent)
+  },
+  {
     path: 'ambientes',
     loadComponent: () => import('./features/environments/environments.component').then(m => m.EnvironmentsComponent)
   },

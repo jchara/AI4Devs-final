@@ -1,0 +1,97 @@
+// Mixin para centrar elementos
+@mixin center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Mixin para responsive breakpoints
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: #{$breakpoint-xs - 1px}) {
+      @content;
+    }
+  }
+  @if $breakpoint == sm {
+    @media (min-width: #{$breakpoint-xs}) and (max-width: #{$breakpoint-sm - 1px}) {
+      @content;
+    }
+  }
+  @if $breakpoint == md {
+    @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-md - 1px}) {
+      @content;
+    }
+  }
+  @if $breakpoint == lg {
+    @media (min-width: #{$breakpoint-md}) and (max-width: #{$breakpoint-lg - 1px}) {
+      @content;
+    }
+  }
+  @if $breakpoint == xl {
+    @media (min-width: #{$breakpoint-lg}) {
+      @content;
+    }
+  }
+}
+
+// Mixin para truncar texto
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Mixin para sombras
+@mixin box-shadow($level: 1) {
+  @if $level == 1 {
+    box-shadow: $shadow-sm;
+  } @else if $level == 2 {
+    box-shadow: $shadow-md;
+  } @else if $level == 3 {
+    box-shadow: $shadow-lg;
+  }
+}
+
+// Mixin para transiciones
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// Mixin para botones
+@mixin button-style($bg-color, $text-color: white) {
+  background-color: $bg-color;
+  color: $text-color;
+  border: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  @include transition();
+  
+  &:hover {
+    background-color: darken($bg-color, 10%);
+  }
+  
+  &:disabled {
+    background-color: lighten($bg-color, 20%);
+    cursor: not-allowed;
+  }
+}
+
+// Mixin para cards
+@mixin card-style {
+  background: white;
+  border-radius: $border-radius-md;
+  @include box-shadow(1);
+  padding: $spacing-lg;
+}
+
+// Mixin para grid responsive
+@mixin grid-responsive($columns: 1, $gap: $spacing-md) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+  
+  @include respond-to(xs) {
+    grid-template-columns: 1fr;
+  }
+} 

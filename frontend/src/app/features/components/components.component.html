@@ -1,0 +1,329 @@
+<div class="components-page">
+  <div class="content-wrapper fade-in">
+    <div class="page-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="page-title">
+            Componentes
+            <span class="count-number">{{ filteredComponents.length }}</span>
+          </h1>
+          <p class="page-subtitle">
+            Gestiona y supervisa todos los componentes del sistema
+          </p>
+        </div>
+
+        <div class="header-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            class="app-button primary-button"
+            (click)="openCreatePanel()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Nuevo Componente</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de filtros y búsqueda -->
+    <mat-card class="filter-card">
+      <div class="filter-content">
+        <form [formGroup]="searchForm" class="search-container">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Buscar componente</mat-label>
+            <input
+              matInput
+              formControlName="searchTerm"
+              placeholder="Buscar por nombre, descripción o tecnología"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Tipo de componente</mat-label>
+            <mat-select formControlName="typeFilter">
+              <mat-option value="">Todos los tipos</mat-option>
+              <mat-option *ngFor="let type of componentTypes" [value]="type">
+                <mat-icon>{{ getComponentTypeIcon(type) }}</mat-icon>
+                {{ getComponentTypeLabel(type) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Proyecto</mat-label>
+            <mat-select formControlName="projectFilter">
+              <mat-option value="">Todos los proyectos</mat-option>
+              <mat-option *ngFor="let project of projects" [value]="project.id">
+                {{ project.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button
+            mat-stroked-button
+            type="button"
+            class="clear-filters-button"
+            (click)="clearFilters()"
+            *ngIf="searchForm.get('searchTerm')?.value || searchForm.get('typeFilter')?.value || searchForm.get('projectFilter')?.value"
+          >
+            <mat-icon>clear_all</mat-icon>
+            Limpiar filtros
+          </button>
+        </form>
+      </div>
+    </mat-card>
+
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando componentes...</p>
+    </div>
+
+    <!-- Tabla de componentes - Vista desktop y tablet -->
+    <div
+      *ngIf="!loading && filteredComponents.length > 0"
+      class="table-container"
+    >
+      <table
+        mat-table
+        [dataSource]="filteredComponents"
+        matSort
+        class="components-table"
+      >
+        <!-- Columna de nombre -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let component" class="name-cell">
+            <div class="component-name-container">
+              <span class="component-name" (click)="openDetailsPanel(component)">{{ component.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna de tipo -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+          <td mat-cell *matCellDef="let component">
+            <mat-chip-set>
+              <mat-chip class="type-chip" [class]="'type-' + component.type">
+                <mat-icon matChipAvatar>{{ getComponentTypeIcon(component.type) }}</mat-icon>
+                {{ getComponentTypeLabel(component.type) }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Columna de tecnología -->
+        <ng-container matColumnDef="technology">
+          <th mat-header-cell *matHeaderCellDef>Tecnología</th>
+          <td mat-cell *matCellDef="let component" class="technology-cell">
+            <span class="technology-text">{{ component.technology }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Columna de versión -->
+        <ng-container matColumnDef="version">
+          <th mat-header-cell *matHeaderCellDef>Versión</th>
+          <td mat-cell *matCellDef="let component" class="version-cell">
+            <span class="version-text">{{ component.version || 'N/A' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Columna de proyecto -->
+        <ng-container matColumnDef="project">
+          <th mat-header-cell *matHeaderCellDef>Proyecto</th>
+          <td mat-cell *matCellDef="let component" class="project-cell">
+            <span class="project-text">{{ getProjectName(component.projectId) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Columna de estado -->
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let component">
+            <mat-slide-toggle
+              [checked]="component.isActive"
+              (change)="toggleActive(component)"
+              color="primary"
+            >
+              <span class="toggle-text">{{ getActiveStatusText(component.isActive) }}</span>
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <!-- Columna de acciones -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let component">
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Acciones de componente"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" class="actions-menu">
+              <div class="menu-section">
+                <button mat-menu-item (click)="openDetailsPanel(component)" class="menu-item">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Ver detalles</span>
+                </button>
+                <button mat-menu-item (click)="openEditPanel(component)" class="menu-item">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+              </div>
+              
+              <div class="menu-section">
+                <button
+                  mat-menu-item
+                  (click)="openDeleteDialog(component)"
+                  class="menu-item delete-action"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </div>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+      ></mat-paginator>
+    </div>
+
+    <!-- Vista para móviles - Tarjetas -->
+    <div
+      *ngIf="!loading && filteredComponents.length > 0"
+      class="mobile-container"
+    >
+      <div
+        class="component-card"
+        *ngFor="let component of filteredComponents"
+      >
+        <div class="card-header">
+          <mat-icon class="component-icon">{{ getComponentTypeIcon(component.type) }}</mat-icon>
+          <h3 class="component-name" (click)="openDetailsPanel(component)">{{ component.name }}</h3>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="mobileMenu"
+            aria-label="Acciones de componente"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #mobileMenu="matMenu" class="actions-menu mobile-menu">
+            <div class="menu-section">
+              <button mat-menu-item (click)="openDetailsPanel(component)" class="menu-item">
+                <mat-icon>visibility</mat-icon>
+                <span>Ver detalles</span>
+              </button>
+              <button mat-menu-item (click)="openEditPanel(component)" class="menu-item">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+            </div>
+            
+            <div class="menu-section">
+              <button
+                mat-menu-item
+                (click)="openDeleteDialog(component)"
+                class="menu-item delete-action"
+              >
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </mat-menu>
+        </div>
+
+        <div class="card-content">
+          <p class="component-description">{{ component.description || 'Sin descripción' }}</p>
+
+          <div class="component-details">
+            <div class="detail-item">
+              <span class="detail-label">Tipo:</span>
+              <mat-chip class="type-chip" [class]="'type-' + component.type">
+                {{ getComponentTypeLabel(component.type) }}
+              </mat-chip>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Tecnología:</span>
+              <span class="detail-value">{{ component.technology }}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Versión:</span>
+              <span class="detail-value">{{ component.version || 'N/A' }}</span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Proyecto:</span>
+              <span class="detail-value">{{ getProjectName(component.projectId) }}</span>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <mat-slide-toggle
+              [checked]="component.isActive"
+              (change)="toggleActive(component)"
+              color="primary"
+            >
+              {{ getActiveStatusText(component.isActive) }}
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="!loading && filteredComponents.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">widgets</mat-icon>
+      <h2>No se encontraron componentes</h2>
+      <p>No hay componentes que coincidan con los filtros aplicados.</p>
+      <button
+        mat-raised-button
+        color="primary"
+        class="app-button primary-button"
+        (click)="clearFilters()"
+        *ngIf="searchForm.get('searchTerm')?.value || searchForm.get('typeFilter')?.value || searchForm.get('projectFilter')?.value"
+      >
+        <mat-icon>clear_all</mat-icon>
+        Limpiar filtros
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="app-button primary-button"
+        (click)="openCreatePanel()"
+        *ngIf="!searchForm.get('searchTerm')?.value && !searchForm.get('typeFilter')?.value && !searchForm.get('projectFilter')?.value"
+      >
+        <mat-icon>add</mat-icon>
+        Crear primer componente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel deslizante para crear/editar -->
+<app-component-slide-panel
+  [isOpen]="isEditPanelOpen"
+  [component]="selectedComponent"
+  [projects]="projects"
+  (closed)="onEditPanelClosed($event)"
+></app-component-slide-panel>
+
+<!-- TODO: Implementar panel de detalles -->
+<!-- <app-component-details-panel
+  [isOpen]="isDetailsPanelOpen"
+  [component]="selectedComponent"
+  (closed)="onDetailsPanelClosed()"
+></app-component-details-panel> --> 

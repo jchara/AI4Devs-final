@@ -991,3 +991,29 @@ El toggle en la vista de proyectos no funciona, analiza porque el update no est�
 ```
 Implementa el mismo diseño de la tabla y del panel y su formulario en proyectos. deben ser los mismos diseños, estilos de botones
 ```
+
+## Prompt 68: Crear vistas de componentes y bases de datos - FULLSTACK
+**HUS Relacionadas:** HU-025, HU-026
+
+```
+Como experto en Angular y UX/UI en la vista de proyectos del  crea el crud correspondiente para los proyectos, teniendo en cuenta estos puntos:
+
+Teniendo en cuenta todo lo aplicado en la creacion de la vista de proyectos su modal y su panel, crea las vistas de componentes y bases de datos 
+
+como base para que desarrolles toda la vista de proyectos analiza los endpoints creados en el @/backend  y la arquitectura de la BD @Arquitectura-BD.md
+```
+
+## Prompt 69: Análisis y estandarización de componentes Angular - FRONTEND
+
+```
+@/frontend  como experto en front Angular analiza el proyecto front para cargar contexto.
+
+después analiza detalladamente el componen de proyectos.
+
+identifica el diseño, estilos y estructura de la vista listar (tabla y cajon de búsqueda)
+También analiza el panel de crear y editar, estilos (reutilizables) de botones, campos y funcionamiento del panel y su scroll
+
+Después de analizarlo, ajusta las vistas componente y base de datos con esa misma estructura.
+
+Si tienes alguna pregunta hazla antes de hacer cualquier cambio.
+```
