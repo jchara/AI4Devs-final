@@ -371,23 +371,20 @@
       .database-details {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-md);
+        gap: var(--spacing-md);
         
         .detail-item {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          gap: var(--spacing-sm);
           
           .detail-label {
             font-weight: 500;
             color: var(--text-secondary);
-            min-width: 80px;
           }
           
           .detail-value {
             color: var(--text-primary);
-            flex: 1;
           }
           
           .type-chip {
@@ -397,13 +394,7 @@
         }
       }
       
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: var(--spacing-sm);
-        border-top: 1px solid var(--border-color);
-      }
+
     }
   }
 }

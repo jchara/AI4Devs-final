@@ -271,16 +271,17 @@
               <span class="detail-label">Proyecto:</span>
               <span class="detail-value">{{ getProjectName(database.projectId, database) }}</span>
             </div>
-          </div>
 
-          <div class="card-actions">
-            <mat-slide-toggle
-              [checked]="database.isActive"
-              (change)="toggleActive(database)"
-              color="primary"
-            >
-              {{ getActiveStatusText(database.isActive) }}
-            </mat-slide-toggle>
+            <div class="detail-item">
+              <span class="detail-label">Estado:</span>
+              <mat-slide-toggle
+                [checked]="database.isActive"
+                (change)="toggleActive(database)"
+                color="primary"
+              >
+                <span class="toggle-text">{{ getActiveStatusText(database.isActive) }}</span>
+              </mat-slide-toggle>
+            </div>
           </div>
         </div>
       </div>

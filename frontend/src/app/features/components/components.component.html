@@ -261,16 +261,17 @@
               <span class="detail-label">Proyecto:</span>
               <span class="detail-value">{{ getProjectName(component.projectId) }}</span>
             </div>
-          </div>
 
-          <div class="card-actions">
-            <mat-slide-toggle
-              [checked]="component.isActive"
-              (change)="toggleActive(component)"
-              color="primary"
-            >
-              {{ getActiveStatusText(component.isActive) }}
-            </mat-slide-toggle>
+            <div class="detail-item">
+              <span class="detail-label">Estado:</span>
+              <mat-slide-toggle
+                [checked]="component.isActive"
+                (change)="toggleActive(component)"
+                color="primary"
+              >
+                <span class="toggle-text">{{ getActiveStatusText(component.isActive) }}</span>
+              </mat-slide-toggle>
+            </div>
           </div>
         </div>
       </div>
