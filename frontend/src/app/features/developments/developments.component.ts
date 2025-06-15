@@ -278,7 +278,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     return this.badgeUtils.getStatusBadgeClass(status);
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | undefined | null): string {
     return this.badgeUtils.formatDate(date);
   }
 

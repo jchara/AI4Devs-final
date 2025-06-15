@@ -103,6 +103,8 @@ export interface Development {
   status: DevelopmentStatus;
   priority: string;
   environment: DevelopmentEnvironment;
+  environmentId?: number;
+  projectId?: number;
   progress: number;
   isActive: boolean;
   jiraUrl?: string;
@@ -110,7 +112,7 @@ export interface Development {
   notes?: string;
   startDate: Date;
   endDate?: Date;
-  estimatedDate: Date;
+  estimatedDate?: Date;
   assignedTo: User;
   team: Team;
   components: Component[];

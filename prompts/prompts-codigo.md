@@ -1147,3 +1147,23 @@ Ten en cuenta buenas prácticas de desarrollo, seguridad y rendimiento. Mantén 
 
 Antes de implementar, analiza el proyecto existente y confirma el plan de implementación. Si tienes alguna consulta, hazla primero.
 ```
+
+## Prompt 71: Error en el panel de crear o editar de la vista de desarrollos - FRONTEND
+
+```
+Analiza este error que se esta presentando al abrir el panel de crear o editar de la vista de desarrollos:
+core.mjs:6547 ERROR Error: Cannot find control with name: 'projectId'
+    at _throwError (forms.mjs:3513:9)
+    at setUpControl (forms.mjs:3304:19)
+    at _FormGroupDirective.addControl (forms.mjs:5513:5)
+    at _FormControlName._setUpControl (forms.mjs:6195:39)
+    at _FormControlName.ngOnChanges (forms.mjs:6151:28)
+    at _FormControlName.rememberChangeHistoryAndInvokeOnChangesHook (core.mjs:3075:10)
+    at callHookInternal (core.mjs:4140:10)
+    at callHook (core.mjs:4167:5)
+    at callHooks (core.mjs:4124:9)
+    at executeInitAndCheckHooks (core.mjs:4079:5)
+
+Determina porque pasa el error y explícame de forma corta.
+No realices cambios hasta que no te confirme.
+```

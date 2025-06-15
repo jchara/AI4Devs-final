@@ -115,7 +115,12 @@ export class BadgeUtilsService {
   /**
    * Formatea una fecha en formato español
    */
-  formatDate(date: Date): string {
+  formatDate(date: Date | undefined | null): string {
+    // Manejar casos donde la fecha es undefined o null
+    if (!date) {
+      return 'No especificada';
+    }
+    
     return new Intl.DateTimeFormat('es-ES', {
       day: '2-digit',
       month: '2-digit',

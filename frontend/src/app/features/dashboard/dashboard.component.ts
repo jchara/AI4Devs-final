@@ -130,7 +130,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.badgeUtils.getActivityTypeClass(type);
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | undefined | null): string {
     return this.badgeUtils.formatDate(date);
   }
 

@@ -28,10 +28,6 @@ export class CreateDevelopmentDto {
   @IsOptional()
   progress?: number;
 
-  @ApiProperty({ description: 'ID of the project this development belongs to' })
-  @IsNumber()
-  projectId: number;
-
   @ApiProperty({ description: 'Estimated completion date', required: false })
   @IsDate()
   @IsOptional()

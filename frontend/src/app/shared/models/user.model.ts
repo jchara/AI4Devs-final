@@ -3,7 +3,10 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
+  roleId: number;
+  teamId: number;
+  role?: Role;
+  team?: Team;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

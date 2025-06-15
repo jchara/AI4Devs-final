@@ -8,6 +8,7 @@ import {
 } from './repositories';
 import { EnvironmentService } from './services';
 import { EnvironmentController } from './controllers';
+import { DeploymentTypeController } from './controllers/deployment-type.controller';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { EnvironmentController } from './controllers';
     UpcomingDeploymentRepository,
     EnvironmentService
   ],
-  controllers: [EnvironmentController],
+  controllers: [EnvironmentController, DeploymentTypeController],
   exports: [
     EnvironmentRepository, 
     DeploymentTypeRepository, 

@@ -11,6 +11,8 @@ export interface BackendDevelopmentResponse {
   status: string;
   priority: string;
   environment: string;
+  environmentId?: number;
+  projectId?: number;
   progress: number;
   isActive: boolean;
   jiraUrl?: string;

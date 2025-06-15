@@ -20,6 +20,7 @@ import { DevelopmentComponentController } from './controllers/development-compon
 import { DevelopmentDatabaseController } from './controllers/development-database.controller';
 import { DevelopmentController } from './controllers/development.controller';
 import { ProjectController } from './controllers/project.controller';
+import { TeamController } from './controllers/team.controller';
 
 // Repositories
 import { ComponentRepository } from './repositories/component.repository';
@@ -66,6 +67,7 @@ import { TeamService } from './services/team.service';
     DevelopmentController,
     DevelopmentComponentController,
     DevelopmentDatabaseController,
+    TeamController,
   ],
   providers: [
     ProjectService,

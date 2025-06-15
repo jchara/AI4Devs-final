@@ -15,6 +15,8 @@ import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { DevelopmentService } from '../../services/development.service';
 import { ProjectService } from '../../../../core/services/project.service';
 import { EnvironmentService } from '../../../../core/services/environment.service';
+import { UserService } from '../../../../core/services/user.service';
+import { TeamService } from '../../../../core/services/team.service';
 import { Development, DevelopmentStatus } from '../../../../shared/models/development.model';
 import { BackendDevelopmentPriority } from '../../../../shared/interfaces/backend-interfaces';
 import { Project } from '../../../../shared/models/project.model';
@@ -123,6 +125,8 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     private developmentService: DevelopmentService,
     private projectService: ProjectService,
     private environmentService: EnvironmentService,
+    private userService: UserService,
+    private teamService: TeamService,
     private cdr: ChangeDetectorRef
   ) {
     this.developmentForm = this.createForm();
@@ -184,7 +188,9 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
 
     forkJoin({
       projects: this.projectService.getProjects(),
-      environments: this.environmentService.getEnvironments()
+      environments: this.environmentService.getEnvironments(),
+      users: this.userService.getUsers(),
+      teams: this.teamService.getTeams()
     }).pipe(takeUntil(this.destroy$))
     .subscribe({
       next: (data) => {
@@ -199,22 +205,20 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           ? data.environments.filter(env => env.isActive) 
           : [];
         
-        // Mock data for users and teams until services are created
-        this.users = [
-          { id: 1, firstName: 'Juan', lastName: 'Pérez', email: 'juan@company.com', role: 'Desarrollador', isActive: true, createdAt: new Date(), updatedAt: new Date() },
-          { id: 2, firstName: 'María', lastName: 'García', email: 'maria@company.com', role: 'QA', isActive: true, createdAt: new Date(), updatedAt: new Date() },
-          { id: 3, firstName: 'Carlos', lastName: 'López', email: 'carlos@company.com', role: 'DevOps', isActive: true, createdAt: new Date(), updatedAt: new Date() }
-        ].filter(user => user.isActive);
-        
-        this.teams = [
-          { id: 1, name: 'Frontend Team', description: 'Equipo de desarrollo frontend', isActive: true, createdAt: new Date(), updatedAt: new Date() },
-          { id: 2, name: 'Backend Team', description: 'Equipo de desarrollo backend', isActive: true, createdAt: new Date(), updatedAt: new Date() },
-          { id: 3, name: 'DevOps Team', description: 'Equipo de infraestructura', isActive: true, createdAt: new Date(), updatedAt: new Date() }
-        ].filter(team => team.isActive);
+        // Procesar datos reales del backend
+        this.users = Array.isArray(data.users) 
+          ? data.users.filter(user => user.isActive) 
+          : [];
+          
+        this.teams = Array.isArray(data.teams) 
+          ? data.teams.filter(team => team.isActive) 
+          : [];
         
         console.log('Processed data:', { 
           projects: this.projects.length, 
-          environments: this.environments.length 
+          environments: this.environments.length,
+          users: this.users.length,
+          teams: this.teams.length
         }); // Debug log
         
         this.loading = false;
@@ -269,8 +273,8 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           progress: this.development?.progress || 0,
           jiraUrl: this.development?.jiraUrl || '',
           branch: this.development?.branch || '',
-          projectId: this.development?.assignedTo?.id || '',
-          environmentId: this.development?.environment || '',
+          projectId: this.development?.projectId || '',
+          environmentId: this.development?.environmentId || '',
           assignedUserId: this.development?.assignedTo?.id || '',
           teamId: this.development?.team?.id || '',
           startDate: this.development?.startDate ? new Date(this.development.startDate) : new Date(),
@@ -358,11 +362,17 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         status: formData.status,
         priority: formData.priority,
         projectId: formData.projectId,
+        environmentId: formData.environmentId,
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
         startDate: formData.startDate || undefined,
+        estimatedDate: formData.estimatedDate || undefined,
         endDate: formData.endDate || undefined,
-        progress: formData.progress || 0
+        jiraUrl: formData.jiraUrl?.trim() || undefined,
+        branch: formData.branch?.trim() || undefined,
+        notes: formData.notes?.trim() || undefined,
+        progress: formData.progress || 0,
+        isActive: formData.isActive !== undefined ? formData.isActive : true
       };
       
       this.developmentService.updateDevelopment(this.development.id, updateData)
@@ -386,11 +396,17 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         status: formData.status,
         priority: formData.priority,
         projectId: formData.projectId,
+        environmentId: formData.environmentId,
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
         startDate: formData.startDate || undefined,
+        estimatedDate: formData.estimatedDate || undefined,
         endDate: formData.endDate || undefined,
-        progress: formData.progress || 0
+        jiraUrl: formData.jiraUrl?.trim() || undefined,
+        branch: formData.branch?.trim() || undefined,
+        notes: formData.notes?.trim() || undefined,
+        progress: formData.progress || 0,
+        isActive: formData.isActive !== undefined ? formData.isActive : true
       };
       
       this.developmentService.createDevelopment(createData)

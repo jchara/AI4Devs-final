@@ -231,7 +231,12 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     return this.badgeUtils.getStatusBadgeClass(status);
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | undefined | null): string {
+    // Manejar casos donde la fecha es undefined o null
+    if (!date) {
+      return 'No especificada';
+    }
+    
     const key = date.getTime().toString();
     if (this.cachedDates[key]) {
       return this.cachedDates[key];
@@ -248,7 +253,12 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     return formatted;
   }
 
-  calculateTimeElapsed(date: Date): string {
+  calculateTimeElapsed(date: Date | undefined | null): string {
+    // Manejar casos donde la fecha es undefined o null
+    if (!date) {
+      return 'No disponible';
+    }
+    
     const key = date.getTime().toString();
     const now = new Date();
     

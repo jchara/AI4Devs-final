@@ -242,6 +242,7 @@ export class DevelopmentService {
       deployedBy: this.mapUserFromString(
         deployment.assignedTo || 'Sin asignar'
       ),
+      // TODO: El deploymentType debería venir del backend
       deploymentType: {
         id: 1,
         name: 'Regular',
@@ -506,10 +507,13 @@ export class DevelopmentService {
         firstName: activity.performedBy.firstName || 'Usuario',
         lastName: activity.performedBy.lastName || 'Desconocido',
         email: activity.performedBy.email || '',
+        roleId: activity.performedBy.roleId || 1,
+        teamId: activity.performedBy.teamId || 1,
+        role: activity.performedBy.role,
+        team: activity.performedBy.team,
         isActive: activity.performedBy.isActive || true,
         createdAt: new Date(activity.performedBy.createdAt || new Date()),
         updatedAt: new Date(activity.performedBy.updatedAt || new Date()),
-        role: activity.performedBy.role?.name || 'DEVELOPER',
       } : this.mapUserFromString('Usuario Desconocido'),
       timestamp: new Date(activity.createdAt),
       createdAt: new Date(activity.createdAt),
@@ -524,10 +528,11 @@ export class DevelopmentService {
       firstName: userString.split(' ')[0] || '',
       lastName: userString.split(' ').slice(1).join(' ') || '',
       email: '',
+      roleId: 1,
+      teamId: 1,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
-      role: 'DEVELOPER',
     };
   }
 

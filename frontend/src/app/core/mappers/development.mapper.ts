@@ -38,6 +38,8 @@ export class DevelopmentMapper {
       status: this.mapStatusFromBackend(backendDev.status),
       priority: backendDev.priority || 'MEDIUM',
       environment: this.mapEnvironmentFromBackend(backendDev.environment),
+      environmentId: backendDev.environmentId,
+      projectId: backendDev.projectId,
       progress: backendDev.progress,
       isActive: backendDev.isActive,
       jiraUrl: backendDev.jiraUrl,
@@ -194,7 +196,8 @@ export class DevelopmentMapper {
       firstName: userString.split(' ')[0] || '',
       lastName: userString.split(' ').slice(1).join(' ') || '',
       email: '',
-      role: 'DEVELOPER', // Valor por defecto
+      roleId: 1, // ID por defecto
+      teamId: 1, // ID por defecto
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -276,7 +279,8 @@ export class DevelopmentMapper {
         firstName: 'Sin asignar',
         lastName: '',
         email: '',
-        role: 'DEVELOPER',
+        roleId: 1,
+        teamId: 1,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -289,7 +293,8 @@ export class DevelopmentMapper {
         firstName: user,
         lastName: '',
         email: '',
-        role: 'DEVELOPER',
+        roleId: 1,
+        teamId: 1,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -301,7 +306,10 @@ export class DevelopmentMapper {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       email: user.email || '',
-      role: user.role || 'DEVELOPER',
+      roleId: user.roleId || 1,
+      teamId: user.teamId || 1,
+      role: user.role,
+      team: user.team,
       isActive: user.isActive ?? true,
       createdAt: new Date(user.createdAt || new Date()),
       updatedAt: new Date(user.updatedAt || new Date()),
@@ -406,6 +414,7 @@ export class DevelopmentMapper {
       createdAt: new Date(deployment.createdAt),
       updatedAt: new Date(deployment.updatedAt),
       deployedBy: this.mapUserFromBackend(deployment.assignedTo),
+      // TODO: El deploymentType debería venir del backend
       deploymentType: {
         id: 1,
         name: 'Regular',
