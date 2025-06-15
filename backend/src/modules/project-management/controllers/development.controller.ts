@@ -23,10 +23,12 @@ import {
 import { DevelopmentPriority, DevelopmentStatus } from '../../../shared/enums';
 import {
   CreateDevelopmentDto,
-  DevelopmentMetricsResponseDto,
   DevelopmentResponseDto,
   UpdateDevelopmentDto,
-} from '../dto';
+  CreateDevelopmentWithRelationsDto,
+  UpdateDevelopmentWithRelationsDto,
+} from '../dtos';
+import { DevelopmentMetricsResponseDto } from '../dto';
 import { Development } from '../entities/development.entity';
 import { DevelopmentMetrics } from '../interfaces';
 import { DevelopmentFilters } from '../repositories/development.repository.interface';
@@ -448,5 +450,60 @@ export class DevelopmentController extends BaseController<Development> {
   })
   restore(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.developmentService.restore(id);
+  }
+
+  // Endpoints transaccionales para manejar desarrollo con componentes y bases de datos
+  @Post('with-relations')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create development with components and databases',
+    description: 'Crea un desarrollo junto con sus componentes y bases de datos asociadas en una sola transacción',
+  })
+  @ApiBody({
+    type: CreateDevelopmentWithRelationsDto,
+    description: 'Datos del desarrollo con componentes y bases de datos',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Development with relations created successfully',
+    type: DevelopmentResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Error de validación en los datos enviados',
+  })
+  createWithRelations(
+    @Body() createDto: CreateDevelopmentWithRelationsDto,
+  ): Promise<Development> {
+    return this.developmentService.createWithRelations(createDto);
+  }
+
+  @Patch(':id/with-relations')
+  @ApiOperation({
+    summary: 'Update development with components and databases',
+    description: 'Actualiza un desarrollo junto con sus componentes y bases de datos asociadas en una sola transacción',
+  })
+  @ApiBody({
+    type: UpdateDevelopmentWithRelationsDto,
+    description: 'Datos del desarrollo con componentes y bases de datos a actualizar',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Development with relations updated successfully',
+    type: DevelopmentResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Error de validación en los datos enviados',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Development not found',
+  })
+  updateWithRelations(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateDevelopmentWithRelationsDto,
+  ): Promise<Development> {
+    return this.developmentService.updateWithRelations(id, updateDto);
   }
 }

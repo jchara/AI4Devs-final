@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -17,6 +17,8 @@ import { ProjectService } from '../../../../core/services/project.service';
 import { EnvironmentService } from '../../../../core/services/environment.service';
 import { UserService } from '../../../../core/services/user.service';
 import { TeamService } from '../../../../core/services/team.service';
+import { ComponentService, Component as AppComponent } from '../../../../shared/services/component.service';
+import { DatabaseService, Database, DatabaseChangeType } from '../../../../shared/services/database.service';
 import { Development, DevelopmentStatus } from '../../../../shared/models/development.model';
 import { BackendDevelopmentPriority } from '../../../../shared/interfaces/backend-interfaces';
 import { Project } from '../../../../shared/models/project.model';
@@ -31,6 +33,7 @@ import { memoize } from 'lodash';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatButtonModule,
     MatIconModule,
     MatInputModule,
@@ -104,6 +107,12 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   environments: Environment[] = [];
   users: User[] = [];
   teams: Team[] = [];
+  components: AppComponent[] = [];
+  databases: Database[] = [];
+
+  // Arrays para componentes y bases de datos seleccionados
+  selectedComponents: any[] = [];
+  selectedDatabases: any[] = [];
 
   // Opciones para el formulario
   developmentStatuses: DevelopmentStatus[] = [
@@ -120,6 +129,15 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     BackendDevelopmentPriority.CRITICAL
   ];
 
+  databaseChangeTypes = [
+    { value: DatabaseChangeType.CREATE, label: 'Crear' },
+    { value: DatabaseChangeType.UPDATE, label: 'Actualizar' },
+    { value: DatabaseChangeType.DELETE, label: 'Eliminar' },
+    { value: DatabaseChangeType.MIGRATION, label: 'Migración' },
+    { value: DatabaseChangeType.INDEX, label: 'Índice' },
+    { value: DatabaseChangeType.PROCEDURE, label: 'Procedimiento' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private developmentService: DevelopmentService,
@@ -127,6 +145,8 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     private environmentService: EnvironmentService,
     private userService: UserService,
     private teamService: TeamService,
+    private componentService: ComponentService,
+    private databaseService: DatabaseService,
     private cdr: ChangeDetectorRef
   ) {
     this.developmentForm = this.createForm();
@@ -166,7 +186,6 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       progress: [0, [Validators.min(0), Validators.max(100)]],
       jiraUrl: ['', [Validators.pattern(/^https?:\/\/.+/)]],
       branch: [''],
-      projectId: ['', Validators.required],
       environmentId: ['', Validators.required],
       assignedUserId: ['', Validators.required],
       teamId: ['', Validators.required],
@@ -190,7 +209,9 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       projects: this.projectService.getProjects(),
       environments: this.environmentService.getEnvironments(),
       users: this.userService.getUsers(),
-      teams: this.teamService.getTeams()
+      teams: this.teamService.getTeams(),
+      components: this.componentService.getActiveComponents(),
+      databases: this.databaseService.getActiveDatabases()
     }).pipe(takeUntil(this.destroy$))
     .subscribe({
       next: (data) => {
@@ -213,12 +234,22 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         this.teams = Array.isArray(data.teams) 
           ? data.teams.filter(team => team.isActive) 
           : [];
+
+        this.components = Array.isArray(data.components) 
+          ? data.components.filter(comp => comp.isActive) 
+          : [];
+
+        this.databases = Array.isArray(data.databases) 
+          ? data.databases.filter(db => db.isActive) 
+          : [];
         
         console.log('Processed data:', { 
           projects: this.projects.length, 
           environments: this.environments.length,
           users: this.users.length,
-          teams: this.teams.length
+          teams: this.teams.length,
+          components: this.components.length,
+          databases: this.databases.length
         }); // Debug log
         
         this.loading = false;
@@ -231,6 +262,8 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         this.environments = [];
         this.users = [];
         this.teams = [];
+        this.components = [];
+        this.databases = [];
         this.loading = false;
         this.cdr.markForCheck();
       }
@@ -250,7 +283,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       progress: 0,
       jiraUrl: '',
       branch: '',
-      projectId: '',
+
       environmentId: '',
       assignedUserId: '',
       teamId: '',
@@ -273,7 +306,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           progress: this.development?.progress || 0,
           jiraUrl: this.development?.jiraUrl || '',
           branch: this.development?.branch || '',
-          projectId: this.development?.projectId || '',
+
           environmentId: this.development?.environmentId || '',
           assignedUserId: this.development?.assignedTo?.id || '',
           teamId: this.development?.team?.id || '',
@@ -283,6 +316,27 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           notes: this.development?.notes || '',
           isActive: this.development?.isActive !== undefined ? this.development.isActive : true
         });
+
+        // Cargar componentes y bases de datos existentes si está editando
+        if (this.development?.developmentComponents) {
+          this.selectedComponents = this.development.developmentComponents.map(devComp => ({
+            componentId: devComp.component.id,
+            description: devComp.notes || '',
+            notes: devComp.notes || ''
+          }));
+        }
+
+        // TODO: Cargar bases de datos existentes cuando esté disponible en el modelo
+        // if (this.development?.developmentDatabases) {
+        //   this.selectedDatabases = this.development.developmentDatabases.map(devDb => ({
+        //     databaseId: devDb.database.id,
+        //     changeType: devDb.changeType,
+        //     scriptDescription: devDb.scriptDescription,
+        //     sqlScript: devDb.sqlScript || '',
+        //     notes: devDb.notes || ''
+        //   }));
+        // }
+
         this.cdr.markForCheck();
       });
     }
@@ -354,14 +408,29 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     
     const formData = this.developmentForm.value;
     
+    // Preparar datos de componentes
+    const components = this.selectedComponents.map(comp => ({
+      componentId: comp.componentId,
+      description: comp.description || '',
+      notes: comp.notes || ''
+    }));
+
+    // Preparar datos de bases de datos
+    const databases = this.selectedDatabases.map(db => ({
+      databaseId: db.databaseId,
+      changeType: db.changeType,
+      scriptDescription: db.scriptDescription,
+      sqlScript: db.sqlScript || '',
+      notes: db.notes || ''
+    }));
+    
     if (this.isEditMode && this.development) {
-      // Estructura para actualizar según el DTO del backend
+      // Estructura para actualizar con relaciones
       const updateData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         status: formData.status,
         priority: formData.priority,
-        projectId: formData.projectId,
         environmentId: formData.environmentId,
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
@@ -372,10 +441,12 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         branch: formData.branch?.trim() || undefined,
         notes: formData.notes?.trim() || undefined,
         progress: formData.progress || 0,
-        isActive: formData.isActive !== undefined ? formData.isActive : true
+        isActive: formData.isActive !== undefined ? formData.isActive : true,
+        components: components,
+        databases: databases
       };
       
-      this.developmentService.updateDevelopment(this.development.id, updateData)
+      this.developmentService.updateDevelopmentWithRelations(this.development.id, updateData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
@@ -389,13 +460,12 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           }
         });
     } else {
-      // Estructura para crear según el DTO del backend
+      // Estructura para crear con relaciones
       const createData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         status: formData.status,
         priority: formData.priority,
-        projectId: formData.projectId,
         environmentId: formData.environmentId,
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
@@ -406,10 +476,12 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         branch: formData.branch?.trim() || undefined,
         notes: formData.notes?.trim() || undefined,
         progress: formData.progress || 0,
-        isActive: formData.isActive !== undefined ? formData.isActive : true
+        isActive: formData.isActive !== undefined ? formData.isActive : true,
+        components: components,
+        databases: databases
       };
       
-      this.developmentService.createDevelopment(createData)
+      this.developmentService.createDevelopmentWithRelations(createData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
@@ -468,5 +540,45 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
 
   trackByPriority(index: number, item: BackendDevelopmentPriority): string {
     return item;
+  }
+
+  // Métodos para manejar componentes
+  addComponent(): void {
+    this.selectedComponents.push({
+      componentId: '',
+      description: '',
+      notes: ''
+    });
+  }
+
+  removeComponent(index: number): void {
+    this.selectedComponents.splice(index, 1);
+  }
+
+  trackByComponent(index: number, item: AppComponent): number {
+    return item.id;
+  }
+
+  // Métodos para manejar bases de datos
+  addDatabase(): void {
+    this.selectedDatabases.push({
+      databaseId: '',
+      changeType: DatabaseChangeType.UPDATE,
+      scriptDescription: '',
+      sqlScript: '',
+      notes: ''
+    });
+  }
+
+  removeDatabase(index: number): void {
+    this.selectedDatabases.splice(index, 1);
+  }
+
+  trackByDatabase(index: number, item: Database): number {
+    return item.id;
+  }
+
+  trackByChangeType(index: number, item: any): string {
+    return item.value;
   }
 } 

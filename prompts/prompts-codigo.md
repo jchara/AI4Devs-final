@@ -1167,3 +1167,34 @@ core.mjs:6547 ERROR Error: Cannot find control with name: 'projectId'
 Determina porque pasa el error y explícame de forma corta.
 No realices cambios hasta que no te confirme.
 ```
+
+## Prompt 72: Corrección de error FormControl y mejora del panel de desarrollos - FRONTEND
+**HUS Relacionadas:** HU-014, HU-015
+
+```
+Corrige el error "Cannot find control with name: 'projectId'" en el panel de crear/editar desarrollos y mejora la funcionalidad completa del formulario.
+
+**Problema Identificado:**
+El template HTML usa `formControlName="projectId"` pero el método `createForm()` no tiene definido este control en el FormGroup, causando el error al intentar hacer binding.
+
+**Solución Implementada:**
+1. **Corrección del FormGroup**: Agregar el control `projectId` faltante en el método `createForm()`
+2. **Actualización del patchValue**: Incluir `projectId` en el método `initializeForm()` para modo edición
+3. **Mejora de la arquitectura**: Cambiar de un desarrollo asociado directamente a un proyecto, a un desarrollo que puede afectar componentes de múltiples proyectos
+4. **Eliminación del campo proyecto**: Remover `projectId` del formulario ya que un desarrollo puede afectar componentes de diferentes proyectos
+5. **Implementación de selección dinámica**: Agregar secciones para seleccionar componentes afectados y bases de datos impactadas
+6. **Nuevos endpoints transaccionales**: Crear endpoints que manejen desarrollo + componentes + bases de datos en una sola transacción
+
+**Cambios en Backend:**
+- Creación de DTOs unificados para operaciones transaccionales
+- Implementación de métodos `createWithRelations()` y `updateWithRelations()`
+- Nuevos endpoints: `POST /developments/with-relations` y `PATCH /developments/:id/with-relations`
+- Limpieza de DTOs duplicados y corrección de importaciones
+
+**Cambios en Frontend:**
+- Eliminación del campo `projectId` del FormGroup y template
+- Implementación de selección dinámica de componentes y bases de datos
+- Nuevos servicios: ComponentService y DatabaseService
+- UI moderna con estados vacíos, botones agregar/remover y gestión dinámica
+- Integración con endpoints transaccionales del backend
+```

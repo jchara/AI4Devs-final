@@ -614,4 +614,72 @@ export class DevelopmentService {
         return ActivityType.DEVELOPMENT_UPDATED;
     }
   }
+
+  /**
+   * Crear desarrollo con componentes y bases de datos (transaccional)
+   */
+  createDevelopmentWithRelations(
+    developmentData: any
+  ): Observable<Development | null> {
+    this.loadingSubject.next(true);
+    return this.apiService.post<BackendDevelopmentResponse>('developments/with-relations', developmentData).pipe(
+      map((response) => {
+        if (response) {
+          const development = this.mapDevelopmentFromBackend(response);
+          
+          // Actualizar la lista local
+          const currentDevelopments = this.developmentsSubject.value;
+          this.developmentsSubject.next([...currentDevelopments, development]);
+          
+          this.notificationService.showSuccess('Desarrollo creado exitosamente');
+          this.loadingSubject.next(false);
+          return development;
+        }
+        this.loadingSubject.next(false);
+        return null;
+      }),
+      catchError((error) => {
+        console.error('Error al crear desarrollo con relaciones:', error);
+        this.notificationService.showError('Error al crear desarrollo');
+        this.loadingSubject.next(false);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Actualizar desarrollo con componentes y bases de datos (transaccional)
+   */
+  updateDevelopmentWithRelations(
+    id: number,
+    developmentData: any
+  ): Observable<Development | null> {
+    this.loadingSubject.next(true);
+    return this.apiService.patch<BackendDevelopmentResponse>(`developments/${id}/with-relations`, developmentData).pipe(
+      map((response) => {
+        if (response) {
+          const development = this.mapDevelopmentFromBackend(response);
+          
+          // Actualizar la lista local
+          const currentDevelopments = this.developmentsSubject.value;
+          const updatedDevelopments = currentDevelopments.map((dev) =>
+            dev.id === id ? development : dev
+          );
+          this.developmentsSubject.next(updatedDevelopments);
+          
+          this.notificationService.showSuccess('Desarrollo actualizado exitosamente');
+          this.loadingSubject.next(false);
+          return development;
+        }
+        this.loadingSubject.next(false);
+        return null;
+      }),
+      catchError((error) => {
+        console.error('Error al actualizar desarrollo con relaciones:', error);
+        this.notificationService.showError('Error al actualizar desarrollo');
+        this.loadingSubject.next(false);
+        return of(null);
+      })
+    );
+  }
 }

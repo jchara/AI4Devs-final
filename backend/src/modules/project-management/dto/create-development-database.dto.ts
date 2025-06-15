@@ -15,13 +15,17 @@ export class CreateDevelopmentDatabaseDto {
   @IsEnum(DatabaseChangeType)
   changeType: DatabaseChangeType;
 
-  @ApiProperty({ description: 'Descripción del cambio', required: false })
+  @ApiProperty({ description: 'Descripción del script/cambio' })
   @IsString()
-  @IsOptional()
-  description?: string;
+  scriptDescription: string;
 
   @ApiProperty({ description: 'Script SQL del cambio', required: false })
   @IsString()
   @IsOptional()
   sqlScript?: string;
+
+  @ApiProperty({ description: 'Notas adicionales', required: false })
+  @IsString()
+  @IsOptional()
+  notes?: string;
 } 

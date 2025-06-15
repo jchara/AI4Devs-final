@@ -4,10 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseChangeType } from '../../../shared/enums';
-import {
-  CreateDevelopmentDatabaseDto,
-  UpdateDevelopmentDatabaseDto,
-} from '../dtos/development-database.dto';
+import { CreateDevelopmentDatabaseDto } from '../dto/create-development-database.dto';
+import { UpdateDevelopmentDatabaseDto } from '../dto/update-development-database.dto';
 import { DevelopmentDatabase } from '../entities/development-database.entity';
 import { DevelopmentDatabaseRepository } from '../repositories';
 import { BaseService } from './base.service';

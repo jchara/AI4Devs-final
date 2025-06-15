@@ -1,19 +1,26 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
 import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
-import { CreateDevelopmentDto, UpdateDevelopmentDto } from '../dtos';
+import { CreateDevelopmentDto, UpdateDevelopmentDto, CreateDevelopmentWithRelationsDto, UpdateDevelopmentWithRelationsDto } from '../dtos';
 import { Development } from '../entities/development.entity';
 import { DevelopmentMetrics } from '../interfaces';
 import { DevelopmentRepository } from '../repositories/development.repository';
 import { DevelopmentFilters } from '../repositories/development.repository.interface';
 import { BaseService } from './base.service';
 import { EnvironmentRepository } from 'src/modules/infrastructure';
+import { DevelopmentComponentService } from './development-component.service';
+import { DevelopmentDatabaseService } from './development-database.service';
 
 @Injectable()
 export class DevelopmentService extends BaseService<Development> {
   constructor(
     private readonly developmentRepository: DevelopmentRepository,
     private readonly environmentRepository: EnvironmentRepository,
+    private readonly developmentComponentService: DevelopmentComponentService,
+    private readonly developmentDatabaseService: DevelopmentDatabaseService,
+    @InjectDataSource() private readonly dataSource: DataSource,
   ) {
     super(developmentRepository);
   }
@@ -167,5 +174,91 @@ export class DevelopmentService extends BaseService<Development> {
     filters: DevelopmentFilters,
   ): Promise<Development[]> {
     return await this.developmentRepository.findWithFilters(filters);
+  }
+
+  // Métodos transaccionales para manejar desarrollo con componentes y bases de datos
+  async createWithRelations(
+    createDto: CreateDevelopmentWithRelationsDto,
+  ): Promise<Development> {
+    return await this.dataSource.transaction(async () => {
+      // 1. Crear el desarrollo
+      const { components, databases, ...developmentData } = createDto;
+      const development = await this.developmentRepository.create(developmentData);
+
+      // 2. Crear relaciones con componentes si existen
+      if (components && components.length > 0) {
+        for (const componentData of components) {
+          await this.developmentComponentService.create({
+            developmentId: development.id,
+            ...componentData,
+          });
+        }
+      }
+
+      // 3. Crear relaciones con bases de datos si existen
+      if (databases && databases.length > 0) {
+        for (const databaseData of databases) {
+          await this.developmentDatabaseService.create({
+            developmentId: development.id,
+            ...databaseData,
+          });
+        }
+      }
+
+      // 4. Retornar el desarrollo con todas sus relaciones
+      return await this.getDevelopmentWithDetails(development.id);
+    });
+  }
+
+  async updateWithRelations(
+    id: number,
+    updateDto: UpdateDevelopmentWithRelationsDto,
+  ): Promise<Development> {
+    return await this.dataSource.transaction(async () => {
+      // 1. Actualizar el desarrollo
+      const { components, databases, ...developmentData } = updateDto;
+      await this.developmentRepository.update(id, developmentData);
+
+      // 2. Si se proporcionan componentes, reemplazar las relaciones existentes
+      if (components !== undefined) {
+        // Eliminar relaciones existentes
+        const existingComponents = await this.developmentComponentService.findByDevelopment(id);
+        for (const existing of existingComponents) {
+          await this.developmentComponentService.delete(existing.id);
+        }
+
+        // Crear nuevas relaciones
+        if (components.length > 0) {
+          for (const componentData of components) {
+            await this.developmentComponentService.create({
+              developmentId: id,
+              ...componentData,
+            });
+          }
+        }
+      }
+
+      // 3. Si se proporcionan bases de datos, reemplazar las relaciones existentes
+      if (databases !== undefined) {
+        // Eliminar relaciones existentes
+        const existingDatabases = await this.developmentDatabaseService.findDatabasesByDevelopment(id);
+        for (const existing of existingDatabases) {
+          await this.developmentDatabaseService.delete(existing.id);
+        }
+
+        // Crear nuevas relaciones
+        if (databases.length > 0) {
+          for (const databaseData of databases) {
+            await this.developmentDatabaseService.create({
+              developmentId: id,
+              ...databaseData,
+            });
+          }
+        }
+      }
+
+      // 4. Retornar el desarrollo actualizado con todas sus relaciones
+      return await this.getDevelopmentWithDetails(id);
+    });
   }
 }

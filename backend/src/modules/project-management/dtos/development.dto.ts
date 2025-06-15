@@ -1,8 +1,52 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsOptional, IsNumber, IsDate, IsUrl, Min, Max } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNumber, IsDate, IsUrl, Min, Max, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
 import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
+import { DatabaseChangeType } from '../../../shared/enums/database-change-type.enum';
 import { BaseDto } from './base.dto';
+
+// DTOs para componentes dentro del desarrollo
+export class DevelopmentComponentDto {
+  @ApiProperty({ description: 'ID del componente' })
+  @IsNumber()
+  componentId: number;
+
+  @ApiProperty({ description: 'Descripción del cambio en el componente', required: false })
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({ description: 'Notas adicionales', required: false })
+  @IsString()
+  @IsOptional()
+  notes?: string;
+}
+
+// DTOs para bases de datos dentro del desarrollo
+export class DevelopmentDatabaseDto {
+  @ApiProperty({ description: 'ID de la base de datos' })
+  @IsNumber()
+  databaseId: number;
+
+  @ApiProperty({ description: 'Tipo de cambio', enum: DatabaseChangeType })
+  @IsEnum(DatabaseChangeType)
+  changeType: DatabaseChangeType;
+
+  @ApiProperty({ description: 'Descripción del script/cambio' })
+  @IsString()
+  scriptDescription: string;
+
+  @ApiProperty({ description: 'Script SQL del cambio', required: false })
+  @IsString()
+  @IsOptional()
+  sqlScript?: string;
+
+  @ApiProperty({ description: 'Notas adicionales', required: false })
+  @IsString()
+  @IsOptional()
+  notes?: string;
+}
 
 export class CreateDevelopmentDto {
   @ApiProperty({ description: 'Title of the development' })
@@ -37,6 +81,50 @@ export class CreateDevelopmentDto {
   @IsUrl()
   @IsOptional()
   repositoryUrl?: string;
+
+  // Campos adicionales de la entidad
+  @ApiProperty({ description: 'Start date of the development', required: false })
+  @IsDate()
+  @IsOptional()
+  startDate?: Date;
+
+  @ApiProperty({ description: 'End date of the development', required: false })
+  @IsDate()
+  @IsOptional()
+  endDate?: Date;
+
+  @ApiProperty({ description: 'JIRA URL', required: false })
+  @IsUrl()
+  @IsOptional()
+  jiraUrl?: string;
+
+  @ApiProperty({ description: 'Git branch', required: false })
+  @IsString()
+  @IsOptional()
+  branch?: string;
+
+  @ApiProperty({ description: 'Additional notes', required: false })
+  @IsString()
+  @IsOptional()
+  notes?: string;
+
+  @ApiProperty({ description: 'Environment ID' })
+  @IsNumber()
+  environmentId: number;
+
+  @ApiProperty({ description: 'Assigned user ID', required: false })
+  @IsNumber()
+  @IsOptional()
+  assignedToId?: number;
+
+  @ApiProperty({ description: 'Team ID', required: false })
+  @IsNumber()
+  @IsOptional()
+  teamId?: number;
+
+  @ApiProperty({ description: 'Is active', required: false })
+  @IsOptional()
+  isActive?: boolean;
 }
 
 export class UpdateDevelopmentDto {
@@ -65,11 +153,6 @@ export class UpdateDevelopmentDto {
   @IsOptional()
   progress?: number;
 
-  @ApiProperty({ description: 'ID of the project this development belongs to', required: false })
-  @IsNumber()
-  @IsOptional()
-  projectId?: number;
-
   @ApiProperty({ description: 'Estimated completion date', required: false })
   @IsDate()
   @IsOptional()
@@ -79,6 +162,101 @@ export class UpdateDevelopmentDto {
   @IsUrl()
   @IsOptional()
   repositoryUrl?: string;
+
+  // Campos adicionales de la entidad
+  @ApiProperty({ description: 'Start date of the development', required: false })
+  @IsDate()
+  @IsOptional()
+  startDate?: Date;
+
+  @ApiProperty({ description: 'End date of the development', required: false })
+  @IsDate()
+  @IsOptional()
+  endDate?: Date;
+
+  @ApiProperty({ description: 'JIRA URL', required: false })
+  @IsUrl()
+  @IsOptional()
+  jiraUrl?: string;
+
+  @ApiProperty({ description: 'Git branch', required: false })
+  @IsString()
+  @IsOptional()
+  branch?: string;
+
+  @ApiProperty({ description: 'Additional notes', required: false })
+  @IsString()
+  @IsOptional()
+  notes?: string;
+
+  @ApiProperty({ description: 'Environment ID', required: false })
+  @IsNumber()
+  @IsOptional()
+  environmentId?: number;
+
+  @ApiProperty({ description: 'Assigned user ID', required: false })
+  @IsNumber()
+  @IsOptional()
+  assignedToId?: number;
+
+  @ApiProperty({ description: 'Team ID', required: false })
+  @IsNumber()
+  @IsOptional()
+  teamId?: number;
+
+  @ApiProperty({ description: 'Is active', required: false })
+  @IsOptional()
+  isActive?: boolean;
+}
+
+// DTO Unificado para crear desarrollo con componentes y bases de datos
+export class CreateDevelopmentWithRelationsDto extends CreateDevelopmentDto {
+  @ApiProperty({ 
+    description: 'Componentes asociados al desarrollo', 
+    type: [DevelopmentComponentDto],
+    required: false 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DevelopmentComponentDto)
+  @IsOptional()
+  components?: DevelopmentComponentDto[];
+
+  @ApiProperty({ 
+    description: 'Bases de datos asociadas al desarrollo', 
+    type: [DevelopmentDatabaseDto],
+    required: false 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DevelopmentDatabaseDto)
+  @IsOptional()
+  databases?: DevelopmentDatabaseDto[];
+}
+
+// DTO Unificado para actualizar desarrollo con componentes y bases de datos
+export class UpdateDevelopmentWithRelationsDto extends UpdateDevelopmentDto {
+  @ApiProperty({ 
+    description: 'Componentes asociados al desarrollo', 
+    type: [DevelopmentComponentDto],
+    required: false 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DevelopmentComponentDto)
+  @IsOptional()
+  components?: DevelopmentComponentDto[];
+
+  @ApiProperty({ 
+    description: 'Bases de datos asociadas al desarrollo', 
+    type: [DevelopmentDatabaseDto],
+    required: false 
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DevelopmentDatabaseDto)
+  @IsOptional()
+  databases?: DevelopmentDatabaseDto[];
 }
 
 export class DevelopmentResponseDto extends BaseDto {
