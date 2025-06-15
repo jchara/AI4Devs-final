@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Database } from '../entities/database.entity';
 import { BaseRepository } from '../../../shared/repositories/base.repository';
 import { DatabaseType } from '../../../shared/enums/database-type.enum';
@@ -23,7 +23,10 @@ export class DatabaseRepository extends BaseRepository<Database> {
 
   async findAllWithRelations(): Promise<Database[]> {
     return this.databaseRepository.find({
-      relations: ['environment', 'project', 'developmentDatabases'],
+      where: { 
+        deletedAt: IsNull()
+      },
+      relations: ['environment', 'project'],
     });
   }
 

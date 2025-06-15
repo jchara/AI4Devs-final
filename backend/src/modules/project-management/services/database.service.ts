@@ -15,6 +15,11 @@ export class DatabaseService extends BaseService<Database> {
     super(databaseRepository);
   }
 
+  // Sobrescribir findAll para incluir relaciones
+  async findAll(): Promise<Database[]> {
+    return this.databaseRepository.findAllWithRelations();
+  }
+
   async findByEnvironmentId(environmentId: number): Promise<Database[]> {
     return this.databaseRepository.findByEnvironment(environmentId);
   }
