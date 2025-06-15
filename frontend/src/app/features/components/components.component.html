@@ -97,7 +97,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
           <td mat-cell *matCellDef="let component" class="name-cell">
             <div class="component-name-container">
-              <span class="component-name" (click)="openDetailsPanel(component)">{{ component.name }}</span>
+              <span class="component-name">{{ component.name }}</span>
             </div>
           </td>
         </ng-container>
@@ -166,10 +166,6 @@
             </button>
             <mat-menu #menu="matMenu" class="actions-menu">
               <div class="menu-section">
-                <button mat-menu-item (click)="openDetailsPanel(component)" class="menu-item">
-                  <mat-icon>visibility</mat-icon>
-                  <span>Ver detalles</span>
-                </button>
                 <button mat-menu-item (click)="openEditPanel(component)" class="menu-item">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
@@ -211,7 +207,7 @@
       >
         <div class="card-header">
           <mat-icon class="component-icon">{{ getComponentTypeIcon(component.type) }}</mat-icon>
-          <h3 class="component-name" (click)="openDetailsPanel(component)">{{ component.name }}</h3>
+          <h3 class="component-name">{{ component.name }}</h3>
           <button
             mat-icon-button
             [matMenuTriggerFor]="mobileMenu"
@@ -221,10 +217,6 @@
           </button>
           <mat-menu #mobileMenu="matMenu" class="actions-menu mobile-menu">
             <div class="menu-section">
-              <button mat-menu-item (click)="openDetailsPanel(component)" class="menu-item">
-                <mat-icon>visibility</mat-icon>
-                <span>Ver detalles</span>
-              </button>
               <button mat-menu-item (click)="openEditPanel(component)" class="menu-item">
                 <mat-icon>edit</mat-icon>
                 <span>Editar</span>

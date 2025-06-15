@@ -68,9 +68,8 @@ export class ComponentsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['name', 'type', 'technology', 'version', 'project', 'isActive', 'actions'];
   displayedColumnsMobile: string[] = ['name', 'type', 'actions'];
   
-  // Paneles laterales
+  // Panel lateral
   isEditPanelOpen = false;
-  isDetailsPanelOpen = false;
   selectedComponent: ComponentModel | null = null;
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -146,7 +145,9 @@ export class ComponentsComponent implements OnInit, OnDestroy {
 
   loadProjects(): void {
     this.projectService.getProjects().pipe(takeUntil(this.destroy$)).subscribe(projects => {
-      this.projects = projects;
+      // Manejar tanto el formato {data: Array} como Array directo
+      const projectsArray = (projects as any)?.data || projects || [];
+      this.projects = Array.isArray(projectsArray) ? projectsArray.filter(proj => proj.isActive) : [];
       this.cdr.markForCheck();
     });
   }
@@ -187,10 +188,7 @@ export class ComponentsComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
   
-  openDetailsPanel(component: ComponentModel): void {
-    // TODO: Implementar panel de detalles
-    console.log('Ver detalles del componente:', component);
-  }
+
   
   onEditPanelClosed(result: boolean): void {
     this.isEditPanelOpen = false;
@@ -203,9 +201,7 @@ export class ComponentsComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
   
-  onDetailsPanelClosed(): void {
-    // TODO: Implementar cierre de panel de detalles
-  }
+
   
   openDeleteDialog(component: ComponentModel): void {
     const dialogData: DeleteDialogData = {

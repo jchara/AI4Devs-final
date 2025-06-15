@@ -397,39 +397,74 @@
 // MENÚS DE ACCIONES
 // =============================================================================
 
-.actions-menu {
+// Estilos para el menú de acciones
+::ng-deep .actions-menu {
+  .mat-mdc-menu-content {
+    padding: 8px 0;
+    min-width: 200px;
+  }
+
   .menu-section {
-    padding: var(--spacing-xs) 0;
-    
+    padding: 4px 0;
+
     &:not(:last-child) {
       border-bottom: 1px solid var(--border-color);
     }
-    
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      padding: var(--spacing-sm) var(--spacing-md);
-      transition: var(--transition-fast);
-      
-      &:hover {
-        background-color: var(--bg-secondary);
-      }
-      
-      &.delete-action {
-        color: var(--color-error);
-        
-        &:hover {
-          background-color: rgba(var(--color-error-rgb), 0.1);
-        }
-      }
-      
+  }
+
+  .menu-label {
+    padding: 8px 16px 4px 16px;
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .menu-item, [mat-menu-item] {
+    padding: 8px 16px;
+    min-height: 40px;
+    font-size: var(--font-size-sm);
+    transition: var(--transition-standard);
+    border: none !important;
+
+    mat-icon {
+      margin-right: 12px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+    }
+
+    span {
+      color: var(--text-primary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    &:hover {
+      background-color: var(--bg-secondary);
+
       mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        color: var(--color-primary);
       }
     }
+  }
+
+  .delete-action {
+    color: var(--color-error) !important;
+    
+    mat-icon, span {
+      color: var(--color-error) !important;
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-error-rgb), 0.08) !important;
+    }
+  }
+
+  &.mobile-menu .mat-mdc-menu-content {
+    min-width: 180px;
   }
 }
 
@@ -562,3 +597,76 @@
 // =============================================================================
 // MODO OSCURO
 // =============================================================================
+
+// Estilos para el tema oscuro
+:host-context(.dark-theme) {
+  ::ng-deep {
+    .mat-mdc-table {
+      background-color: var(--bg-primary);
+    }
+    
+    .mat-mdc-row, .mat-mdc-header-row {
+      background-color: var(--bg-primary);
+    }
+    
+    .mat-mdc-paginator {
+      background-color: var(--bg-primary);
+    }
+
+    // Estilos para los toggle en tema oscuro
+    .mat-mdc-slide-toggle {
+      .mdc-form-field {
+        color: var(--text-primary);
+      }
+      
+      .mdc-switch__track {
+        background-color: rgba(var(--text-primary-rgb), 0.3);
+      }
+      
+      .mdc-switch__handle-track {
+        background-color: transparent;
+      }
+      
+      .mdc-switch__handle {
+        background-color: var(--bg-primary);
+      }
+      
+      &.mat-accent {
+        .mdc-switch__track::after {
+          background-color: var(--color-primary);
+        }
+      }
+      
+      .mdc-form-field label {
+        color: var(--text-primary);
+      }
+    }
+  }
+}
+
+// Ajustes a los toggles de estado
+::ng-deep .mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: var(--color-primary);
+  --mdc-switch-selected-handle-color: var(--bg-primary);
+  --mdc-switch-selected-hover-track-color: var(--color-primary);
+  --mdc-switch-selected-pressed-track-color: var(--color-primary);
+  --mdc-switch-unselected-handle-color: var(--bg-primary);
+  
+  .mdc-form-field {
+    color: var(--text-primary);
+  }
+  
+  .mdc-switch__track {
+    background-color: rgba(var(--text-primary-rgb), 0.3);
+  }
+  
+  .mdc-label {
+    color: var(--text-primary);
+  }
+  
+  .toggle-text {
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    margin-left: var(--spacing-xs);
+  }
+}

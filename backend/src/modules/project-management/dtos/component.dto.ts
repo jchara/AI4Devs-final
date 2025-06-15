@@ -24,6 +24,11 @@ export class CreateComponentDto {
   @IsOptional()
   version?: string;
 
+  @ApiProperty({ description: 'Technology of the component' })
+  @IsString()
+  @Length(1, 100)
+  technology: string;
+
   @ApiProperty({ description: 'Whether the component is active' })
   @IsBoolean()
   isActive: boolean;
@@ -56,6 +61,12 @@ export class UpdateComponentDto {
   @IsOptional()
   version?: string;
 
+  @ApiProperty({ description: 'Technology of the component', required: false })
+  @IsString()
+  @Length(1, 100)
+  @IsOptional()
+  technology?: string;
+
   @ApiProperty({ description: 'Whether the component is active', required: false })
   @IsBoolean()
   @IsOptional()
@@ -73,5 +84,6 @@ export class ComponentResponseDto extends BaseDto {
   name: string;
   type: ComponentType;
   description?: string;
-  technology?: string;
+  technology: string;
+  version?: string;
 } 
