@@ -175,7 +175,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   
   openDetailsPanel(project: Project): void {
     // TODO: Implementar panel de detalles
-    console.log('Ver detalles del proyecto:', project);
   }
   
   onEditPanelClosed(result: boolean): void {
@@ -215,7 +214,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       onConfirm: () => {
         this.projectService.deleteProject(project.id).subscribe({
           next: () => {
-            console.log('Proyecto eliminado exitosamente');
+            // Proyecto eliminado exitosamente
           },
           error: (error) => {
             console.error('Error al eliminar proyecto:', error);

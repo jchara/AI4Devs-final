@@ -1,26 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { NotificationService } from '../../core/services/notification.service';
 import { DevelopmentChartComponent } from '../../shared/components/development-chart/development-chart.component';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
-import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
 import {
   ActivityType,
   ChartData,
   Development,
+  DevelopmentEnvironment,
   DevelopmentMetrics,
   DevelopmentStatus,
-  DevelopmentEnvironment,
   RecentActivity
 } from '../../shared/models/development.model';
+import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
 import { DevelopmentService } from '../developments/services/development.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,7 +52,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private developmentService: DevelopmentService,
     private changeDetectorRef: ChangeDetectorRef,
     private badgeUtils: BadgeUtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -170,5 +171,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       default:
         return 'notifications';
     }
+  }
+
+  // Navegar al detalle del desarrollo
+  viewDevelopmentDetails(development: Development): void {
+    this.router.navigate(['/developments'], { 
+      queryParams: { 
+        viewDetails: development.id 
+      } 
+    });
   }
 }

@@ -230,7 +230,7 @@ export class ComponentsComponent implements OnInit, OnDestroy {
       onConfirm: () => {
         this.componentService.deleteComponent(component.id).subscribe({
           next: () => {
-            console.log('Componente eliminado exitosamente');
+            // Componente eliminado exitosamente
           },
           error: (error) => {
             console.error('Error al eliminar componente:', error);

@@ -137,15 +137,7 @@
           }
         }
         
-        .clear-filters-button {
-          height: 56px;
-          min-width: 120px;
-          
-          @media (max-width: 768px) {
-            height: 48px;
-            min-width: unset;
-          }
-        }
+
       }
     }
   }

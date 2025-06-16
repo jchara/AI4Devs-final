@@ -52,9 +52,10 @@
           </mat-form-field>
 
           <button
-            mat-stroked-button
+            mat-button
+            color="primary"
             type="button"
-            class="clear-filters-button"
+            class="app-button secondary-button"
             (click)="clearFilters()"
             *ngIf="searchForm.get('searchTerm')?.value || searchForm.get('typeFilter')?.value"
           >

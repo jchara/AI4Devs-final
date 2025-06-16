@@ -306,22 +306,20 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         });
 
         // Debug: Log de los datos recibidos
-        console.log('Development data received:', this.development);
-        console.log('Components:', this.development?.components);
-        console.log('Databases:', this.development?.databases);
+        
 
         // Cargar componentes existentes si está editando
         if (this.development?.components && Array.isArray(this.development.components)) {
-          console.log('Loading components from new format:', this.development.components);
+  
           this.selectedComponents = this.development.components.map((comp: any) => ({
             componentId: comp.componentId,
             description: comp.notes || '',
             notes: comp.notes || ''
           }));
-          console.log('Selected components:', this.selectedComponents);
+          
         } else if (this.development?.developmentComponents) {
           // Fallback para el formato anterior
-          console.log('Loading components from old format:', this.development.developmentComponents);
+          
           this.selectedComponents = this.development.developmentComponents.map((devComp: any) => ({
             componentId: devComp.component.id,
             description: devComp.notes || '',
@@ -331,7 +329,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
 
         // Cargar bases de datos existentes si está editando
         if (this.development?.databases && Array.isArray(this.development.databases)) {
-          console.log('Loading databases from new format:', this.development.databases);
+
           this.selectedDatabases = this.development.databases.map((db: any) => ({
             databaseId: db.databaseId,
             changeType: db.changeType,
@@ -339,7 +337,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
             sqlScript: db.sqlScript || '',
             notes: db.notes || ''
           }));
-          console.log('Selected databases:', this.selectedDatabases);
+          
         }
 
         this.cdr.markForCheck();
@@ -461,7 +459,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       if (updateData.notes === '') updateData.notes = undefined;
 
       // Debug: Log de los datos que se van a enviar (temporal)
-      console.log('Datos a enviar al backend:', JSON.stringify(updateData, null, 2));
+
       
       this.developmentService.updateDevelopmentWithRelations(this.development.id, updateData)
         .pipe(takeUntil(this.destroy$))

@@ -13,6 +13,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Subject } from 'rxjs';
 import {
   debounceTime,
@@ -122,13 +123,15 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private changeDetectorRef: ChangeDetectorRef,
     private badgeUtils: BadgeUtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.setupResponsiveLayout();
     this.setupFilters();
     this.loadDevelopments();
+    this.checkForViewDetailsParam();
   }
 
   ngOnDestroy(): void {
@@ -617,6 +620,52 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
         return 'component-monolith';
       default:
         return 'component-unknown';
+    }
+  }
+
+  private checkForViewDetailsParam(): void {
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      if (params['viewDetails']) {
+        const developmentId = parseInt(params['viewDetails'], 10);
+        this.openDevelopmentDetails(developmentId);
+      }
+    });
+  }
+
+  private openDevelopmentDetails(developmentId: number): void {
+    // Si los desarrollos ya están cargados, buscar y abrir inmediatamente
+    const development = this.developments.find(d => d.id === developmentId);
+    if (development) {
+      this.viewDetails(development);
+      return;
+    }
+
+    // Si no están cargados, esperar a que se carguen
+    if (this.loading) {
+      // Esperar a que termine la carga actual
+      const checkLoaded = setInterval(() => {
+        if (!this.loading) {
+          clearInterval(checkLoaded);
+          const dev = this.developments.find(d => d.id === developmentId);
+          if (dev) {
+            this.viewDetails(dev);
+          }
+        }
+      }, 100);
+      
+      // Timeout de seguridad
+      setTimeout(() => {
+        clearInterval(checkLoaded);
+      }, 5000);
+    } else {
+      // Si no está cargando, forzar recarga y luego abrir
+      this.loadDevelopments();
+      setTimeout(() => {
+        const dev = this.developments.find(d => d.id === developmentId);
+        if (dev) {
+          this.viewDetails(dev);
+        }
+      }, 1000);
     }
   }
 }

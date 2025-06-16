@@ -342,7 +342,7 @@ export class DatabasesComponent implements OnInit, OnDestroy {
       onConfirm: () => {
         this.databaseService.deleteDatabase(database.id).subscribe({
           next: () => {
-            console.log('Base de datos eliminada exitosamente');
+            // Base de datos eliminada exitosamente
           },
           error: (error) => {
             console.error('Error al eliminar base de datos:', error);

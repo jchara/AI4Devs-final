@@ -199,7 +199,7 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
       onConfirm: () => {
         this.environmentService.deleteEnvironment(environment.id).subscribe({
           next: () => {
-            console.log('Ambiente eliminado exitosamente');
+            // Ambiente eliminado exitosamente
           },
           error: (error) => {
             console.error('Error al eliminar ambiente:', error);
