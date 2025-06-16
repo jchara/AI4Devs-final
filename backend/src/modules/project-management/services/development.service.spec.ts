@@ -3,9 +3,13 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DevelopmentService } from './development.service';
 import { Development } from '../entities/development.entity';
-import { DevelopmentStatus } from '../enums/development-status.enum';
-import { DevelopmentPriority } from '../enums/development-priority.enum';
+import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
+import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
 import { NotFoundException } from '@nestjs/common';
+
+// Test environment variables
+const TEST_USER_ID = parseInt(process.env.TEST_USER_ID || '1');
+const TEST_TEAM_ID = parseInt(process.env.TEST_TEAM_ID || '1');
 
 describe('DevelopmentService', () => {
   let service: DevelopmentService;
@@ -20,6 +24,9 @@ describe('DevelopmentService', () => {
     delete: jest.fn(),
     softDelete: jest.fn(),
     restore: jest.fn(),
+    findByEnvironment: jest.fn(),
+    findByAssignedUser: jest.fn(),
+    findByTeam: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -93,7 +100,7 @@ describe('DevelopmentService', () => {
       ];
       mockRepository.find.mockResolvedValue(mockDevelopments);
 
-      const result = await service.findByAssignedTo('user1');
+      const result = await service.findByAssignedTo(TEST_USER_ID);
       expect(result).toEqual(mockDevelopments);
       expect(repository.find).toHaveBeenCalledWith({
         where: { assignedTo: 'user1' },
@@ -108,7 +115,7 @@ describe('DevelopmentService', () => {
       ];
       mockRepository.find.mockResolvedValue(mockDevelopments);
 
-      const result = await service.findByTeam('team1');
+      const result = await service.findByTeam(TEST_TEAM_ID);
       expect(result).toEqual(mockDevelopments);
       expect(repository.find).toHaveBeenCalledWith({
         where: { team: 'team1' },
@@ -179,6 +186,62 @@ describe('DevelopmentService', () => {
         ...mockDevelopment,
         status: DevelopmentStatus.COMPLETED,
       });
+    });
+  });
+
+  describe('updateProgress', () => {
+    it('should validate progress range', async () => {
+      await expect(service.updateProgress(1, -10)).rejects.toThrow('Progress must be between 0 and 100');
+      await expect(service.updateProgress(1, 150)).rejects.toThrow('Progress must be between 0 and 100');
+    });
+
+    it('should update progress within valid range', async () => {
+      const mockDevelopment = { id: 1, title: 'Test', progress: 50 };
+      mockRepository.findOne.mockResolvedValue(mockDevelopment);
+      mockRepository.update.mockResolvedValue({ ...mockDevelopment, progress: 75 });
+
+      const result = await service.updateProgress(1, 75);
+      expect(result.progress).toBe(75);
+    });
+  });
+
+  describe('findByEnvironmentId', () => {
+    it('should return developments for specific environment', async () => {
+      const mockDevelopments = [
+        { id: 1, title: 'Dev 1', environmentId: 1 },
+        { id: 2, title: 'Dev 2', environmentId: 1 },
+      ];
+      mockRepository.findByEnvironment = jest.fn().mockResolvedValue(mockDevelopments);
+
+      const result = await service.findByEnvironmentId(1);
+      expect(result).toEqual(mockDevelopments);
+      expect(mockRepository.findByEnvironment).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('findByAssignedTo', () => {
+    it('should return developments assigned to specific user', async () => {
+      const mockDevelopments = [
+        { id: 1, title: 'Dev 1', assignedToId: 1 },
+      ];
+      mockRepository.findByAssignedUser = jest.fn().mockResolvedValue(mockDevelopments);
+
+      const result = await service.findByAssignedTo(1);
+      expect(result).toEqual(mockDevelopments);
+      expect(mockRepository.findByAssignedUser).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('findByTeam', () => {
+    it('should return developments for specific team', async () => {
+      const mockDevelopments = [
+        { id: 1, title: 'Dev 1', teamId: 1 },
+      ];
+      mockRepository.findByTeam = jest.fn().mockResolvedValue(mockDevelopments);
+
+      const result = await service.findByTeam(1);
+      expect(result).toEqual(mockDevelopments);
+      expect(mockRepository.findByTeam).toHaveBeenCalledWith(1);
     });
   });
 }); 

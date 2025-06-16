@@ -19,6 +19,8 @@ describe('DevelopmentComponentService', () => {
     delete: jest.fn(),
     softDelete: jest.fn(),
     restore: jest.fn(),
+    findByDevelopment: jest.fn(),
+    findByComponent: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -26,7 +28,7 @@ describe('DevelopmentComponentService', () => {
       providers: [
         DevelopmentComponentService,
         {
-          provide: getRepositoryToken(DevelopmentComponent),
+          provide: 'DevelopmentComponentRepository',
           useValue: mockRepository,
         },
       ],

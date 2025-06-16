@@ -766,7 +766,7 @@ la barra de progreso de Estado Actual no tiene color (ver imagen)
 en el botón cambiar estado, el desplegable es mas delgado que el botón y los estados tienen un diseño feo (ver imagen 2)
 ```
 
-## Prompt 47: Implementación del CRUD para entidad environments - BACKEND
+## Prompt 47: Implementación de CRUD para entidad environments - BACKEND
 **HUS Relacionadas:** HU-020
 
 ```
@@ -1229,16 +1229,104 @@ Como desarrollador experto en Angular ejecuta las optimizaciones de rendimiento 
 - Aplicado en: Components, Projects, Databases, Environments
 
 **Beneficios Esperados:**
-- Bundle size: Reducción del 15-20%
-- Tiempo de carga: Mejora de 200-300ms
-- Memoria: Optimización del 25%
-- Filtros: 70% menos ejecuciones innecesarias
+- Bundle size: Reducción
+- Tiempo de carga Mejorada
+- Optimización Memoria
 - UX: Panel de desarrollo con apertura instantánea usando cache
 - Consistencia: Comportamiento uniforme en toda la aplicación
+```
 
-**Técnicas Aplicadas:**
-- Consolidación de imports con MaterialModule centralizado
-- Cache con gestión inteligente de timeout y validación
-- Debounce y distinctUntilChanged para optimización de filtros
-- Mantenimiento de patrones de rendimiento existentes (OnPush, unsubscribe, lazy loading)
+## Prompt 77: Implementación de tests unitarios híbridos en backend - BACKEND
+**HUS Relacionadas:** HT-004
+
+```
+Como desarrollador backend senior en NestJS, implementa una estrategia de testing híbrida para los servicios principales del backend siguiendo estas especificaciones:
+
+**Estrategia de Testing Híbrida:**
+
+**Ambiente LOCAL → Tests de Integración (BD Real):**
+- Conexión real a PostgreSQL de desarrollo cuando NODE_ENV=local o TEST_ENV=local
+- Tests más lentos pero más realistas
+- Detecta problemas de queries, relaciones, constraints de BD
+- Ideal para desarrollo y debugging local
+
+**Ambiente CI/CD → Tests Unitarios (Mocks):**
+- Mocks para todos los repositorios cuando NODE_ENV=test, production, etc.
+- Tests súper rápidos sin dependencias externas
+- Ideal para pipelines de CI/CD y testing automatizado
+
+**Configuración Dinámica:**
+- Crear helper `test-config.helper.ts` para detectar ambiente
+- Factory de módulos de test: `createIntegrationTestModule()` vs `createUnitTestModule()`
+- Setup condicional en cada archivo de test según ambiente
+
+**Servicios a testear:**
+1. **ActivityService** - Sistema de auditoría y actividades
+2. **ComponentService** - Gestión de componentes de software
+3. **DatabaseService** - Gestión de bases de datos
+4. **DevelopmentService** - Gestión de desarrollos principales
+
+**Estructura de tests:**
+- Usar Jest como framework de testing
+- Implementar mocks completos para repositorios y dependencias (ambiente remoto)
+- Configuración de BD real para ambiente local
+- Cobertura mínima del 80% en servicios críticos
+- Tests para casos exitosos y manejo de errores
+- Validación de DTOs y transformaciones
+
+**Casos de prueba por servicio:**
+- **CRUD básico**: create, findAll, findOne, update, delete
+- **Métodos específicos**: findByProject, findByType, findActive
+- **Validaciones**: datos inválidos, entidades no encontradas
+- **Relaciones**: métodos que involucran múltiples entidades
+- **Soft delete**: restore, validación de isActive
+
+**Configuración del entorno:**
+- Variables de entorno para valores de test y configuración de BD
+- Mocks centralizados para repositorios (ambiente remoto)
+- Setup de BD de test para ambiente local
+- Setup y teardown apropiados para ambos tipos
+- Configuración de ESLint para archivos de test
+
+**Buenas prácticas:**
+- No quemar valores en los tests (usar variables de entorno)
+- DTOs correctos según la estructura real
+- Imports consistentes y limpios
+- Nombres descriptivos para casos de prueba
+- Agrupación lógica con describe/it
+- Cleanup apropiado de BD en tests de integración
+- Aislamiento entre tests para evitar interferencias
+
+**Beneficios de la estrategia híbrida:**
+- **Desarrollo local**: Tests realistas con BD que detectan problemas de SQL/TypeORM
+- **CI/CD**: Tests rápidos sin dependencias que no bloquean el pipeline
+- **Flexibilidad**: Capacidad de elegir qué tipo de test ejecutar según necesidad
+- **Debugging**: Tests de integración facilitan identificación de problemas
+- **Performance**: Tests unitarios rápidos para feedback inmediato
+```
+
+## Prompt 78: Corrección de errores en tests unitarios - BACKEND
+**HUS Relacionadas:** HT-004
+
+```
+Corrige los errores identificados en los archivos de tests unitarios del backend:
+
+**Problemas a resolver:**
+1. **Conflictos de DTOs**: Diferencias entre rutas `dto/` y `dtos/`
+2. **Enums incorrectos**: ComponentType.API no existe, usar MICROFRONTEND
+3. **DatabaseType**: Usar POSTGRES en lugar de POSTGRESQL
+4. **Imports faltantes**: Rutas incorrectas para enums compartidos
+5. **Métodos no implementados**: findByEnvironment, findByAssignedUser, findByTeam
+6. **Variables quemadas**: Reemplazar por variables de entorno
+
+**Correcciones específicas:**
+- **ComponentService**: Usar CreateComponentDto de `dtos/component.dto`
+- **DatabaseService**: Corregir DatabaseType.POSTGRES y estructura de DTO
+- **DevelopmentService**: Arreglar imports de enums y agregar métodos faltantes al mock
+- **Variables de entorno**: TEST_COMPONENT_NAME, TEST_PROJECT_ID, etc.
+
+**Configuración de linter:**
+- Ajustar ESLint para ser más permisivo con archivos de test
+- Permitir importaciones no utilizadas en archivos .spec.ts
+- Configurar reglas específicas para entorno de testing
 ```

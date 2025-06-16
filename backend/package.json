@@ -22,7 +22,13 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:unit": "cross-env NODE_ENV=test jest",
+    "test:integration": "cross-env TEST_ENV=local USE_REAL_DB=true jest",
+    "test:unit:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:integration:watch": "cross-env TEST_ENV=local USE_REAL_DB=true jest --watch",
+    "test:unit:cov": "cross-env NODE_ENV=test jest --coverage",
+    "test:integration:cov": "cross-env TEST_ENV=local USE_REAL_DB=true jest --coverage"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -54,6 +60,7 @@
     "@types/node": "^22.10.7",
     "@types/pg": "^8.15.4",
     "@types/supertest": "^6.0.2",
+    "cross-env": "^7.0.3",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

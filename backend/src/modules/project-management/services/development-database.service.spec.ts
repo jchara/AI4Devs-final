@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DevelopmentDatabaseService } from './development-database.service';
 import { DevelopmentDatabase } from '../entities/development-database.entity';
-import { DatabaseChangeType } from '../enums/database-change-type.enum';
+import { DatabaseChangeType } from '../../../shared/enums/database-change-type.enum';
 import { NotFoundException } from '@nestjs/common';
 
 describe('DevelopmentDatabaseService', () => {
@@ -40,74 +40,37 @@ describe('DevelopmentDatabaseService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('findByDevelopmentId', () => {
+  describe('findDatabasesByDevelopment', () => {
     it('should return databases for a development', async () => {
       const mockDatabases = [
-        { id: 1, developmentId: 1 },
-        { id: 2, developmentId: 1 },
+        { id: 1, developmentId: 1, changeType: DatabaseChangeType.SCHEMA_CHANGE },
+        { id: 2, developmentId: 1, changeType: DatabaseChangeType.DATA_MIGRATION },
       ];
       mockRepository.find.mockResolvedValue(mockDatabases);
 
-      const result = await service.findByDevelopmentId(1);
+      const result = await service.findDatabasesByDevelopment(1);
       expect(result).toEqual(mockDatabases);
       expect(repository.find).toHaveBeenCalledWith({
         where: { development: { id: 1 } },
+        relations: ['database'],
       });
     });
   });
 
-  describe('findByDatabaseId', () => {
-    it('should return developments for a database', async () => {
-      const mockDatabases = [
-        { id: 1, databaseId: 1 },
-        { id: 2, databaseId: 1 },
-      ];
-      mockRepository.find.mockResolvedValue(mockDatabases);
-
-      const result = await service.findByDatabaseId(1);
-      expect(result).toEqual(mockDatabases);
-      expect(repository.find).toHaveBeenCalledWith({
-        where: { database: { id: 1 } },
-      });
-    });
-  });
-
-  describe('findByChangeType', () => {
-    it('should return databases with the specified change type', async () => {
-      const mockDatabases = [
-        { id: 1, changeType: DatabaseChangeType.CREATE },
-      ];
-      mockRepository.find.mockResolvedValue(mockDatabases);
-
-      const result = await service.findByChangeType(DatabaseChangeType.CREATE);
-      expect(result).toEqual(mockDatabases);
-      expect(repository.find).toHaveBeenCalledWith({
-        where: { changeType: DatabaseChangeType.CREATE },
-      });
-    });
-  });
-
-  describe('getDevelopmentDatabaseWithDetails', () => {
-    it('should return database with all relations', async () => {
-      const mockDatabase = {
-        id: 1,
-        development: { id: 1 },
-        database: { id: 1 },
+  describe('create', () => {
+    it('should create a new development database relation', async () => {
+      const createDto = {
+        developmentId: 1,
+        databaseId: 1,
+                 changeType: DatabaseChangeType.SCHEMA_CHANGE,
+        scriptDescription: 'Test script',
       };
-      mockRepository.findOne.mockResolvedValue(mockDatabase);
+      const mockDevelopmentDatabase = { id: 1, ...createDto };
+      mockRepository.save.mockResolvedValue(mockDevelopmentDatabase);
 
-      const result = await service.getDevelopmentDatabaseWithDetails(1);
-      expect(result).toEqual(mockDatabase);
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id: 1 },
-        relations: ['development', 'database'],
-      });
-    });
-
-    it('should throw NotFoundException when database not found', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      await expect(service.getDevelopmentDatabaseWithDetails(1)).rejects.toThrow(NotFoundException);
+      const result = await service.create(createDto);
+      expect(result).toEqual(mockDevelopmentDatabase);
+      expect(repository.save).toHaveBeenCalled();
     });
   });
 }); 

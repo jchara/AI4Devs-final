@@ -15,7 +15,7 @@ import { DevelopmentMetrics } from '../interfaces';
 import { DevelopmentRepository } from '../repositories/development.repository';
 import { DevelopmentFilters } from '../repositories/development.repository.interface';
 import { BaseService } from './base.service';
-import { EnvironmentRepository } from 'src/modules/infrastructure';
+import { EnvironmentRepository } from '../../infrastructure/repositories/environment.repository';
 import { DevelopmentComponentService } from './development-component.service';
 import { DevelopmentDatabaseService } from './development-database.service';
 

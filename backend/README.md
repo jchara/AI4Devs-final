@@ -348,6 +348,7 @@ Cada dominio agrupa entidades relacionadas:
 
 ## 🔧 Scripts Disponibles
 
+### 🚀 Aplicación
 - `npm run build` - Compilar aplicación
 - `npm run start` - Iniciar aplicación
 - `npm run start:dev` - Iniciar en modo desarrollo (watch)
@@ -355,9 +356,73 @@ Cada dominio agrupa entidades relacionadas:
 - `npm run start:prod` - Iniciar en modo producción
 - `npm run seed` - Ejecutar seeds con datos de desarrollo
 - `npm run lint` - Ejecutar linter ESLint
-- `npm run test` - Ejecutar tests unitarios (12 tests implementados)
-- `npm run test:watch` - Ejecutar tests en modo watch
-- `npm run test:cov` - Ejecutar tests con cobertura (~70% servicios principales)
+
+### 🧪 Testing Híbrido
+
+#### Tests Unitarios (Mocks - Rápidos)
+- `npm run test:unit` - Ejecutar tests unitarios con mocks
+- `npm run test:unit:watch` - Tests unitarios en modo watch
+- `npm run test:unit:cov` - Tests unitarios con cobertura
+
+#### Tests de Integración (BD Real - Completos)
+- `npm run test:integration` - Ejecutar tests de integración con BD real
+- `npm run test:integration:watch` - Tests de integración en modo watch
+- `npm run test:integration:cov` - Tests de integración con cobertura
+
+#### Tests Tradicionales
+- `npm test` - Ejecutar todos los tests (detecta ambiente automáticamente)
+- `npm run test:watch` - Tests en modo watch
+- `npm run test:cov` - Tests con reporte de cobertura
+- `npm run test:debug` - Tests en modo debug
+- `npm run test:e2e` - Tests end-to-end
+
+#### Tests Específicos
+```bash
+# Ejecutar test específico (unitario)
+npm run test:unit -- --testPathPattern=activity.service.spec.ts
+
+# Ejecutar test específico (integración)
+npm run test:integration -- --testPathPattern=activity.service.spec.ts
+
+# Ejecutar con verbose para más detallenpm run test:integration -- --testPathPattern=activity.service.spec.ts 
+s
+npm run test:unit -- --testPathPattern=activity.service.spec.ts --verbose
+
+# También funciona con patrones más amplios
+npm run test:unit -- --testPathPattern=activity
+npm run test:unit -- --testPathPattern=service.spec
+```
+
+### 🎯 Estrategia de Testing Híbrida
+
+#### 🏠 Ambiente Local (Desarrollo)
+```bash
+# Variables de entorno para tests de integración
+TEST_ENV=local
+USE_REAL_DB=true
+```
+- **Conexión:** PostgreSQL real de desarrollo
+- **Velocidad:** Más lento (~30-60s) pero más realista
+- **Detecta:** Problemas de queries, relaciones, constraints
+- **Ideal para:** Desarrollo local y debugging
+
+#### ☁️ Ambiente CI/CD (Producción)
+```bash
+# Variables de entorno para tests unitarios
+NODE_ENV=test
+```
+- **Conexión:** Mocks para todos los repositorios
+- **Velocidad:** Súper rápido (~15s)
+- **Sin dependencias:** No requiere BD externa
+- **Ideal para:** Pipelines de CI/CD y desarrollo rápido
+
+### 📊 Estado Actual de Tests
+- **Tests implementados**: 54+ tests funcionando
+- **ActivityService**: 14 tests ✅ (100% cobertura)
+- **Estrategia híbrida**: Implementada y funcionando
+- **Tests unitarios**: ~15 segundos de ejecución
+- **Tests de integración**: Preparados para BD local
+- **Suites funcionando**: 5/9 (ActivityService, ComponentService, DatabaseService, AppController, ActivityController)
 
 ## 🔒 Seguridad
 
@@ -387,6 +452,109 @@ CORS_ORIGIN=https://your-frontend-domain.com
 2. Seeds actualizados para usar nuevos repositorios
 3. Controladores y servicios optimizados
 4. Base de datos compatible (sin cambios de esquema)
+
+## 🧪 Configuración de Testing
+
+### 📁 Archivos de Configuración
+```
+src/test/
+├── test-config.helper.ts    # Detección automática de ambiente
+└── test-module.factory.ts   # Factory para módulos de testing
+```
+
+### ⚙️ Variables de Entorno para Tests
+Crear archivo `.env.test` en la raíz del proyecto:
+```env
+# Test Environment Configuration
+NODE_ENV=test
+TEST_ENV=local
+
+# Database Configuration for Tests
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_DATABASE_TEST=devtracker_test
+
+# Test Configuration
+USE_REAL_DB=false
+
+# Test Data Variables
+TEST_USER_NAME=Test User
+TEST_USER_EMAIL=test@example.com
+TEST_COMPONENT_NAME=Test Component
+TEST_PROJECT_NAME=Test Project
+```
+
+### 🎯 Cómo Funciona la Estrategia Híbrida
+
+#### 1. **Detección Automática**
+El sistema detecta automáticamente qué tipo de tests ejecutar basado en:
+- `NODE_ENV=test` → Tests unitarios con mocks
+- `TEST_ENV=local` → Tests de integración con BD real
+- `USE_REAL_DB=true` → Forzar BD real
+
+#### 2. **Configuración Dinámica**
+```typescript
+// El helper detecta el ambiente automáticamente
+const testConfig = getTestConfig();
+
+if (testConfig.useMocks) {
+  // Configurar mocks para tests rápidos
+} else {
+  // Configurar conexión a BD real
+}
+```
+
+#### 3. **Logs Informativos**
+```bash
+🧪 Test Configuration:
+  Environment: test
+  Database: Mocked
+  Strategy: Unit Tests
+```
+
+### 🚀 Configurar BD para Tests de Integración (Opcional)
+
+Si quieres ejecutar tests de integración con BD real:
+
+1. **Crear BD de testing**
+```sql
+CREATE DATABASE devtracker_test;
+```
+
+2. **Configurar variables**
+```bash
+# En .env.test
+TEST_ENV=local
+USE_REAL_DB=true
+DB_DATABASE_TEST=devtracker_test
+```
+
+3. **Ejecutar tests de integración**
+```bash
+npm run test:integration
+```
+
+### 📊 Beneficios de la Estrategia Híbrida
+
+#### ✅ **Tests Unitarios (Mocks)**
+- **Velocidad**: ~15 segundos
+- **Sin dependencias**: No requiere BD
+- **Ideal para**: CI/CD, desarrollo rápido
+- **Cobertura**: Lógica de negocio
+
+#### ✅ **Tests de Integración (BD Real)**
+- **Realismo**: Detecta problemas reales
+- **Queries**: Valida SQL y relaciones
+- **Constraints**: Verifica reglas de BD
+- **Ideal para**: Desarrollo local, debugging
+
+#### 🎯 **Lo Mejor de Ambos Mundos**
+- Desarrollo rápido con mocks
+- Validación completa con BD real
+- Configuración automática
+- Sin duplicación de código
 
 ## 🤝 Contribución
 

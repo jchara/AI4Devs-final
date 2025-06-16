@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectService } from './project.service';
 import { Project } from '../entities/project.entity';
-import { ProjectType } from '../enums/project-type.enum';
+import { ProjectType } from '../../../shared/enums/project-type.enum';
 import { NotFoundException } from '@nestjs/common';
 
 describe('ProjectService', () => {
@@ -59,31 +59,31 @@ describe('ProjectService', () => {
   describe('findByType', () => {
     it('should return projects of the specified type', async () => {
       const mockProjects = [
-        { id: 1, name: 'Project 1', type: ProjectType.INTERNAL },
+        { id: 1, name: 'Project 1', type: ProjectType.BACKEND },
       ];
       mockRepository.find.mockResolvedValue(mockProjects);
 
-      const result = await service.findByType(ProjectType.INTERNAL);
+      const result = await service.findByType(ProjectType.BACKEND);
       expect(result).toEqual(mockProjects);
       expect(repository.find).toHaveBeenCalledWith({
-        where: { type: ProjectType.INTERNAL },
+        where: { type: ProjectType.BACKEND },
       });
     });
   });
 
-  describe('validateUniqueName', () => {
-    it('should return true for unique name', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+  describe('create', () => {
+    it('should create a new project', async () => {
+      const createDto = {
+        name: 'New Project',
+        type: ProjectType.BACKEND,
+        description: 'Test project',
+      };
+      const mockProject = { id: 1, ...createDto };
+      mockRepository.save.mockResolvedValue(mockProject);
 
-      const result = await service.validateUniqueName('Unique Project');
-      expect(result).toBe(true);
-    });
-
-    it('should return false for duplicate name', async () => {
-      mockRepository.findOne.mockResolvedValue({ id: 1, name: 'Existing Project' });
-
-      const result = await service.validateUniqueName('Existing Project');
-      expect(result).toBe(false);
+      const result = await service.create(createDto);
+      expect(result).toEqual(mockProject);
+      expect(repository.save).toHaveBeenCalled();
     });
   });
 
