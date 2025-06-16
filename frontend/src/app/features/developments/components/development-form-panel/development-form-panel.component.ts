@@ -95,6 +95,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
 
   private destroy$ = new Subject<void>();
   private memoizedGetFormError = memoize(this.getFormError.bind(this));
+  private resizeObserver: ResizeObserver | null = null;
 
   title: string = 'Nuevo Desarrollo';
   developmentForm: FormGroup;
@@ -154,24 +155,32 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   ngOnInit(): void {
     this.savePromptToFile();
     this.loadFormData();
+    this.setupResizeObserver();
   }
 
   ngAfterViewInit(): void {
     if (this.isOpen) {
       this.initializeForm();
+      this.setupScrollOptimizations();
     }
   }
 
   ngOnChanges(): void {
     if (this.isOpen) {
       this.initializeForm();
+      this.handlePanelOpen();
       if (this.projects.length === 0) {
         this.loadFormData();
       }
+    } else {
+      this.handlePanelClose();
     }
   }
 
   ngOnDestroy(): void {
+    this.handlePanelClose();
+    this.cleanupScrollListeners();
+    this.cleanupResizeObserver();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -527,6 +536,12 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     }
   }
 
+  closeOnBackdropClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.close();
+    }
+  }
+
   onEscapeKey(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
       this.close();
@@ -601,4 +616,142 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   trackByChangeType(index: number, item: any): string {
     return item.value;
   }
+
+  // =============================================================================
+  // SCROLL MANAGEMENT & OPTIMIZATIONS
+  // =============================================================================
+
+  private handlePanelOpen(): void {
+    // Usar requestAnimationFrame para asegurar que las operaciones DOM se realicen en un frame óptimo
+    requestAnimationFrame(() => {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+      
+      const panel = document.querySelector('.slide-panel');
+      const scrollableContent = document.querySelector('.scrollable-content');
+      
+      if (panel) panel.scrollTop = 0;
+      if (scrollableContent) scrollableContent.scrollTop = 0;
+      
+      // Marcar para detección de cambios
+      this.cdr.markForCheck();
+    });
+  }
+
+  private handlePanelClose(): void {
+    requestAnimationFrame(() => {
+      this.resetBodyStyles();
+      // Marcar para detección de cambios
+      this.cdr.markForCheck();
+    });
+  }
+
+  private resetBodyStyles(): void {
+    const scrollY = document.body.style.top;
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.top = '';
+    
+    // Restaurar la posición de scroll
+    if (scrollY) {
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+  }
+
+  private blockBodyScroll(): void {
+    this.handlePanelOpen();
+  }
+
+  private restoreBodyScroll(): void {
+    this.handlePanelClose();
+  }
+
+  private resetScroll(): void {
+    // Este método ahora está incluido en handlePanelOpen
+  }
+
+  private setupScrollOptimizations(): void {
+    if (typeof document !== 'undefined') {
+      // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+      setTimeout(() => {
+        const scrollableContent = document.querySelector('.scrollable-content');
+        if (scrollableContent) {
+          // Optimización con passive listeners
+          scrollableContent.addEventListener('scroll', this.onScroll.bind(this), { passive: true });
+          
+          // Aplicar optimizaciones CSS via JavaScript si es necesario
+          (scrollableContent as HTMLElement).style.scrollBehavior = 'smooth';
+        }
+      }, 0);
+    }
+  }
+
+  private onScroll = (): void => {
+    // Placeholder para futuras optimizaciones de scroll
+    // Como lazy loading de contenido, infinite scroll, etc.
+    
+    // Ejemplo de optimización: detectar si el usuario está cerca del final
+    // para cargar más contenido dinámicamente
+    const scrollableContent = document.querySelector('.scrollable-content');
+    if (scrollableContent) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollableContent;
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+      
+      if (isNearBottom) {
+        // Aquí se podría implementar lazy loading de más datos
+        // console.log('Usuario cerca del final del scroll');
+      }
+    }
+  };
+
+  private cleanupScrollListeners(): void {
+    if (typeof document !== 'undefined') {
+      const scrollableContent = document.querySelector('.scrollable-content');
+      if (scrollableContent) {
+        scrollableContent.removeEventListener('scroll', this.onScroll);
+      }
+    }
+  }
+
+  private setupResizeObserver(): void {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.detectMobileDevice();
+      });
+      
+      this.resizeObserver.observe(document.body);
+    }
+  }
+
+  private cleanupResizeObserver(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+  }
+
+  private detectMobileDevice(): void {
+    const newIsMobile = window.innerWidth <= 768;
+    if (this.isMobile !== newIsMobile) {
+      this.isMobile = newIsMobile;
+      this.cdr.markForCheck();
+    }
+  }
+
+  private setupScrollHandlers(): void {
+    const scrollableElements = document.querySelectorAll('.scrollable-content');
+    scrollableElements.forEach(element => {
+      element.addEventListener('wheel', () => {
+        // El evento es pasivo por defecto
+      }, { passive: true });
+    });
+  }
+
+  readonly getPanelAnimationParams = memoize(() => ({
+    transformEnter: 'translateX(100%)',
+    transformLeave: 'translateX(100%)'
+  }));
 } 

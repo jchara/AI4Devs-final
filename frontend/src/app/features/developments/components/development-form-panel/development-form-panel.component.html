@@ -1,7 +1,7 @@
 <div class="panel-overlay" 
      *ngIf="isOpen" 
      @overlay
-     (click)="onOverlayClick($event)"
+     (click)="closeOnBackdropClick($event)"
      (keydown)="onEscapeKey($event)"
      tabindex="0">
   
