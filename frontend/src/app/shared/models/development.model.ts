@@ -5,20 +5,33 @@ export enum DevelopmentStatus {
   IN_PROGRESS = 'in_progress',
   TESTING = 'testing',
   COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  CANCELLED = 'cancelled'
+}
+
+export enum DevelopmentPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical'
 }
 
 export enum DevelopmentEnvironment {
   DEVELOPMENT = 'DEVELOPMENT',
   TESTING = 'TESTING',
   STAGING = 'STAGING',
-  PRODUCTION = 'PRODUCTION',
+  PRODUCTION = 'PRODUCTION'
 }
 
 export enum ComponentType {
   MICROSERVICE = 'MICROSERVICE',
   MICROFRONTEND = 'MICROFRONTEND',
   MONOLITH = 'MONOLITH',
+}
+
+export enum DevelopmentComponentChangeType {
+  CREATED = 'created',
+  MODIFIED = 'modified',
+  DELETED = 'deleted'
 }
 
 export enum ActivityType {
@@ -28,7 +41,7 @@ export enum ActivityType {
   MICROSERVICE_ADDED = 'microservice_added',
   MICROSERVICE_REMOVED = 'microservice_removed',
   PROGRESS_UPDATED = 'progress_updated',
-  DEPLOYMENT_SCHEDULED = 'deployment_scheduled',
+  DEPLOYMENT_SCHEDULED = 'deployment_scheduled'
 }
 
 export enum DeploymentStatus {

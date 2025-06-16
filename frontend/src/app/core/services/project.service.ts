@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../environments/environment';
 import { 
   Project, 
@@ -10,6 +9,7 @@ import {
   CreateProjectRequest, 
   UpdateProjectRequest 
 } from '../../shared/models/project.model';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,7 @@ export class ProjectService {
 
   constructor(
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private notificationService: NotificationService
   ) {}
 
   /**
@@ -231,16 +231,10 @@ export class ProjectService {
       errorMessage += `: ${error.message}`;
     }
     
-    this.snackBar.open(errorMessage, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+    this.notificationService.showError(errorMessage);
   }
 
   private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+    this.notificationService.showSuccess(message);
   }
 } 

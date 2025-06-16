@@ -1203,3 +1203,42 @@ El template HTML usa `formControlName="projectId"` pero el método `createForm()
 - **Solución**: Filtrar elementos con IDs válidos y convertir a números antes de enviar al backend
 - **Cambios**: Inicializar con `null` en lugar de strings vacíos y validar antes del envío
 ```
+
+## Prompt 76: Optimizaciones de rendimiento - FRONTEND
+**HUS Relacionadas:** HT-005
+
+```
+Como desarrollador experto en Angular ejecuta las optimizaciones de rendimiento en el proyecto Angular frontend, implementando las siguientes mejoras de alto impacto:
+
+**1. Consolidación de Material Imports:**
+- Centralizar todos los módulos de Angular Material en MaterialModule
+- Eliminar imports duplicados en componentes individuales
+- Reducir bundle size y mejorar tree-shaking
+- Archivos actualizados: shared/material.module.ts, components.component.ts, projects.component.ts, databases.component.ts, environments.component.ts
+
+**2. Sistema de Cache en Development Form:**
+- Implementar cache inteligente con timeout de 5 minutos para datos del formulario
+- Reducir llamadas HTTP innecesarias al servidor
+- Mejorar tiempo de apertura del panel de desarrollo
+- Funcionalidades: validación de cache, fallback a servidor, método clearCache()
+
+**3. Debounce en Filtros de Búsqueda:**
+- Implementar debounce de 300ms en todos los filtros de búsqueda
+- Agregar distinctUntilChanged() para evitar filtrados redundantes
+- Mejorar rendimiento durante escritura rápida
+- Aplicado en: Components, Projects, Databases, Environments
+
+**Beneficios Esperados:**
+- Bundle size: Reducción del 15-20%
+- Tiempo de carga: Mejora de 200-300ms
+- Memoria: Optimización del 25%
+- Filtros: 70% menos ejecuciones innecesarias
+- UX: Panel de desarrollo con apertura instantánea usando cache
+- Consistencia: Comportamiento uniforme en toda la aplicación
+
+**Técnicas Aplicadas:**
+- Consolidación de imports con MaterialModule centralizado
+- Cache con gestión inteligente de timeout y validación
+- Debounce y distinctUntilChanged para optimización de filtros
+- Mantenimiento de patrones de rendimiento existentes (OnPush, unsubscribe, lazy loading)
+```

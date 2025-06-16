@@ -19,7 +19,7 @@ import { UserService } from '../../../../core/services/user.service';
 import { TeamService } from '../../../../core/services/team.service';
 import { ComponentService, Component as AppComponent } from '../../../../shared/services/component.service';
 import { DatabaseService, Database, DatabaseChangeType } from '../../../../shared/services/database.service';
-import { Development, DevelopmentStatus } from '../../../../shared/models/development.model';
+import { Development, DevelopmentStatus, DevelopmentComponentChangeType } from '../../../../shared/models/development.model';
 import { BackendDevelopmentPriority } from '../../../../shared/interfaces/backend-interfaces';
 import { Project } from '../../../../shared/models/project.model';
 import { Environment } from '../../../../shared/models/environment.model';
@@ -492,6 +492,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       .filter(comp => comp.componentId && comp.componentId !== '' && comp.componentId !== null)
       .map(comp => ({
         componentId: Number(comp.componentId),
+        changeType: this.isEditMode ? DevelopmentComponentChangeType.MODIFIED : DevelopmentComponentChangeType.CREATED,
         description: comp.description || '',
         notes: comp.notes || ''
       }));

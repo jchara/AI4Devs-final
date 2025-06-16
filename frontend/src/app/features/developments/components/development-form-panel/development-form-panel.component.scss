@@ -335,25 +335,6 @@
 
 .toggle-field {
   margin: var(--spacing-md) 0 var(--spacing-lg) 0;
-  
-  ::ng-deep {
-    .mat-slide-toggle {
-      .mat-slide-toggle-label {
-        color: var(--text-primary);
-        font-weight: 500;
-      }
-      
-      &.mat-checked {
-        .mat-slide-toggle-thumb {
-          background-color: var(--primary-color);
-        }
-        
-        .mat-slide-toggle-bar {
-          background-color: var(--primary-color-light);
-        }
-      }
-    }
-  }
 }
 
 // =============================================================================

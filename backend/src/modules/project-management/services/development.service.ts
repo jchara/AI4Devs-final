@@ -4,7 +4,12 @@ import { DataSource } from 'typeorm';
 import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
 import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
 import { DevelopmentComponentChangeType } from '../../../shared/enums/development-component-change-type.enum';
-import { CreateDevelopmentDto, UpdateDevelopmentDto, CreateDevelopmentWithRelationsDto, UpdateDevelopmentWithRelationsDto } from '../dtos';
+import {
+  CreateDevelopmentDto,
+  UpdateDevelopmentDto,
+  CreateDevelopmentWithRelationsDto,
+  UpdateDevelopmentWithRelationsDto,
+} from '../dtos';
 import { Development } from '../entities/development.entity';
 import { DevelopmentMetrics } from '../interfaces';
 import { DevelopmentRepository } from '../repositories/development.repository';
@@ -88,63 +93,71 @@ export class DevelopmentService extends BaseService<Development> {
     }
 
     // Obtener componentes asociados
-    const components = await this.developmentComponentService.findByDevelopment(id);
-    
+    const components =
+      await this.developmentComponentService.findByDevelopment(id);
+
     // Obtener bases de datos asociadas
-    const databases = await this.developmentDatabaseService.findDatabasesByDevelopment(id);
+    const databases =
+      await this.developmentDatabaseService.findDatabasesByDevelopment(id);
 
     return {
       ...development,
-      components: components.map(dc => ({
+      components: components.map((dc) => ({
         id: dc.id,
         componentId: dc.componentId,
         component: dc.component,
         notes: dc.notes || '',
         changeType: dc.changeType,
         progress: dc.progress,
-        version: dc.version
+        version: dc.version,
       })),
-      databases: databases.map(dd => ({
+      databases: databases.map((dd) => ({
         id: dd.id,
         databaseId: dd.databaseId,
         database: dd.database,
         changeType: dd.changeType,
         scriptDescription: dd.scriptDescription,
-        notes: dd.notes || ''
-      }))
+        notes: dd.notes || '',
+      })),
     };
   }
 
   async findAllWithRelations(): Promise<any[]> {
     const developments = await this.developmentRepository.findAll();
-    
+
     // Para cada desarrollo, obtener sus relaciones
     const developmentsWithRelations = await Promise.all(
       developments.map(async (development) => {
-        const components = await this.developmentComponentService.findByDevelopment(development.id);
-        const databases = await this.developmentDatabaseService.findDatabasesByDevelopment(development.id);
+        const components =
+          await this.developmentComponentService.findByDevelopment(
+            development.id,
+          );
+        const databases =
+          await this.developmentDatabaseService.findDatabasesByDevelopment(
+            development.id,
+          );
 
         return {
           ...development,
-                     components: components.map(dc => ({
-             id: dc.id,
-             componentId: dc.componentId,
-             component: dc.component,
-             notes: dc.notes || '',
-             changeType: dc.changeType,
-             progress: dc.progress,
-             version: dc.version
-           })),
-           databases: databases.map(dd => ({
-             id: dd.id,
-             databaseId: dd.databaseId,
-             database: dd.database,
-             changeType: dd.changeType,
-             scriptDescription: dd.scriptDescription,
-             notes: dd.notes || ''
-           }))
+          components: components.map((dc) => ({
+            id: dc.id,
+            componentId: dc.componentId,
+            component: dc.component,
+            notes: dc.notes || '',
+            changeType: dc.changeType,
+            progress: dc.progress,
+            version: dc.version,
+          })),
+          databases: databases.map((dd) => ({
+            id: dd.id,
+            databaseId: dd.databaseId,
+            database: dd.database,
+            changeType: dd.changeType,
+            scriptDescription: dd.scriptDescription,
+            notes: dd.notes || '',
+          })),
         };
-      })
+      }),
     );
 
     return developmentsWithRelations;
@@ -173,17 +186,17 @@ export class DevelopmentService extends BaseService<Development> {
     const metrics = await this.developmentRepository.getMetrics();
     const environments = await this.environmentRepository.findAll();
     const byEnvironment = environments.map((environment) => {
-      if(environment.isActive){
+      if (environment.isActive) {
         return {
           environment: environment.name,
           count: metrics.byEnvironment[environment.name] || 0,
-        }
+        };
       }
     });
 
     metrics.byEnvironment = byEnvironment.reduce(
       (acc, curr) => {
-        if(curr){
+        if (curr) {
           acc[curr.environment] = curr.count;
         }
         return acc;
@@ -253,14 +266,24 @@ export class DevelopmentService extends BaseService<Development> {
     return await this.dataSource.transaction(async () => {
       // 1. Crear el desarrollo
       const { components, databases, ...developmentData } = createDto;
-      const development = await this.developmentRepository.create(developmentData);
+      const development =
+        await this.developmentRepository.create(developmentData);
 
       // 2. Crear relaciones con componentes si existen
       if (components && components.length > 0) {
         for (const componentData of components) {
+          // Validar y convertir changeType
+          const changeType =
+            componentData.changeType &&
+            Object.values(DevelopmentComponentChangeType).includes(
+              componentData.changeType,
+            )
+              ? componentData.changeType
+              : DevelopmentComponentChangeType.CREATED;
+
           await this.developmentComponentService.createDevelopmentComponent({
             developmentId: development.id,
-            changeType: DevelopmentComponentChangeType.MODIFIED, // Valor por defecto
+            changeType,
             ...componentData,
           });
         }
@@ -285,17 +308,25 @@ export class DevelopmentService extends BaseService<Development> {
     id: number,
     updateDto: UpdateDevelopmentWithRelationsDto,
   ): Promise<Development> {
-    console.log('Iniciando updateWithRelations en servicio:', { id, updateDto });
+    console.log('Iniciando updateWithRelations en servicio:', {
+      id,
+      updateDto,
+    });
     return await this.dataSource.transaction(async () => {
       // 1. Actualizar el desarrollo
       const { components, databases, ...developmentData } = updateDto;
-      console.log('Datos separados:', { components, databases, developmentData });
+      console.log('Datos separados:', {
+        components,
+        databases,
+        developmentData,
+      });
       await this.developmentRepository.update(id, developmentData);
 
       // 2. Si se proporcionan componentes, reemplazar las relaciones existentes
       if (components !== undefined) {
         // Eliminar relaciones existentes
-        const existingComponents = await this.developmentComponentService.findByDevelopment(id);
+        const existingComponents =
+          await this.developmentComponentService.findByDevelopment(id);
         for (const existing of existingComponents) {
           await this.developmentComponentService.delete(existing.id);
         }
@@ -303,9 +334,18 @@ export class DevelopmentService extends BaseService<Development> {
         // Crear nuevas relaciones
         if (components.length > 0) {
           for (const componentData of components) {
+            // Validar y convertir changeType para updates
+            const changeType =
+              componentData.changeType &&
+              Object.values(DevelopmentComponentChangeType).includes(
+                componentData.changeType,
+              )
+                ? componentData.changeType
+                : DevelopmentComponentChangeType.MODIFIED;
+
             await this.developmentComponentService.createDevelopmentComponent({
               developmentId: id,
-              changeType: DevelopmentComponentChangeType.MODIFIED, // Valor por defecto
+              changeType,
               ...componentData,
             });
           }
@@ -315,7 +355,8 @@ export class DevelopmentService extends BaseService<Development> {
       // 3. Si se proporcionan bases de datos, reemplazar las relaciones existentes
       if (databases !== undefined) {
         // Eliminar relaciones existentes
-        const existingDatabases = await this.developmentDatabaseService.findDatabasesByDevelopment(id);
+        const existingDatabases =
+          await this.developmentDatabaseService.findDatabasesByDevelopment(id);
         for (const existing of existingDatabases) {
           await this.developmentDatabaseService.delete(existing.id);
         }

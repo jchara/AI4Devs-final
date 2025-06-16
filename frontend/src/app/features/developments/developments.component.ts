@@ -25,6 +25,8 @@ import {
 import { NotificationService } from '../../core/services/notification.service';
 import { MaterialModule } from '../../shared/material.module';
 import { BadgeUtilsService } from '../../shared/services/badge-utils.service';
+import { DeleteDialogComponent, DeleteDialogData } from '../../shared/components/delete-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { DevelopmentDetailsPanelComponent } from './components/development-details-panel/development-details-panel.component';
 import { DevelopmentFormPanelComponent } from './components/development-form-panel/development-form-panel.component';
 import {
@@ -124,7 +126,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private badgeUtils: BadgeUtilsService,
     private notificationService: NotificationService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -485,7 +488,55 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   deleteDevelopment(development: Development | DevelopmentWithRelations): void {
-    // Implementar lógica de eliminación
+    const dialogData: DeleteDialogData = {
+      title: 'Eliminar desarrollo',
+      entityName: development.title,
+      entityType: 'el desarrollo',
+      breadcrumbs: ['Dashboard', 'Desarrollos', development.title],
+      warningMessage: 'Esta acción no se puede deshacer. Se eliminará el desarrollo y todas sus referencias.',
+      additionalInfo: [
+        {
+          icon: 'info',
+          label: 'Estado',
+          value: development.status
+        },
+        {
+          icon: 'trending_up',
+          label: 'Progreso',
+          value: `${development.progress}%`
+        },
+        {
+          icon: 'business',
+          label: 'Ambiente',
+          value: this.getEnvironmentString(development)
+        }
+      ],
+      onConfirm: () => {
+        this.developmentService.deleteDevelopment(development.id).subscribe({
+          next: () => {
+            // Desarrollo eliminado exitosamente
+          },
+          error: (error) => {
+            console.error('Error al eliminar desarrollo:', error);
+          }
+        });
+      },
+      loading$: this.developmentService.loading$ as any
+    };
+
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: dialogData,
+      panelClass: 'delete-development-dialog',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.loadDevelopments();
+      }
+    });
   }
 
   changeStatus(development: Development | DevelopmentWithRelations, newStatus: string): void {

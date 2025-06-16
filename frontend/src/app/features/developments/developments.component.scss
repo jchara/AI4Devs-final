@@ -607,18 +607,7 @@
   }
 }
 
-// Notificaciones de snackbar
-::ng-deep {
-  .success-snackbar {
-    --mdc-snackbar-container-color: #4caf50 !important;
-    --mdc-snackbar-supporting-text-color: white !important;
-  }
-
-  .error-snackbar {
-    --mdc-snackbar-container-color: #f44336 !important;
-    --mdc-snackbar-supporting-text-color: white !important;
-  }
-}
+// Estilos de notificaciones ahora están centralizados en styles.scss
 
 // Paginador de tabla
 .table-paginator {

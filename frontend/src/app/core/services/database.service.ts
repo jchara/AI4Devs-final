@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../environments/environment';
 import { 
   Database, 
@@ -11,6 +10,7 @@ import {
   UpdateDatabaseRequest,
   DatabaseSearchFilters
 } from '../../shared/models/database.model';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class DatabaseService {
 
   constructor(
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private notificationService: NotificationService
   ) {}
 
   /**
@@ -269,16 +269,10 @@ export class DatabaseService {
 
   private handleError(message: string, error: any): void {
     console.error(message, error);
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+    this.notificationService.showError(message);
   }
 
   private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+    this.notificationService.showSuccess(message);
   }
 } 

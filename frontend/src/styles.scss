@@ -433,78 +433,145 @@ body.dark {
 // NOTIFICATION STYLES (SNACKBAR)
 // =============================================================================
 
-// Success notifications
-.success-snackbar {
-  .mat-mdc-snack-bar-container {
-    background-color: #4CAF50 !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
-  }
-
-  .mdc-snackbar__action {
-    color: white !important;
-    font-weight: 600 !important;
-  }
+// Success notifications - máxima especificidad
+.success-snackbar,
+::ng-deep .success-snackbar,
+.mat-mdc-snack-bar-container.success-snackbar {
+  --mdc-snackbar-container-color: #4CAF50 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+  --mat-snack-bar-button-color: white !important;
+  background-color: #4CAF50 !important;
+  color: white !important;
 }
 
-// Error notifications
-.error-snackbar {
-  .mat-mdc-snack-bar-container {
-    background-color: #F44336 !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3) !important;
-  }
-
-  .mdc-snackbar__action {
-    color: white !important;
-    font-weight: 600 !important;
-  }
+::ng-deep .success-snackbar .mat-mdc-snack-bar-container,
+::ng-deep .mat-mdc-snack-bar-container.success-snackbar {
+  background-color: #4CAF50 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
 }
 
-// Warning notifications
-.warning-snackbar {
-  .mat-mdc-snack-bar-container {
-    background-color: #FF9800 !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3) !important;
-  }
-
-  .mdc-snackbar__action {
-    color: white !important;
-    font-weight: 600 !important;
-  }
+::ng-deep .success-snackbar .mdc-snackbar__action,
+::ng-deep .success-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+  font-weight: 600 !important;
 }
 
-// Info notifications
-.info-snackbar {
-  .mat-mdc-snack-bar-container {
-    background-color: var(--color-accent) !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(102, 198, 234, 0.3) !important;
-  }
+// Error notifications - máxima especificidad
+.error-snackbar,
+::ng-deep .error-snackbar,
+.mat-mdc-snack-bar-container.error-snackbar {
+  --mdc-snackbar-container-color: #F44336 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+  --mat-snack-bar-button-color: white !important;
+  background-color: #F44336 !important;
+  color: white !important;
+}
 
-  .mdc-snackbar__action {
-    color: white !important;
-    font-weight: 600 !important;
-  }
+::ng-deep .error-snackbar .mat-mdc-snack-bar-container,
+::ng-deep .mat-mdc-snack-bar-container.error-snackbar {
+  background-color: #F44336 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3) !important;
+}
+
+::ng-deep .error-snackbar .mdc-snackbar__action,
+::ng-deep .error-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+// Warning notifications - máxima especificidad
+.warning-snackbar,
+::ng-deep .warning-snackbar,
+.mat-mdc-snack-bar-container.warning-snackbar {
+  --mdc-snackbar-container-color: #FF9800 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+  --mat-snack-bar-button-color: white !important;
+  background-color: #FF9800 !important;
+  color: white !important;
+}
+
+::ng-deep .warning-snackbar .mat-mdc-snack-bar-container,
+::ng-deep .mat-mdc-snack-bar-container.warning-snackbar {
+  background-color: #FF9800 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3) !important;
+}
+
+::ng-deep .warning-snackbar .mdc-snackbar__action,
+::ng-deep .warning-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+// Info notifications - máxima especificidad
+.info-snackbar,
+::ng-deep .info-snackbar,
+.mat-mdc-snack-bar-container.info-snackbar {
+  --mdc-snackbar-container-color: #2196F3 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+  --mat-snack-bar-button-color: white !important;
+  background-color: #2196F3 !important;
+  color: white !important;
+}
+
+::ng-deep .info-snackbar .mat-mdc-snack-bar-container,
+::ng-deep .mat-mdc-snack-bar-container.info-snackbar {
+  background-color: #2196F3 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3) !important;
+}
+
+::ng-deep .info-snackbar .mdc-snackbar__action,
+::ng-deep .info-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+  font-weight: 600 !important;
 }
 
 // Modo oscuro para notificaciones
 body.dark {
-  .success-snackbar .mat-mdc-snack-bar-container {
+  ::ng-deep .success-snackbar .mat-mdc-snack-bar-container,
+  ::ng-deep .mat-mdc-snack-bar-container.success-snackbar {
     background-color: #388E3C !important;
   }
 
-  .error-snackbar .mat-mdc-snack-bar-container {
+  ::ng-deep .error-snackbar .mat-mdc-snack-bar-container,
+  ::ng-deep .mat-mdc-snack-bar-container.error-snackbar {
     background-color: #D32F2F !important;
   }
 
-  .warning-snackbar .mat-mdc-snack-bar-container {
+  ::ng-deep .warning-snackbar .mat-mdc-snack-bar-container,
+  ::ng-deep .mat-mdc-snack-bar-container.warning-snackbar {
     background-color: #F57C00 !important;
   }
 
-  .info-snackbar .mat-mdc-snack-bar-container {
+  ::ng-deep .info-snackbar .mat-mdc-snack-bar-container,
+  ::ng-deep .mat-mdc-snack-bar-container.info-snackbar {
     background-color: #0288D1 !important;
+  }
+}
+
+// Estilos adicionales para forzar los colores - última línea de defensa
+.mat-mdc-snack-bar-container {
+  &.success-snackbar {
+    background-color: #4CAF50 !important;
+    color: white !important;
+  }
+  
+  &.error-snackbar {
+    background-color: #F44336 !important;
+    color: white !important;
+  }
+  
+  &.warning-snackbar {
+    background-color: #FF9800 !important;
+    color: white !important;
+  }
+  
+  &.info-snackbar {
+    background-color: #2196F3 !important;
+    color: white !important;
   }
 }
 
@@ -521,4 +588,58 @@ body.dark {
 .mat-mdc-button-ripple,
 .mdc-button__focus-ring {
   border-radius: 4px !important;
+}
+
+// =============================================================================
+// FORZAR COLORES DE NOTIFICACIONES - MÁXIMA PRIORIDAD
+// =============================================================================
+
+/* Estilos con máxima especificidad para forzar colores */
+.cdk-overlay-container .mat-mdc-snack-bar-container.success-snackbar,
+.cdk-overlay-container .success-snackbar .mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-container.success-snackbar,
+.success-snackbar .mat-mdc-snack-bar-container {
+  background-color: #4CAF50 !important;
+  color: white !important;
+  --mdc-snackbar-container-color: #4CAF50 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
+.cdk-overlay-container .mat-mdc-snack-bar-container.error-snackbar,
+.cdk-overlay-container .error-snackbar .mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-container.error-snackbar,
+.error-snackbar .mat-mdc-snack-bar-container {
+  background-color: #F44336 !important;
+  color: white !important;
+  --mdc-snackbar-container-color: #F44336 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
+.cdk-overlay-container .mat-mdc-snack-bar-container.warning-snackbar,
+.cdk-overlay-container .warning-snackbar .mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-container.warning-snackbar,
+.warning-snackbar .mat-mdc-snack-bar-container {
+  background-color: #FF9800 !important;
+  color: white !important;
+  --mdc-snackbar-container-color: #FF9800 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
+.cdk-overlay-container .mat-mdc-snack-bar-container.info-snackbar,
+.cdk-overlay-container .info-snackbar .mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-container.info-snackbar,
+.info-snackbar .mat-mdc-snack-bar-container {
+  background-color: #2196F3 !important;
+  color: white !important;
+  --mdc-snackbar-container-color: #2196F3 !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
+/* Botones de acción */
+.success-snackbar .mat-mdc-snack-bar-action,
+.error-snackbar .mat-mdc-snack-bar-action,
+.warning-snackbar .mat-mdc-snack-bar-action,
+.info-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+  font-weight: 600 !important;
 }

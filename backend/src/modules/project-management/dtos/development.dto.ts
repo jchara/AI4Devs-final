@@ -5,12 +5,18 @@ import { DevelopmentStatus } from '../../../shared/enums/development-status.enum
 import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
 import { DatabaseChangeType } from '../../../shared/enums/database-change-type.enum';
 import { BaseDto } from './base.dto';
+import { DevelopmentComponentChangeType } from 'src/shared/enums';
 
 // DTOs para componentes dentro del desarrollo
 export class DevelopmentComponentDto {
   @ApiProperty({ description: 'ID del componente' })
   @IsNumber()
   componentId: number;
+
+  @ApiProperty({ description: 'Tipo de cambio', required: false })
+  @IsString()
+  @IsOptional()
+  changeType?: DevelopmentComponentChangeType;
 
   @ApiProperty({ description: 'Descripción del cambio en el componente', required: false })
   @IsString()
