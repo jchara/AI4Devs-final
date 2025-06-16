@@ -16,12 +16,11 @@ export interface Database {
 }
 
 export enum DatabaseChangeType {
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  MIGRATION = 'MIGRATION',
-  INDEX = 'INDEX',
-  PROCEDURE = 'PROCEDURE'
+  SCHEMA_CHANGE = 'schema_change',
+  DATA_MIGRATION = 'data_migration',
+  STORED_PROCEDURE = 'stored_procedure',
+  FUNCTION = 'function',
+  TRIGGER = 'trigger'
 }
 
 @Injectable({

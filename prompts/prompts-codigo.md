@@ -1197,4 +1197,9 @@ El template HTML usa `formControlName="projectId"` pero el método `createForm()
 - Nuevos servicios: ComponentService y DatabaseService
 - UI moderna con estados vacíos, botones agregar/remover y gestión dinámica
 - Integración con endpoints transaccionales del backend
+
+**Error Adicional Corregido:**
+- **Problema**: Error 400 Bad Request al actualizar desarrollo por envío de `componentId` y `databaseId` como strings vacíos
+- **Solución**: Filtrar elementos con IDs válidos y convertir a números antes de enviar al backend
+- **Cambios**: Inicializar con `null` en lugar de strings vacíos y validar antes del envío
 ```

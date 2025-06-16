@@ -3,6 +3,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
 import { DevelopmentStatus } from '../../../shared/enums/development-status.enum';
+import { DevelopmentComponentChangeType } from '../../../shared/enums/development-component-change-type.enum';
 import { CreateDevelopmentDto, UpdateDevelopmentDto, CreateDevelopmentWithRelationsDto, UpdateDevelopmentWithRelationsDto } from '../dtos';
 import { Development } from '../entities/development.entity';
 import { DevelopmentMetrics } from '../interfaces';
@@ -188,8 +189,9 @@ export class DevelopmentService extends BaseService<Development> {
       // 2. Crear relaciones con componentes si existen
       if (components && components.length > 0) {
         for (const componentData of components) {
-          await this.developmentComponentService.create({
+          await this.developmentComponentService.createDevelopmentComponent({
             developmentId: development.id,
+            changeType: DevelopmentComponentChangeType.MODIFIED, // Valor por defecto
             ...componentData,
           });
         }
@@ -198,7 +200,7 @@ export class DevelopmentService extends BaseService<Development> {
       // 3. Crear relaciones con bases de datos si existen
       if (databases && databases.length > 0) {
         for (const databaseData of databases) {
-          await this.developmentDatabaseService.create({
+          await this.developmentDatabaseService.createDevelopmentDatabase({
             developmentId: development.id,
             ...databaseData,
           });
@@ -214,9 +216,11 @@ export class DevelopmentService extends BaseService<Development> {
     id: number,
     updateDto: UpdateDevelopmentWithRelationsDto,
   ): Promise<Development> {
+    console.log('Iniciando updateWithRelations en servicio:', { id, updateDto });
     return await this.dataSource.transaction(async () => {
       // 1. Actualizar el desarrollo
       const { components, databases, ...developmentData } = updateDto;
+      console.log('Datos separados:', { components, databases, developmentData });
       await this.developmentRepository.update(id, developmentData);
 
       // 2. Si se proporcionan componentes, reemplazar las relaciones existentes
@@ -230,8 +234,9 @@ export class DevelopmentService extends BaseService<Development> {
         // Crear nuevas relaciones
         if (components.length > 0) {
           for (const componentData of components) {
-            await this.developmentComponentService.create({
+            await this.developmentComponentService.createDevelopmentComponent({
               developmentId: id,
+              changeType: DevelopmentComponentChangeType.MODIFIED, // Valor por defecto
               ...componentData,
             });
           }
@@ -249,7 +254,7 @@ export class DevelopmentService extends BaseService<Development> {
         // Crear nuevas relaciones
         if (databases.length > 0) {
           for (const databaseData of databases) {
-            await this.developmentDatabaseService.create({
+            await this.developmentDatabaseService.createDevelopmentDatabase({
               developmentId: id,
               ...databaseData,
             });

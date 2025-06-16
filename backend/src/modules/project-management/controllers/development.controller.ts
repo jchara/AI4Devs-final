@@ -500,10 +500,16 @@ export class DevelopmentController extends BaseController<Development> {
     status: 404,
     description: 'Development not found',
   })
-  updateWithRelations(
+  async updateWithRelations(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateDevelopmentWithRelationsDto,
   ): Promise<Development> {
-    return this.developmentService.updateWithRelations(id, updateDto);
+    try {
+      console.log('Datos recibidos en el controlador:', JSON.stringify(updateDto, null, 2));
+      return await this.developmentService.updateWithRelations(id, updateDto);
+    } catch (error) {
+      console.error('Error en updateWithRelations:', error);
+      throw error;
+    }
   }
 }

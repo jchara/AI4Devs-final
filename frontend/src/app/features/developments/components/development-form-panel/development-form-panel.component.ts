@@ -130,12 +130,11 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   ];
 
   databaseChangeTypes = [
-    { value: DatabaseChangeType.CREATE, label: 'Crear' },
-    { value: DatabaseChangeType.UPDATE, label: 'Actualizar' },
-    { value: DatabaseChangeType.DELETE, label: 'Eliminar' },
-    { value: DatabaseChangeType.MIGRATION, label: 'Migración' },
-    { value: DatabaseChangeType.INDEX, label: 'Índice' },
-    { value: DatabaseChangeType.PROCEDURE, label: 'Procedimiento' }
+    { value: DatabaseChangeType.SCHEMA_CHANGE, label: 'Cambio de Esquema' },
+    { value: DatabaseChangeType.DATA_MIGRATION, label: 'Migración de Datos' },
+    { value: DatabaseChangeType.STORED_PROCEDURE, label: 'Procedimiento Almacenado' },
+    { value: DatabaseChangeType.FUNCTION, label: 'Función' },
+    { value: DatabaseChangeType.TRIGGER, label: 'Trigger' }
   ];
 
   constructor(
@@ -408,21 +407,25 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     
     const formData = this.developmentForm.value;
     
-    // Preparar datos de componentes
-    const components = this.selectedComponents.map(comp => ({
-      componentId: comp.componentId,
-      description: comp.description || '',
-      notes: comp.notes || ''
-    }));
+    // Preparar datos de componentes - filtrar solo los que tienen componentId válido
+    const components = this.selectedComponents
+      .filter(comp => comp.componentId && comp.componentId !== '' && comp.componentId !== null)
+      .map(comp => ({
+        componentId: Number(comp.componentId),
+        description: comp.description || '',
+        notes: comp.notes || ''
+      }));
 
-    // Preparar datos de bases de datos
-    const databases = this.selectedDatabases.map(db => ({
-      databaseId: db.databaseId,
-      changeType: db.changeType,
-      scriptDescription: db.scriptDescription,
-      sqlScript: db.sqlScript || '',
-      notes: db.notes || ''
-    }));
+    // Preparar datos de bases de datos - filtrar solo los que tienen databaseId válido y scriptDescription
+    const databases = this.selectedDatabases
+      .filter(db => db.databaseId && db.databaseId !== '' && db.databaseId !== null && db.scriptDescription && db.scriptDescription.trim() !== '')
+      .map(db => ({
+        databaseId: Number(db.databaseId),
+        changeType: db.changeType,
+        scriptDescription: db.scriptDescription.trim(),
+        sqlScript: db.sqlScript?.trim() || '',
+        notes: db.notes?.trim() || ''
+      }));
     
     if (this.isEditMode && this.development) {
       // Estructura para actualizar con relaciones
@@ -434,17 +437,25 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         environmentId: formData.environmentId,
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
-        startDate: formData.startDate || undefined,
-        estimatedDate: formData.estimatedDate || undefined,
-        endDate: formData.endDate || undefined,
+        startDate: formData.startDate ? new Date(formData.startDate) : undefined,
+        estimatedDate: formData.estimatedDate ? new Date(formData.estimatedDate) : undefined,
+        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
         jiraUrl: formData.jiraUrl?.trim() || undefined,
         branch: formData.branch?.trim() || undefined,
         notes: formData.notes?.trim() || undefined,
-        progress: formData.progress || 0,
+        progress: Number(formData.progress) || 0,
         isActive: formData.isActive !== undefined ? formData.isActive : true,
         components: components,
         databases: databases
       };
+      
+      // Limpiar campos vacíos para evitar errores de validación
+      if (updateData.jiraUrl === '') updateData.jiraUrl = undefined;
+      if (updateData.branch === '') updateData.branch = undefined;
+      if (updateData.notes === '') updateData.notes = undefined;
+
+      // Debug: Log de los datos que se van a enviar (temporal)
+      console.log('Datos a enviar al backend:', JSON.stringify(updateData, null, 2));
       
       this.developmentService.updateDevelopmentWithRelations(this.development.id, updateData)
         .pipe(takeUntil(this.destroy$))
@@ -469,18 +480,23 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         environmentId: formData.environmentId,
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
-        startDate: formData.startDate || undefined,
-        estimatedDate: formData.estimatedDate || undefined,
-        endDate: formData.endDate || undefined,
+        startDate: formData.startDate ? new Date(formData.startDate) : undefined,
+        estimatedDate: formData.estimatedDate ? new Date(formData.estimatedDate) : undefined,
+        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
         jiraUrl: formData.jiraUrl?.trim() || undefined,
         branch: formData.branch?.trim() || undefined,
         notes: formData.notes?.trim() || undefined,
-        progress: formData.progress || 0,
+        progress: Number(formData.progress) || 0,
         isActive: formData.isActive !== undefined ? formData.isActive : true,
         components: components,
         databases: databases
       };
       
+      // Limpiar campos vacíos para evitar errores de validación
+      if (createData.jiraUrl === '') createData.jiraUrl = undefined;
+      if (createData.branch === '') createData.branch = undefined;
+      if (createData.notes === '') createData.notes = undefined;
+
       this.developmentService.createDevelopmentWithRelations(createData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -545,7 +561,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   // Métodos para manejar componentes
   addComponent(): void {
     this.selectedComponents.push({
-      componentId: '',
+      componentId: null,
       description: '',
       notes: ''
     });
@@ -562,9 +578,9 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   // Métodos para manejar bases de datos
   addDatabase(): void {
     this.selectedDatabases.push({
-      databaseId: '',
-      changeType: DatabaseChangeType.UPDATE,
-      scriptDescription: '',
+      databaseId: null,
+      changeType: DatabaseChangeType.SCHEMA_CHANGE,
+      scriptDescription: 'Descripción del cambio',
       sqlScript: '',
       notes: ''
     });
