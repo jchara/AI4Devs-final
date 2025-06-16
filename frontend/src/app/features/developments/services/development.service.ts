@@ -616,6 +616,26 @@ export class DevelopmentService {
   }
 
   /**
+   * Obtener desarrollo con componentes y bases de datos
+   */
+  getDevelopmentWithRelations(id: number): Observable<any> {
+    this.loadingSubject.next(true);
+    return this.apiService.get<any>(`developments/${id}/with-relations`).pipe(
+      map((response) => {
+        this.loadingSubject.next(false);
+        // Extraer solo los datos del desarrollo, no toda la respuesta
+        return response?.data || response;
+      }),
+      catchError((error) => {
+        console.error('Error al obtener desarrollo con relaciones:', error);
+        this.notificationService.showError('Error al cargar desarrollo');
+        this.loadingSubject.next(false);
+        return of(null);
+      })
+    );
+  }
+
+  /**
    * Crear desarrollo con componentes y bases de datos (transaccional)
    */
   createDevelopmentWithRelations(

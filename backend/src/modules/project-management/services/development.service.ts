@@ -81,6 +81,75 @@ export class DevelopmentService extends BaseService<Development> {
     return development;
   }
 
+  async findOneWithRelations(id: number): Promise<any> {
+    const development = await this.developmentRepository.findOne(id);
+    if (!development) {
+      throw new BadRequestException(`Development with ID ${id} not found`);
+    }
+
+    // Obtener componentes asociados
+    const components = await this.developmentComponentService.findByDevelopment(id);
+    
+    // Obtener bases de datos asociadas
+    const databases = await this.developmentDatabaseService.findDatabasesByDevelopment(id);
+
+    return {
+      ...development,
+      components: components.map(dc => ({
+        id: dc.id,
+        componentId: dc.componentId,
+        component: dc.component,
+        notes: dc.notes || '',
+        changeType: dc.changeType,
+        progress: dc.progress,
+        version: dc.version
+      })),
+      databases: databases.map(dd => ({
+        id: dd.id,
+        databaseId: dd.databaseId,
+        database: dd.database,
+        changeType: dd.changeType,
+        scriptDescription: dd.scriptDescription,
+        notes: dd.notes || ''
+      }))
+    };
+  }
+
+  async findAllWithRelations(): Promise<any[]> {
+    const developments = await this.developmentRepository.findAll();
+    
+    // Para cada desarrollo, obtener sus relaciones
+    const developmentsWithRelations = await Promise.all(
+      developments.map(async (development) => {
+        const components = await this.developmentComponentService.findByDevelopment(development.id);
+        const databases = await this.developmentDatabaseService.findDatabasesByDevelopment(development.id);
+
+        return {
+          ...development,
+                     components: components.map(dc => ({
+             id: dc.id,
+             componentId: dc.componentId,
+             component: dc.component,
+             notes: dc.notes || '',
+             changeType: dc.changeType,
+             progress: dc.progress,
+             version: dc.version
+           })),
+           databases: databases.map(dd => ({
+             id: dd.id,
+             databaseId: dd.databaseId,
+             database: dd.database,
+             changeType: dd.changeType,
+             scriptDescription: dd.scriptDescription,
+             notes: dd.notes || ''
+           }))
+        };
+      })
+    );
+
+    return developmentsWithRelations;
+  }
+
   async updateProgress(id: number, progress: number): Promise<Development> {
     if (progress < 0 || progress > 100) {
       throw new BadRequestException('Progress must be between 0 and 100');

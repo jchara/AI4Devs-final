@@ -282,6 +282,20 @@ export class DevelopmentController extends BaseController<Development> {
     return this.developmentService.findByTeam(teamId);
   }
 
+  @Get('with-relations')
+  @ApiOperation({
+    summary: 'Get all developments with components and databases',
+    description: 'Retorna todos los desarrollos con sus componentes y bases de datos asociadas',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all developments with relations',
+  })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  async findAllWithRelations(): Promise<any[]> {
+    return this.developmentService.findAllWithRelations();
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Get development by id',
@@ -304,6 +318,29 @@ export class DevelopmentController extends BaseController<Development> {
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Development> {
     return this.developmentService.findOne(id);
   }
+
+  @Get(':id/with-relations')
+  @ApiOperation({
+    summary: 'Get development by ID with components and databases',
+    description: 'Retorna un desarrollo específico con sus componentes y bases de datos asociadas',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'ID del desarrollo',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return development with relations by ID',
+  })
+  @ApiResponse({ status: 404, description: 'Desarrollo no encontrado' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  async findOneWithRelations(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    return this.developmentService.findOneWithRelations(id);
+  }
+
+
 
   @Patch(':id')
   @ApiOperation({

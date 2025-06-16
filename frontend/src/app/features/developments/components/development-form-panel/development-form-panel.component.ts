@@ -90,7 +90,7 @@ import { memoize } from 'lodash';
 })
 export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   @Input() isOpen = false;
-  @Input() development: Development | null = null;
+  @Input() development: Development | any | null = null;
   @Output() closed = new EventEmitter<boolean>();
 
   private destroy$ = new Subject<void>();
@@ -316,25 +316,42 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           isActive: this.development?.isActive !== undefined ? this.development.isActive : true
         });
 
-        // Cargar componentes y bases de datos existentes si está editando
-        if (this.development?.developmentComponents) {
-          this.selectedComponents = this.development.developmentComponents.map(devComp => ({
+        // Debug: Log de los datos recibidos
+        console.log('Development data received:', this.development);
+        console.log('Components:', this.development?.components);
+        console.log('Databases:', this.development?.databases);
+
+        // Cargar componentes existentes si está editando
+        if (this.development?.components && Array.isArray(this.development.components)) {
+          console.log('Loading components from new format:', this.development.components);
+          this.selectedComponents = this.development.components.map((comp: any) => ({
+            componentId: comp.componentId,
+            description: comp.notes || '',
+            notes: comp.notes || ''
+          }));
+          console.log('Selected components:', this.selectedComponents);
+        } else if (this.development?.developmentComponents) {
+          // Fallback para el formato anterior
+          console.log('Loading components from old format:', this.development.developmentComponents);
+          this.selectedComponents = this.development.developmentComponents.map((devComp: any) => ({
             componentId: devComp.component.id,
             description: devComp.notes || '',
             notes: devComp.notes || ''
           }));
         }
 
-        // TODO: Cargar bases de datos existentes cuando esté disponible en el modelo
-        // if (this.development?.developmentDatabases) {
-        //   this.selectedDatabases = this.development.developmentDatabases.map(devDb => ({
-        //     databaseId: devDb.database.id,
-        //     changeType: devDb.changeType,
-        //     scriptDescription: devDb.scriptDescription,
-        //     sqlScript: devDb.sqlScript || '',
-        //     notes: devDb.notes || ''
-        //   }));
-        // }
+        // Cargar bases de datos existentes si está editando
+        if (this.development?.databases && Array.isArray(this.development.databases)) {
+          console.log('Loading databases from new format:', this.development.databases);
+          this.selectedDatabases = this.development.databases.map((db: any) => ({
+            databaseId: db.databaseId,
+            changeType: db.changeType,
+            scriptDescription: db.scriptDescription,
+            sqlScript: db.sqlScript || '',
+            notes: db.notes || ''
+          }));
+          console.log('Selected databases:', this.selectedDatabases);
+        }
 
         this.cdr.markForCheck();
       });

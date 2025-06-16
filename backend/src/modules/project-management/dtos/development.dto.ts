@@ -74,6 +74,7 @@ export class CreateDevelopmentDto {
 
   @ApiProperty({ description: 'Estimated completion date', required: false })
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   estimatedDate?: Date;
 
@@ -85,11 +86,13 @@ export class CreateDevelopmentDto {
   // Campos adicionales de la entidad
   @ApiProperty({ description: 'Start date of the development', required: false })
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   startDate?: Date;
 
   @ApiProperty({ description: 'End date of the development', required: false })
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   endDate?: Date;
 
@@ -155,6 +158,7 @@ export class UpdateDevelopmentDto {
 
   @ApiProperty({ description: 'Estimated completion date', required: false })
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   estimatedDate?: Date;
 
@@ -166,11 +170,13 @@ export class UpdateDevelopmentDto {
   // Campos adicionales de la entidad
   @ApiProperty({ description: 'Start date of the development', required: false })
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   startDate?: Date;
 
   @ApiProperty({ description: 'End date of the development', required: false })
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   endDate?: Date;
 

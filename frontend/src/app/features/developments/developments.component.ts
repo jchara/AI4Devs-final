@@ -331,9 +331,22 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   editDevelopment(development: Development): void {
-    this.selectedDevelopmentForEdit = development;
-    this.isFormPanelOpen = true;
-    this.changeDetectorRef.markForCheck();
+    // Obtener el desarrollo con relaciones antes de abrir el formulario
+    this.developmentService.getDevelopmentWithRelations(development.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (developmentWithRelations) => {
+          if (developmentWithRelations) {
+            this.selectedDevelopmentForEdit = developmentWithRelations;
+            this.isFormPanelOpen = true;
+            this.changeDetectorRef.markForCheck();
+          }
+        },
+        error: (error) => {
+          console.error('Error al cargar desarrollo para edición:', error);
+          this.notificationService.showError('Error al cargar desarrollo');
+        }
+      });
   }
 
   deleteDevelopment(development: Development): void {
