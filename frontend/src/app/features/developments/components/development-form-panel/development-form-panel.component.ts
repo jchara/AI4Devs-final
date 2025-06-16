@@ -334,6 +334,26 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
     };
   }
 
+  /**
+   * Convierte un DevelopmentEnvironment a su ID correspondiente
+   */
+  private getEnvironmentId(environment?: string): number {
+    if (!environment) return 1; // Default: DEVELOPMENT
+    
+    switch (environment.toUpperCase()) {
+      case 'DEVELOPMENT':
+        return 1;
+      case 'TESTING':
+        return 2;
+      case 'STAGING':
+        return 3;
+      case 'PRODUCTION':
+        return 4;
+      default:
+        return 1;
+    }
+  }
+
   private initializeForm(): void {
     this.isEditMode = !!this.development;
     this.title = this.isEditMode ? 'Editar Desarrollo' : 'Nuevo Desarrollo';
@@ -362,6 +382,9 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       // Usar setTimeout para asegurar que el cambio se aplique después de que Angular haya terminado
       // el ciclo de renderizado actual
       setTimeout(() => {
+        // Obtener el environmentId correcto
+        const environmentId = this.development?.environmentId || this.getEnvironmentId(this.development?.environment);
+        
         this.developmentForm.patchValue({
           title: this.development?.title || '',
           description: this.development?.description || '',
@@ -371,7 +394,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           jiraUrl: this.development?.jiraUrl || '',
           branch: this.development?.branch || '',
 
-          environmentId: this.development?.environmentId || '',
+          environmentId: environmentId,
           assignedUserId: this.development?.assignedTo?.id || '',
           teamId: this.development?.team?.id || '',
           startDate: this.development?.startDate ? new Date(this.development.startDate) : new Date(),
@@ -382,7 +405,6 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         });
 
         // Debug: Log de los datos recibidos
-        
 
         // Cargar componentes existentes si está editando
         if (this.development?.components && Array.isArray(this.development.components)) {
@@ -509,13 +531,16 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       }));
     
     if (this.isEditMode && this.development) {
+      // Asegurar que environmentId tenga un valor válido
+      const environmentId = formData.environmentId || this.getEnvironmentId(this.development?.environment) || 1;
+      
       // Estructura para actualizar con relaciones
       const updateData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         status: formData.status,
         priority: formData.priority,
-        environmentId: formData.environmentId,
+        environmentId: Number(environmentId),
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
         startDate: formData.startDate ? new Date(formData.startDate) : undefined,
@@ -552,13 +577,16 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
           }
         });
     } else {
+      // Asegurar que environmentId tenga un valor válido para creación
+      const environmentId = formData.environmentId || 1; // Default: DEVELOPMENT
+      
       // Estructura para crear con relaciones
       const createData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         status: formData.status,
         priority: formData.priority,
-        environmentId: formData.environmentId,
+        environmentId: Number(environmentId),
         assignedToId: formData.assignedUserId || undefined,
         teamId: formData.teamId || undefined,
         startDate: formData.startDate ? new Date(formData.startDate) : undefined,

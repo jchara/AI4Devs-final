@@ -79,10 +79,20 @@ export class DevelopmentService extends BaseService<Development> {
   }
 
   async getDevelopmentWithDetails(id: number): Promise<Development> {
-    const development = await this.developmentRepository.findOne(id);
+    // Usar queryBuilder para cargar el desarrollo con sus relaciones
+    const development = await this.dataSource
+      .getRepository(Development)
+      .createQueryBuilder('development')
+      .leftJoinAndSelect('development.environment', 'environment')
+      .leftJoinAndSelect('development.assignedTo', 'assignedTo')
+      .leftJoinAndSelect('development.team', 'team')
+      .where('development.id = :id', { id })
+      .getOne();
+    
     if (!development) {
       throw new BadRequestException(`Development with ID ${id} not found`);
     }
+    
     return development;
   }
 
@@ -308,12 +318,20 @@ export class DevelopmentService extends BaseService<Development> {
     id: number,
     updateDto: UpdateDevelopmentWithRelationsDto,
   ): Promise<Development> {
-
-    return await this.dataSource.transaction(async () => {
+    await this.dataSource.transaction(async () => {
       // 1. Actualizar el desarrollo
       const { components, databases, ...developmentData } = updateDto;
+      
+      // Verificar si el desarrollo existe antes de actualizar
+      const existingDevelopment = await this.findOne(id);
+      if (!existingDevelopment) {
+        throw new BadRequestException(`Development with ID ${id} not found`);
+      }
 
-      await this.developmentRepository.update(id, developmentData);
+      // Usar directamente TypeORM para la actualización
+      await this.dataSource
+        .getRepository(Development)
+        .update(id, developmentData);
 
       // 2. Si se proporcionan componentes, reemplazar las relaciones existentes
       if (components !== undefined) {
@@ -364,9 +382,9 @@ export class DevelopmentService extends BaseService<Development> {
           }
         }
       }
-
-      // 4. Retornar el desarrollo actualizado con todas sus relaciones
-      return await this.getDevelopmentWithDetails(id);
     });
+
+    // Retornar el desarrollo actualizado con todas sus relaciones
+    return await this.getDevelopmentWithDetails(id);
   }
 }

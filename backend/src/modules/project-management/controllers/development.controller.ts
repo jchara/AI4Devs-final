@@ -542,7 +542,6 @@ export class DevelopmentController extends BaseController<Development> {
     @Body() updateDto: UpdateDevelopmentWithRelationsDto,
   ): Promise<Development> {
     try {
-  
       return await this.developmentService.updateWithRelations(id, updateDto);
     } catch (error) {
       console.error('Error en updateWithRelations:', error);
