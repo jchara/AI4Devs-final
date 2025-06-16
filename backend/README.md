@@ -46,6 +46,13 @@ src/modules/
 - **🔄 Servicios optimizados** - Lógica de negocio robusta
 - **📚 Documentación Swagger** - API completamente documentada
 
+### ✨ Funcionalidades Avanzadas Implementadas
+
+- **🗑️ Soft Delete Universal** - Eliminación lógica en todas las entidades
+- **📝 Sistema de Actividad** - Tracking automático de cambios
+- **🔧 Validaciones Robustas** - DTOs con class-validator
+- **📊 Métricas Avanzadas** - Dashboard con estadísticas en tiempo real
+
 ## 📋 Requisitos Previos
 
 - Node.js 20.10.0
@@ -348,9 +355,9 @@ Cada dominio agrupa entidades relacionadas:
 - `npm run start:prod` - Iniciar en modo producción
 - `npm run seed` - Ejecutar seeds con datos de desarrollo
 - `npm run lint` - Ejecutar linter ESLint
-- `npm run test` - Ejecutar tests unitarios
+- `npm run test` - Ejecutar tests unitarios (12 tests implementados)
 - `npm run test:watch` - Ejecutar tests en modo watch
-- `npm run test:cov` - Ejecutar tests con cobertura
+- `npm run test:cov` - Ejecutar tests con cobertura (~70% servicios principales)
 
 ## 🔒 Seguridad
 

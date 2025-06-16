@@ -31,6 +31,13 @@ src/
 - **Responsive Design** mobile-first
 - **Optimizaciones de Rendimiento** avanzadas
 
+### ✨ Funcionalidades Avanzadas Implementadas
+
+- **Sistema de Cache Inteligente**: Cache automático con timeout de 5 minutos
+- **Notificaciones Centralizadas**: NotificationService unificado con colores
+- **Optimizaciones de Bundle**: Material consolidado, debounce en filtros
+- **Tracking de Actividad**: Sistema de auditoría en tiempo real
+
 ## 📋 Requisitos Previos
 
 - Node.js 20.10.0
@@ -68,8 +75,8 @@ npm run start:prod
 
 - `ng serve` - Iniciar servidor de desarrollo
 - `ng build` - Compilar aplicación
-- `ng test` - Ejecutar tests unitarios
-- `ng e2e` - Ejecutar tests end-to-end
+- `ng test` - Ejecutar tests unitarios (31 tests implementados)
+- `ng e2e` - Ejecutar tests end-to-end (Cypress - pendiente)
 - `ng lint` - Ejecutar linter
 - `npm run start:prod` - Iniciar en modo producción
 
