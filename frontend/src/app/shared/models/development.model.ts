@@ -176,3 +176,43 @@ export interface DashboardData {
   chartData: ChartData[];
   recentActivities: RecentActivity[];
 }
+
+export interface DevelopmentWithRelations extends Omit<Development, 'components'> {
+  components: DevelopmentComponentRelation[];
+  databases: DevelopmentDatabaseRelation[];
+}
+
+export interface DevelopmentComponentRelation {
+  id: number;
+  componentId: number;
+  component: Component;
+  notes: string;
+  changeType: string;
+  progress: string;
+  version: string | null;
+}
+
+export interface DevelopmentDatabaseRelation {
+  id: number;
+  databaseId: number;
+  database: Database;
+  changeType: string;
+  scriptDescription: string;
+  notes: string;
+}
+
+export interface Database {
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  version: string | null;
+  isActive: boolean;
+  environmentId: number;
+  projectId: number | null;
+  environment?: any;
+  project?: any;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}

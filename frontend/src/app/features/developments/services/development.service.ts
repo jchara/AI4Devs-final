@@ -636,6 +636,26 @@ export class DevelopmentService {
   }
 
   /**
+   * Obtener todos los desarrollos con componentes y bases de datos
+   */
+  getAllDevelopmentsWithRelations(): Observable<any[]> {
+    this.loadingSubject.next(true);
+    return this.apiService.get<any>('developments/with-relations').pipe(
+      map((response) => {
+        this.loadingSubject.next(false);
+        // Extraer solo los datos, no toda la respuesta
+        return response?.data || response;
+      }),
+      catchError((error) => {
+        console.error('Error al obtener desarrollos con relaciones:', error);
+        this.notificationService.showError('Error al cargar desarrollos');
+        this.loadingSubject.next(false);
+        return of([]);
+      })
+    );
+  }
+
+  /**
    * Crear desarrollo con componentes y bases de datos (transaccional)
    */
   createDevelopmentWithRelations(

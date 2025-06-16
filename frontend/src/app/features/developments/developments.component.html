@@ -170,20 +170,22 @@
         <mat-header-cell *matHeaderCellDef>Componentes</mat-header-cell>
         <mat-cell *matCellDef="let development">
           <div class="components-cell">
-            <mat-chip-set>
+            <mat-chip-set *ngIf="getComponentsForDisplay(development).length > 0">
               <mat-chip
-                *ngFor="
-                  let component of development.components;
-                  let i = index;
-                  trackBy: trackByComponent
-                "
+                *ngFor="let devComponent of getComponentsForDisplay(development); trackBy: trackByComponent"
                 [matTooltip]="
-                  component.name + ' (' + component.type + ' - ' + component.technology + ')'
+                  getComponentName(devComponent) + ' (' + getComponentTypeLabel(getComponentType(devComponent)) + ' - ' + getComponentTechnology(devComponent) + ')'
                 "
+                [ngClass]="getComponentTypeClass(getComponentType(devComponent))"
+                matTooltipPosition="above"
+                disabled="true"
               >
-                {{ component.name }}
+                {{ getComponentName(devComponent) }}
               </mat-chip>
             </mat-chip-set>
+            <span *ngIf="getComponentsForDisplay(development).length === 0" class="no-components">
+              Sin componentes
+            </span>
           </div>
         </mat-cell>
       </ng-container>
@@ -196,9 +198,9 @@
         <mat-cell *matCellDef="let development">
           <span
             class="environment-badge"
-            [ngClass]="'ambiente-' + development.environment.toLowerCase()"
+            [ngClass]="getEnvironmentClass(development)"
           >
-            {{ development.environment }}
+            {{ getEnvironmentString(development) }}
           </span>
         </mat-cell>
       </ng-container>
@@ -288,7 +290,7 @@
           <div class="card-info-grid">
             <div class="info-item">
               <mat-icon>business</mat-icon>
-              <span>{{ development.environment }}</span>
+              <span>{{ getEnvironmentString(development) }}</span>
             </div>
             <div class="info-item">
               <mat-icon>schedule</mat-icon>
@@ -298,21 +300,21 @@
 
           <div
             class="card-components"
-            *ngIf="development.components && development.components.length > 0"
+            *ngIf="getComponentsForDisplay(development).length > 0"
           >
             <label>Componentes:</label>
             <div class="components-list">
               <mat-chip-set>
                 <mat-chip
-                  *ngFor="let component of development.components; trackBy: trackByComponent"
+                  *ngFor="let devComponent of getComponentsForDisplay(development); trackBy: trackByComponent"
                   [matTooltip]="
-                    component.name + ' (' + getComponentTypeLabel(component.type) + ' - ' + component.technology + ')'
+                    getComponentName(devComponent) + ' (' + getComponentTypeLabel(getComponentType(devComponent)) + ' - ' + getComponentTechnology(devComponent) + ')'
                   "
-                  [ngClass]="getComponentTypeClass(component.type)"
+                  [ngClass]="getComponentTypeClass(getComponentType(devComponent))"
                   matTooltipPosition="above"
                   disabled="true"
                 >
-                  {{ component.name }}
+                  {{ getComponentName(devComponent) }}
                 </mat-chip>
               </mat-chip-set>
             </div>

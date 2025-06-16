@@ -29,6 +29,8 @@ import { DevelopmentFormPanelComponent } from './components/development-form-pan
 import {
   ComponentType,
   Development,
+  DevelopmentWithRelations,
+  DevelopmentComponentRelation,
   Component as DevelopmentComponent,
   DevelopmentStatus,
   DevelopmentEnvironment,
@@ -54,8 +56,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
 
   // Data
-  developments: Development[] = [];
-  dataSource = new MatTableDataSource<Development>([]);
+  developments: (Development | DevelopmentWithRelations)[] = [];
+  dataSource = new MatTableDataSource<Development | DevelopmentWithRelations>([]);
   totalElements = 0;
   loading = false;
 
@@ -135,12 +137,19 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   // TrackBy functions para optimizar renderizado
-  trackByDevelopment(index: number, item: Development): string {
+  trackByDevelopment(index: number, item: Development | DevelopmentWithRelations): string {
     return item.id.toString();
   }
 
-  trackByComponent(index: number, component: DevelopmentComponent): number {
-    return component.id;
+  trackByComponent(index: number, component: any): number {
+    if (component.componentId) {
+      // Es DevelopmentComponentRelation
+      return component.id || component.componentId || index;
+    } else if (component.id) {
+      // Es DevelopmentComponent o Component
+      return component.id || index;
+    }
+    return index;
   }
 
   trackByStatus(index: number, item: StatusOption): string {
@@ -149,6 +158,90 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
 
   trackByEnvironment(index: number, item: string): string {
     return item;
+  }
+
+  isDevelopmentWithRelations(dev: Development | DevelopmentWithRelations): dev is DevelopmentWithRelations {
+    return 'databases' in dev;
+  }
+
+  // Método auxiliar para obtener componentes de manera segura
+  getComponentsForDisplay(development: Development | DevelopmentWithRelations): any[] {
+    if (this.isDevelopmentWithRelations(development)) {
+      // Es DevelopmentWithRelations, tiene components como DevelopmentComponentRelation[]
+      return development.components || [];
+    } else {
+      // Es Development, puede tener components como Component[] o developmentComponents como DevelopmentComponent[]
+      return development.developmentComponents || development.components || [];
+    }
+  }
+
+  // Métodos auxiliares para manejar componentes
+  getComponentName(component: any): string {
+    if (component.componentId && component.component) {
+      // Es DevelopmentComponentRelation
+      return component.component.name || '';
+    } else if (component.component && component.component.name) {
+      // Es DevelopmentComponent
+      return component.component.name || '';
+    } else if (component.name) {
+      // Es Component directo
+      return component.name || '';
+    }
+    return '';
+  }
+
+  getComponentType(component: any): ComponentType | undefined {
+    if (component.componentId && component.component) {
+      // Es DevelopmentComponentRelation
+      return component.component.type;
+    } else if (component.component && component.component.type) {
+      // Es DevelopmentComponent
+      return component.component.type;
+    } else if (component.type) {
+      // Es Component directo
+      return component.type;
+    }
+    return undefined;
+  }
+
+  getComponentTechnology(component: any): string {
+    if (component.componentId && component.component) {
+      // Es DevelopmentComponentRelation
+      return component.component.technology || '';
+    } else if (component.component && component.component.technology) {
+      // Es DevelopmentComponent
+      return component.component.technology || '';
+    } else if (component.technology) {
+      // Es Component directo
+      return component.technology || '';
+    }
+    return '';
+  }
+
+  // Método auxiliar para obtener el environment como string
+  getEnvironmentString(development: Development | DevelopmentWithRelations): string {
+    if (!development.environment) {
+      return 'UNKNOWN';
+    }
+    
+    // Si es un enum DevelopmentEnvironment, retornarlo directamente
+    if (typeof development.environment === 'string') {
+      return development.environment;
+    }
+    
+    // Si es un objeto, intentar obtener el name o type
+    if (typeof development.environment === 'object') {
+      const envObj = development.environment as any;
+      return envObj.name || envObj.type || 'UNKNOWN';
+    }
+    
+    return 'UNKNOWN';
+  }
+
+  // Método auxiliar para obtener la clase CSS del environment
+  getEnvironmentClass(development: Development | DevelopmentWithRelations): string {
+    const envString = this.getEnvironmentString(development);
+    return 'ambiente-' + envString.toLowerCase();
   }
 
   private setupResponsiveLayout(): void {
@@ -191,24 +284,26 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
 
   private loadDevelopments(): void {
     this.loading = true;
-    this.changeDetectorRef.markForCheck();
+    this.changeDetectorRef.detectChanges();
 
     this.developmentService
-      .getDevelopments()
+      .getAllDevelopmentsWithRelations()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (developments) => {
+          console.log('Desarrollos recibidos:', developments); // Log temporal para debug
           this.developments = developments;
+          this.dataSource.data = developments;
+          this.totalElements = developments.length;
           this.updateStatusCounts();
           this.applyFilters();
           this.loading = false;
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef.detectChanges();
         },
         error: (error) => {
-          console.error('Error loading developments:', error);
-          this.notificationService.showError('Error al cargar los desarrollos');
+          console.error('Error al cargar desarrollos:', error);
           this.loading = false;
-          this.changeDetectorRef.markForCheck();
+          this.changeDetectorRef.detectChanges();
         },
       });
   }
@@ -244,9 +339,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
         (dev) =>
           dev.title.toLowerCase().includes(searchTerm) ||
           dev.description?.toLowerCase().includes(searchTerm) ||
-          dev.components.some((ms) =>
-            ms.name.toLowerCase().includes(searchTerm)
-          )
+          (this.isDevelopmentWithRelations(dev) && dev.components && dev.components.some((comp) =>
+            (comp as DevelopmentComponentRelation).component?.name?.toLowerCase().includes(searchTerm)
+          ))
       );
     }
 
@@ -293,8 +388,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     this.changeDetectorRef.markForCheck();
   }
 
-  viewDetails(development: Development): void {
-    this.selectedDevelopment = development;
+  viewDetails(development: Development | DevelopmentWithRelations): void {
+    this.selectedDevelopment = development as Development;
     this.isPanelOpen = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -330,31 +425,17 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  editDevelopment(development: Development): void {
-    // Obtener el desarrollo con relaciones antes de abrir el formulario
-    this.developmentService.getDevelopmentWithRelations(development.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (developmentWithRelations) => {
-          if (developmentWithRelations) {
-            this.selectedDevelopmentForEdit = developmentWithRelations;
-            this.isFormPanelOpen = true;
-            this.changeDetectorRef.markForCheck();
-          }
-        },
-        error: (error) => {
-          console.error('Error al cargar desarrollo para edición:', error);
-          this.notificationService.showError('Error al cargar desarrollo');
-        }
-      });
+  editDevelopment(development: Development | DevelopmentWithRelations): void {
+    this.selectedDevelopmentForEdit = development as Development;
+    this.isFormPanelOpen = true;
+    this.changeDetectorRef.markForCheck();
   }
 
-  deleteDevelopment(development: Development): void {
-    // TODO: Implementar confirmación de eliminación
-    this.notificationService.showWarning(`Eliminar: ${development.title}`);
+  deleteDevelopment(development: Development | DevelopmentWithRelations): void {
+    // Implementar lógica de eliminación
   }
 
-  changeStatus(development: Development, newStatus: string): void {
+  changeStatus(development: Development | DevelopmentWithRelations, newStatus: string): void {
     this.developmentService
       .changeStatus(development.id, newStatus as DevelopmentStatus)
       .pipe(takeUntil(this.destroy$))
@@ -414,7 +495,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     this.changeDetectorRef.markForCheck();
   }
 
-  getComponentTypeLabel(type: ComponentType): string {
+  getComponentTypeLabel(type: ComponentType | undefined): string {
+    if (!type) return 'Sin tipo';
+    
     switch (type) {
       case ComponentType.MICROSERVICE:
         return 'Microservicio';
@@ -423,11 +506,13 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       case ComponentType.MONOLITH:
         return 'Monolito';
       default:
-        return 'Componente';
+        return 'Desconocido';
     }
   }
 
-  getComponentTypeClass(type: ComponentType): string {
+  getComponentTypeClass(type: ComponentType | undefined): string {
+    if (!type) return 'component-unknown';
+    
     switch (type) {
       case ComponentType.MICROSERVICE:
         return 'component-microservice';
@@ -436,7 +521,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       case ComponentType.MONOLITH:
         return 'component-monolith';
       default:
-        return 'component-default';
+        return 'component-unknown';
     }
   }
 }
