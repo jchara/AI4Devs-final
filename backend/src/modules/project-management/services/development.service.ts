@@ -308,18 +308,11 @@ export class DevelopmentService extends BaseService<Development> {
     id: number,
     updateDto: UpdateDevelopmentWithRelationsDto,
   ): Promise<Development> {
-    console.log('Iniciando updateWithRelations en servicio:', {
-      id,
-      updateDto,
-    });
+
     return await this.dataSource.transaction(async () => {
       // 1. Actualizar el desarrollo
       const { components, databases, ...developmentData } = updateDto;
-      console.log('Datos separados:', {
-        components,
-        databases,
-        developmentData,
-      });
+
       await this.developmentRepository.update(id, developmentData);
 
       // 2. Si se proporcionan componentes, reemplazar las relaciones existentes
