@@ -5,7 +5,7 @@ import { DevelopmentStatus } from '../../../shared/enums/development-status.enum
 import { DevelopmentPriority } from '../../../shared/enums/development-priority.enum';
 import { DatabaseChangeType } from '../../../shared/enums/database-change-type.enum';
 import { BaseDto } from './base.dto';
-import { DevelopmentComponentChangeType } from 'src/shared/enums';
+import { DevelopmentComponentChangeType } from '../../../shared';
 
 // DTOs para componentes dentro del desarrollo
 export class DevelopmentComponentDto {
