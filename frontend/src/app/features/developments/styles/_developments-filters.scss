@@ -1,0 +1,143 @@
+// =============================================================================
+// DEVELOPMENTS FILTERS - Estilos de filtros y búsqueda
+// =============================================================================
+
+// Sección de filtros mejorada
+.filters-section {
+  background: var(--bg-primary);
+  border-radius: var(--card-radius);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--card-shadow);
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+.search-and-environment {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+.search-field {
+  flex: 1;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.environment-select {
+  min-width: 200px;
+
+  @media (max-width: 768px) {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+// Chips de estado mejorados
+.status-filters-container {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+}
+
+.filter-group {
+  flex: 1;
+}
+
+.filter-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  display: block;
+}
+
+.status-chips-simple {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .status-badge-filter {
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-standard);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 148px;
+    justify-content: center;
+    white-space: nowrap;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow);
+    }
+
+    &.selected {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+    }
+
+    .chip-count {
+      opacity: 0.8;
+      font-size: 0.75rem;
+      background-color: rgba(0, 0, 0, 0.1);
+      padding: 2px 6px;
+      border-radius: 12px;
+      min-width: 20px;
+      text-align: center;
+      display: inline-block;
+    }
+
+    // Estilos específicos para cada estado
+    &.status-planning {
+      min-width: 150px;
+    }
+
+    &.status-development {
+      min-width: 140px;
+    }
+
+    &.status-testing {
+      min-width: 130px;
+    }
+
+    &.status-completed {
+      min-width: 130px;
+    }
+
+    &.status-archived {
+      min-width: 120px;
+    }
+  }
+
+  .status-chip-all {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    min-width: 100px;
+
+    &.selected {
+      background-color: var(--color-primary);
+      color: white;
+    }
+  }
+} 

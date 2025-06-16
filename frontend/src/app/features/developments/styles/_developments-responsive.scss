@@ -1,0 +1,36 @@
+// =============================================================================
+// DEVELOPMENTS RESPONSIVE - Media queries y diseño responsivo
+// =============================================================================
+
+// Media queries adicionales
+@media (max-width: 768px) {
+  .status-filters-container .filter-group .status-chips-simple {
+    justify-content: center;
+
+    .status-badge-filter {
+      min-width: 140px;
+      margin-bottom: 8px;
+
+      &.status-planning {
+        min-width: 160px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header .title-section .page-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .status-filters-container .filter-group .status-chips-simple {
+    justify-content: center;
+    gap: 8px;
+
+    .status-badge-filter {
+      min-width: 120px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+  }
+} 

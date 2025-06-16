@@ -1,0 +1,59 @@
+// =============================================================================
+// DEVELOPMENTS BASE - Estilos base del componente
+// =============================================================================
+
+.developments-container {
+  padding-bottom: 2rem;
+}
+
+// Header mejorado
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+}
+
+.title-section {
+  flex: 1;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+}
+
+.count-number {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: white;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  border-radius: var(--border-radius);
+  min-width: 60px;
+  text-align: center;
+  box-shadow: var(--shadow);
+
+  @media (max-width: 768px) {
+    font-size: var(--font-size-2xl);
+    padding: 6px 12px;
+    min-width: 50px;
+  }
+}
+
+// Botón Nuevo mejorado
+.btn-nuevo {
+  @extend .action-button !optional;
+} 

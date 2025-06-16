@@ -1,0 +1,104 @@
+// =============================================================================
+// DEVELOPMENTS TABLE - Estilos de tabla y vista desktop
+// =============================================================================
+
+// Tabla de desarrollos mejorada
+.table-container {
+  overflow-x: auto;
+  background: var(--bg-primary);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  margin-bottom: var(--spacing-lg);
+}
+
+.developments-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+
+  th {
+    background-color: var(--bg-secondary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  tr:hover {
+    background-color: var(--bg-secondary);
+  }
+
+  .mat-mdc-row {
+    transition: var(--transition-standard);
+
+    &:hover {
+      background-color: rgba(var(--bg-tertiary-rgb), 0.5);
+    }
+  }
+  
+  .id-text {
+    font-family: monospace;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+  }
+  
+  // Ajuste de ancho para la columna ID
+  .mat-column-id {
+    max-width: 70px;
+    width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  // Ajuste de ancho para la columna de microservicios
+  .mat-column-microservices {
+    min-width: 150px;
+    white-space: normal;
+  }
+}
+
+// Sección de microservicios en la tabla
+.microservices-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  
+  mat-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  mat-chip {
+    font-size: 0.75rem;
+    font-weight: 500;
+    height: auto;
+    min-height: auto;
+    border-radius: 50px;
+    padding: 4px 12px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-standard);
+    max-width: 120px;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: var(--bg-tertiary);
+    }
+  }
+}
+
+// Paginador de tabla
+.table-paginator {
+  border-top: 1px solid var(--border-color);
+} 

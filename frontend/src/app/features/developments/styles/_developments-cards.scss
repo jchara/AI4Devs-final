@@ -1,0 +1,172 @@
+// =============================================================================
+// DEVELOPMENTS CARDS - Estilos de cards para vista móvil
+// =============================================================================
+
+// Cards para móvil mejoradas
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.development-card-content {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: var(--transition-standard);
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .mat-mdc-card-header {
+    padding: var(--spacing-md) var(--spacing-md) 0 var(--spacing-md);
+  }
+
+  .mat-mdc-card-content {
+    padding: var(--spacing-md);
+  }
+}
+
+.card-header-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: flex-start;
+
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .card-title-section {
+    flex: 1;
+    margin-right: var(--spacing-sm);
+
+    .mat-mdc-card-title {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .mat-mdc-card-subtitle {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.card-description {
+  margin-top: var(--spacing-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-md) 0;
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    padding: 4px 0;
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      color: var(--color-primary);
+    }
+
+    .update-time {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+  }
+}
+
+.card-microservices {
+  margin-top: var(--spacing-md);
+  
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .microservices-list {
+    margin-top: var(--spacing-xs);
+    
+    mat-chip-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    
+    mat-chip {
+      font-size: 0.75rem;
+      font-weight: 500;
+      height: auto;
+      min-height: auto;
+      border-radius: 50px;
+      padding: 4px 12px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      transition: var(--transition-standard);
+      color: var(--text-primary);
+      max-width: 100px;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: var(--bg-tertiary);
+      }
+    }
+  }
+}
+
+.mat-mdc-card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+
+  button {
+    font-weight: 500;
+
+    mat-icon {
+      margin-right: 4px;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+// Mobile paginator
+.mobile-paginator {
+  margin: var(--spacing-md) 0;
+  border-radius: var(--card-radius);
+  background: var(--bg-primary);
+  box-shadow: var(--card-shadow);
+} 
