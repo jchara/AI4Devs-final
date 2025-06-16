@@ -11,7 +11,7 @@ import { Environment } from '../../shared/models/environment.model';
 import { DeleteDialogComponent, DeleteDialogData } from '../../shared/components/delete-dialog';
 import { EnvironmentSlidePanelComponent } from './components/environment-slide-panel/environment-slide-panel.component';
 import { Router, NavigationStart } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MaterialModule } from '../../shared/material.module';
 
 @Component({
@@ -89,6 +89,8 @@ export class EnvironmentsComponent implements OnInit, OnDestroy {
 
     this.searchForm.get('searchTerm')?.valueChanges
       .pipe(
+        debounceTime(300), // Esperar 300ms después del último cambio
+        distinctUntilChanged(), // Solo emitir si el valor cambió
         takeUntil(this.destroy$)
       )
       .subscribe(value => {

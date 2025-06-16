@@ -14,7 +14,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { Router, NavigationStart } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DatabaseService } from '../../core/services/database.service';
 import { EnvironmentService } from '../../core/services/environment.service';
 import { ProjectService } from '../../core/services/project.service';
@@ -128,9 +128,13 @@ export class DatabasesComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
 
-    // Suscripción a cambios en filtros
+    // Suscripción a cambios en filtros con debounce
     this.searchForm.valueChanges
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        debounceTime(300), // Esperar 300ms después del último cambio
+        distinctUntilChanged(), // Solo emitir si el valor cambió
+        takeUntil(this.destroy$)
+      )
       .subscribe(() => {
         this.filterDatabases();
         this.cdr.markForCheck();

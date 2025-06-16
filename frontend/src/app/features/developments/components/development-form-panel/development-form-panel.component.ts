@@ -96,6 +96,16 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   private destroy$ = new Subject<void>();
   private memoizedGetFormError = memoize(this.getFormError.bind(this));
   private resizeObserver: ResizeObserver | null = null;
+  
+  // Cache para datos del formulario
+  private formDataCache = {
+    projects: null as Project[] | null,
+    components: null as AppComponent[] | null,
+    databases: null as Database[] | null,
+    environments: null as Environment[] | null,
+    lastUpdated: 0,
+    cacheTimeout: 5 * 60 * 1000 // 5 minutos
+  };
 
   title: string = 'Nuevo Desarrollo';
   developmentForm: FormGroup;
@@ -210,6 +220,38 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private loadFormData(): void {
+    // Verificar si el cache es válido
+    if (this.isCacheValid()) {
+      this.loadFromCache();
+      return;
+    }
+
+    // Cargar datos desde el servidor y actualizar cache
+    this.loadFromServer();
+  }
+
+  private isCacheValid(): boolean {
+    const now = Date.now();
+    return (
+      this.formDataCache.lastUpdated > 0 &&
+      (now - this.formDataCache.lastUpdated) < this.formDataCache.cacheTimeout &&
+      this.formDataCache.projects !== null &&
+      this.formDataCache.components !== null &&
+      this.formDataCache.databases !== null &&
+      this.formDataCache.environments !== null
+    );
+  }
+
+  private loadFromCache(): void {
+    this.projects = this.formDataCache.projects!;
+    this.components = this.formDataCache.components!;
+    this.databases = this.formDataCache.databases!;
+    this.environments = this.formDataCache.environments!;
+    this.loading = false;
+    this.cdr.markForCheck();
+  }
+
+  private loadFromServer(): void {
     this.loading = true;
     this.cdr.markForCheck();
 
@@ -248,6 +290,9 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         this.databases = Array.isArray(data.databases) 
           ? data.databases.filter(db => db.isActive) 
           : [];
+
+        // Actualizar cache
+        this.updateFormDataCache();
                 
         this.loading = false;
         this.cdr.markForCheck();
@@ -265,6 +310,28 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         this.cdr.markForCheck();
       }
     });
+  }
+
+  private updateFormDataCache(): void {
+    this.formDataCache = {
+      projects: [...this.projects],
+      components: [...this.components],
+      databases: [...this.databases],
+      environments: [...this.environments],
+      lastUpdated: Date.now(),
+      cacheTimeout: 5 * 60 * 1000 // 5 minutos
+    };
+  }
+
+  clearCache(): void {
+    this.formDataCache = {
+      projects: null,
+      components: null,
+      databases: null,
+      environments: null,
+      lastUpdated: 0,
+      cacheTimeout: 5 * 60 * 1000
+    };
   }
 
   private initializeForm(): void {
