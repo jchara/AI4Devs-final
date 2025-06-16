@@ -1,23 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
-import { MatTableModule, MatTable } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTable } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { Router, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -27,6 +14,7 @@ import { Component as ComponentModel, ComponentType } from '../../shared/models/
 import { Project } from '../../shared/models/project.model';
 import { DeleteDialogComponent, DeleteDialogData } from '../../shared/components/delete-dialog';
 import { ComponentSlidePanelComponent } from './components/component-slide-panel/component-slide-panel.component';
+import { MaterialModule } from '../../shared/material.module';
 
 @Component({
   selector: 'app-components',
@@ -34,23 +22,7 @@ import { ComponentSlidePanelComponent } from './components/component-slide-panel
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatCardModule,
-    MatMenuModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-    MatDividerModule,
-    MatChipsModule,
-    MatDialogModule,
-    MatSlideToggleModule,
+    MaterialModule,
     ComponentSlidePanelComponent
   ],
   templateUrl: './components.component.html',
