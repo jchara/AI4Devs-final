@@ -43,10 +43,39 @@ export class DevelopmentChartComponent implements OnInit, OnChanges {
     
     if (maxValue === 0) return 0;
     
-    // Asegurar que las barras tengan al menos 15% de altura para ser visibles
+    // Calcular porcentaje basado en el valor máximo
     const percentage = (count / maxValue) * 100;
-    const finalHeight = Math.max(percentage, 15);
-    return finalHeight;
+    // Asegurar que las barras tengan al menos 8% de altura para ser visibles
+    return Math.max(percentage, 8);
+  }
+
+  // Determinar si el valor debe mostrarse dentro de la barra
+  shouldShowValue(count: number): boolean {
+    if (count === 0) return false;
+    
+    const heightPercentage = this.getBarHeight(count);
+    // Mostrar valor solo si la barra tiene al menos 20% de altura (suficiente espacio)
+    return heightPercentage >= 20;
+  }
+
+  // Determinar el color del texto basado en el color de fondo de la barra
+  getTextColor(backgroundColor: string): string {
+    // Convertir hex a RGB si es necesario
+    let r, g, b;
+    
+    if (backgroundColor.startsWith('#')) {
+      const hex = backgroundColor.slice(1);
+      r = parseInt(hex.substr(0, 2), 16);
+      g = parseInt(hex.substr(2, 2), 16);
+      b = parseInt(hex.substr(4, 2), 16);
+    } else {
+      // Para colores RGB o nombres de colores, usar blanco por defecto
+      return 'white';
+    }
+    
+    // Calcular luminancia para determinar si usar texto blanco o negro
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? 'black' : 'white';
   }
 
   getTotalCount(): number {
