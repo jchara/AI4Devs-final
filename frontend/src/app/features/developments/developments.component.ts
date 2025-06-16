@@ -513,8 +513,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
                 } as Development;
               }
             
-            // LOG: Verificar actualización del array
-            console.log('📊 Array actualizado - ID:', development.id, 'Nuevo estado:', this.developments[index].status);
+
           }
           
           // Actualizar contadores de estado
@@ -552,8 +551,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
           // Forzar detección de cambios final
           this.changeDetectorRef.detectChanges();
           
-          // LOG: Verificar actualización del dataSource
-          console.log('📋 DataSource actualizado - Elemento ID:', development.id, 'Nuevo estado:', this.dataSource.data.find(d => d.id === development.id)?.status);
+
           
           this.notificationService.showSuccess('Estado actualizado correctamente');
         },

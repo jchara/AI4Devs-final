@@ -213,9 +213,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
       databases: this.databaseService.getActiveDatabases()
     }).pipe(takeUntil(this.destroy$))
     .subscribe({
-      next: (data) => {
-        console.log('Data received:', data); // Debug log
-        
+      next: (data) => {       
         // Verificar que los datos sean arrays y filtrar solo elementos activos
         this.projects = Array.isArray(data.projects) 
           ? data.projects.filter(project => project.isActive) 
@@ -241,16 +239,7 @@ export class DevelopmentFormPanelComponent implements OnInit, OnDestroy, AfterVi
         this.databases = Array.isArray(data.databases) 
           ? data.databases.filter(db => db.isActive) 
           : [];
-        
-        console.log('Processed data:', { 
-          projects: this.projects.length, 
-          environments: this.environments.length,
-          users: this.users.length,
-          teams: this.teams.length,
-          components: this.components.length,
-          databases: this.databases.length
-        }); // Debug log
-        
+                
         this.loading = false;
         this.cdr.markForCheck();
       },

@@ -258,30 +258,20 @@ export class DevelopmentMapper {
 
     const envName = typeof environment === 'string' ? environment : environment.name;
     
-    // LOG DEBUG: Ver qué valor exacto está llegando
-    console.log('🔍 Mapper - environment recibido:', environment);
-    console.log('🔍 Mapper - envName extraído:', envName, 'tipo:', typeof envName);
-    console.log('🔍 Mapper - envName.toUpperCase():', envName?.toUpperCase());
-    
     switch (envName?.toUpperCase()) {
       case 'DEVELOPMENT':
       case 'DESARROLLO':  // Soporte para español
-        console.log('✅ Mapper - Mapeando a DEVELOPMENT');
         return DevelopmentEnvironment.DEVELOPMENT;
       case 'TESTING':
       case 'PRUEBAS':     // Soporte para español
-        console.log('✅ Mapper - Mapeando a TESTING');
         return DevelopmentEnvironment.TESTING;
       case 'STAGING':
       case 'PREPRODUCCIÓN':  // Soporte para español
-        console.log('✅ Mapper - Mapeando a STAGING');
         return DevelopmentEnvironment.STAGING;
       case 'PRODUCTION':
       case 'PRODUCCIÓN':  // Soporte para español
-        console.log('✅ Mapper - Mapeando a PRODUCTION');
         return DevelopmentEnvironment.PRODUCTION;
       default:
-        console.log('❌ Mapper - Cayendo en default, envName no reconocido:', envName?.toUpperCase());
         return DevelopmentEnvironment.DEVELOPMENT;
     }
   }
