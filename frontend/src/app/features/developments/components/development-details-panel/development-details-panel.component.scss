@@ -1276,3 +1276,228 @@ button[mat-menu-item] {
     line-height: 1.5;
   }
 }
+
+// Estilos para las nuevas secciones de componentes y bases de datos
+.components-section,
+.databases-section {
+  padding: var(--panel-padding);
+  background: var(--bg-primary);
+  margin-bottom: var(--section-spacing);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    margin: 0 1rem var(--section-spacing);
+  }
+
+  h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    position: relative;
+    padding-bottom: 0.75rem;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 2.5rem;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 3px;
+    }
+  }
+}
+
+.components-list,
+.databases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.component-item,
+.database-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: var(--transition-standard);
+  
+  &:hover {
+    transform: var(--section-hover-transform);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary);
+  }
+}
+
+.component-header,
+.database-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  
+  mat-chip {
+    font-size: 0.75rem;
+    font-weight: 500;
+    
+    &.component-microservice {
+      background-color: rgba(var(--color-primary-rgb), 0.15);
+      color: var(--color-primary);
+    }
+    
+    &.component-microfrontend {
+      background-color: rgba(var(--color-success-rgb), 0.15);
+      color: var(--color-success);
+    }
+    
+    &.component-monolith {
+      background-color: rgba(var(--color-warning-rgb), 0.15);
+      color: var(--color-warning);
+    }
+    
+    &.component-unknown {
+      background-color: rgba(var(--color-error-rgb), 0.15);
+      color: var(--color-error);
+    }
+    
+    &.database-chip {
+      background-color: rgba(var(--color-info-rgb), 0.15);
+      color: var(--color-info);
+    }
+  }
+}
+
+.component-details,
+.database-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  
+  label {
+    min-width: 120px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  
+  span {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    
+    &.change-type {
+      background: rgba(var(--color-primary-rgb), 0.1);
+      color: var(--color-primary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      display: inline-block;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.25rem;
+    
+    label {
+      min-width: auto;
+    }
+  }
+}
+
+// Estilos para estados vacíos
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  transition: var(--transition-standard);
+  
+  &:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.02);
+  }
+  
+  .empty-state-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(var(--color-primary-rgb), 0.1);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    transition: var(--transition-standard);
+    
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: var(--color-primary);
+    }
+  }
+  
+  .empty-state-content {
+    h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem 1rem;
+    
+    .empty-state-icon {
+      width: 50px;
+      height: 50px;
+      
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+    
+    .empty-state-content {
+      h3 {
+        font-size: 0.95rem;
+      }
+      
+      p {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}

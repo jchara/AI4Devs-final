@@ -107,7 +107,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   ];
 
   // Propiedades para el panel de detalles
-  selectedDevelopment: Development | null = null;
+  selectedDevelopment: Development | DevelopmentWithRelations | null = null;
   isPanelOpen = false;
 
   // Propiedades para el panel de formulario
@@ -224,9 +224,9 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       return 'UNKNOWN';
     }
     
-    // Si es un enum DevelopmentEnvironment, retornarlo directamente
+    // Si es un enum DevelopmentEnvironment, traducirlo a español
     if (typeof development.environment === 'string') {
-      return development.environment;
+      return this.translateEnvironmentToSpanish(development.environment);
     }
     
     // Si es un objeto, intentar obtener el name o type
@@ -236,6 +236,22 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     }
     
     return 'UNKNOWN';
+  }
+
+  // Método para traducir el enum a español para mostrar en la UI
+  private translateEnvironmentToSpanish(environment: string): string {
+    switch (environment) {
+      case DevelopmentEnvironment.DEVELOPMENT:
+        return 'DESARROLLO';
+      case DevelopmentEnvironment.TESTING:
+        return 'PRUEBAS';
+      case DevelopmentEnvironment.STAGING:
+        return 'PREPRODUCCIÓN';
+      case DevelopmentEnvironment.PRODUCTION:
+        return 'PRODUCCIÓN';
+      default:
+        return environment; // Fallback al valor original
+    }
   }
 
   // Método auxiliar para obtener la clase CSS del environment
@@ -291,7 +307,6 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (developments) => {
-          console.log('Desarrollos recibidos:', developments); // Log temporal para debug
           this.developments = developments;
           this.dataSource.data = developments;
           this.totalElements = developments.length;
@@ -301,7 +316,29 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
           this.changeDetectorRef.detectChanges();
         },
         error: (error) => {
-          console.error('Error al cargar desarrollos:', error);
+          console.error('Error al cargar desarrollos con relaciones:', error);
+          // Fallback: cargar desarrollos normales si falla el endpoint con relaciones
+          this.loadDevelopmentsFallback();
+        },
+      });
+  }
+
+  private loadDevelopmentsFallback(): void {
+    this.developmentService
+      .getDevelopments()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (developments) => {
+          this.developments = developments;
+          this.dataSource.data = developments;
+          this.totalElements = developments.length;
+          this.updateStatusCounts();
+          this.applyFilters();
+          this.loading = false;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al cargar desarrollos (fallback):', error);
           this.loading = false;
           this.changeDetectorRef.detectChanges();
         },
@@ -359,8 +396,22 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.dataSource.data = filteredData;
+    // CRÍTICO: Estrategia más robusta para actualizar la tabla
+    // 1. Limpiar datos actuales
+    this.dataSource.data = [];
+    this.changeDetectorRef.detectChanges();
+    
+    // 2. Asignar nuevos datos con nueva referencia
+    this.dataSource.data = [...filteredData];
     this.totalElements = filteredData.length;
+
+    // 3. Forzar detección de cambios múltiple
+    this.changeDetectorRef.detectChanges();
+    
+    // 4. Usar setTimeout para asegurar que Angular procese los cambios
+    setTimeout(() => {
+      this.changeDetectorRef.detectChanges();
+    }, 0);
 
     // Reset paginator
     if (this.paginator) {
@@ -389,7 +440,7 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(development: Development | DevelopmentWithRelations): void {
-    this.selectedDevelopment = development as Development;
+    this.selectedDevelopment = development;
     this.isPanelOpen = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -418,9 +469,8 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChangeStatusFromPanel(): void {
+  onChangeStatusFromPanel(newStatus: DevelopmentStatus): void {
     if (this.selectedDevelopment) {
-      const newStatus = this.getStatusesForChange(this.selectedDevelopment.status)[0];
       this.changeStatus(this.selectedDevelopment, newStatus);
     }
   }
@@ -441,28 +491,75 @@ export class DevelopmentsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updatedDev) => {
+          // Actualizar el desarrollo en el array principal
+          // NOTA: El backend no devuelve el ID, usamos el ID del desarrollo original
           const index = this.developments.findIndex(
-            (d) => d.id === updatedDev.id
+            (d) => d.id === development.id
           );
           if (index !== -1) {
-            this.developments[index] = updatedDev;
-            this.updateStatusCounts();
-            this.applyFilters();
+                          // Mantener las relaciones si existen y agregar el ID faltante
+              if (this.isDevelopmentWithRelations(this.developments[index])) {
+                const devWithRelations = this.developments[index] as DevelopmentWithRelations;
+                this.developments[index] = {
+                  ...updatedDev,
+                  id: development.id, // Agregar el ID que falta en la respuesta del backend
+                  components: devWithRelations.components,
+                  databases: devWithRelations.databases
+                } as DevelopmentWithRelations;
+              } else {
+                this.developments[index] = {
+                  ...updatedDev,
+                  id: development.id // Agregar el ID que falta en la respuesta del backend
+                } as Development;
+              }
             
-            // Refrescar la tabla completa
-            this.loadDevelopments();
-            
-            // Si hay un desarrollo seleccionado en el panel, actualizarlo también
-            if (this.selectedDevelopment && this.selectedDevelopment.id === updatedDev.id) {
-              this.selectedDevelopment = updatedDev;
-            }
+            // LOG: Verificar actualización del array
+            console.log('📊 Array actualizado - ID:', development.id, 'Nuevo estado:', this.developments[index].status);
           }
-          this.changeDetectorRef.markForCheck();
+          
+          // Actualizar contadores de estado
+          this.updateStatusCounts();
+          
+          // CRÍTICO: Crear nueva referencia del array completo para forzar detección de cambios
+          this.developments = [...this.developments];
+          
+          // Si hay un desarrollo seleccionado en el panel, actualizarlo también
+          if (this.selectedDevelopment && this.selectedDevelopment.id === development.id) {
+                          if (this.isDevelopmentWithRelations(this.selectedDevelopment)) {
+                const selectedWithRelations = this.selectedDevelopment as DevelopmentWithRelations;
+                this.selectedDevelopment = {
+                  ...updatedDev,
+                  id: development.id, // Agregar el ID que falta
+                  components: selectedWithRelations.components,
+                  databases: selectedWithRelations.databases
+                } as DevelopmentWithRelations;
+              } else {
+                this.selectedDevelopment = {
+                  ...updatedDev,
+                  id: development.id // Agregar el ID que falta
+                } as Development;
+              }
+          }
+          
+          // CRÍTICO: Estrategia más robusta - Recrear completamente el dataSource
+          const currentData = this.dataSource.data;
+          this.dataSource.data = [];
+          this.changeDetectorRef.detectChanges();
+          
+          // Aplicar filtros para refrescar la tabla con los datos actualizados
+          this.applyFilters();
+          
+          // Forzar detección de cambios final
+          this.changeDetectorRef.detectChanges();
+          
+          // LOG: Verificar actualización del dataSource
+          console.log('📋 DataSource actualizado - Elemento ID:', development.id, 'Nuevo estado:', this.dataSource.data.find(d => d.id === development.id)?.status);
+          
+          this.notificationService.showSuccess('Estado actualizado correctamente');
         },
         error: (error) => {
           console.error('Error changing status:', error);
           this.notificationService.showError('Error al cambiar el estado');
-          this.changeDetectorRef.markForCheck();
         },
       });
   }

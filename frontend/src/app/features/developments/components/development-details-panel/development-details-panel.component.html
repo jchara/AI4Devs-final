@@ -100,10 +100,10 @@
                     <div class="progress-bar-small">
                       <div
                         class="progress-fill"
-                        [style.width]="development.progress"
+                        [ngStyle]="getProgressBarStyle()"
                       ></div>
                     </div>
-                    <span>{{ development.progress }}</span>
+                    <span>{{ getProgressDisplay() }}</span>
                   </div>
                 </div>
                 <div class="info-item">
@@ -154,6 +154,33 @@
                 </div>
               </div>
             </section>
+
+            <!-- Estado Actual -->
+            <section class="status-section-left">
+              <h2>Estado Actual</h2>
+              <div class="status-info">
+                <div
+                  class="status-badge-large"
+                  [class]="getStatusBadgeClass(development.status)"
+                >
+                  {{ development.status }}
+                </div>
+
+                <!-- Componente de progreso con barra de progreso -->
+                <div class="progress-container">
+                  <div class="progress-bar-horizontal">
+                    <div
+                      class="progress-fill"
+                      [ngStyle]="getProgressBarStyle()"
+                    ></div>
+                    <span class="progress-label"
+                      >{{ getProgressDisplay() }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+
           </div>
 
           <!-- Columna Derecha -->
@@ -198,28 +225,91 @@
               </div>
             </section>
 
-            <!-- Estado Actual -->
-            <section class="status-section-left">
-              <h2>Estado Actual</h2>
-              <div class="status-info">
-                <div
-                  class="status-badge-large"
-                  [class]="getStatusBadgeClass(development.status)"
+            <!-- Componentes -->
+            <section class="components-section">
+              <h2>Componentes Afectados</h2>
+              <div class="components-list" *ngIf="getComponents().length > 0">
+                <div 
+                  class="component-item" 
+                  *ngFor="let component of getComponents(); trackBy: trackByFn"
                 >
-                  {{ development.status }}
-                </div>
-
-                <!-- Componente de progreso con barra de progreso -->
-                <div class="progress-container">
-                  <div class="progress-bar-horizontal">
-                    <div
-                      class="progress-fill"
-                      [ngStyle]="getProgressBarStyle()"
-                    ></div>
-                    <span class="progress-label"
-                      >{{ development.progress }}%</span
+                  <div class="component-header">
+                    <mat-chip 
+                      [ngClass]="getComponentTypeClass(getComponentType(component))"
+                      disabled="true"
                     >
+                      {{ getComponentTypeLabel(getComponentType(component)) }}
+                    </mat-chip>
+                    <h3>{{ getComponentName(component) }}</h3>
                   </div>
+                  <div class="component-details">
+                    <div class="detail-row">
+                      <label>Tecnología:</label>
+                      <span>{{ component.component.technology || 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                      <label>Tipo de cambio:</label>
+                      <span class="change-type">{{ component.changeType || 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row" *ngIf="component.notes">
+                      <label>Notas:</label>
+                      <span>{{ component.notes }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Mensaje cuando no hay componentes -->
+              <div class="empty-state" *ngIf="getComponents().length === 0">
+                <div class="empty-state-icon">
+                  <mat-icon>code</mat-icon>
+                </div>
+                <div class="empty-state-content">
+                  <h3>Sin componentes afectados</h3>
+                  <p>Este desarrollo no tiene componentes asociados actualmente.</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Bases de Datos -->
+            <section class="databases-section">
+              <h2>Bases de Datos Afectadas</h2>
+              <div class="databases-list" *ngIf="getDatabases().length > 0">
+                <div 
+                  class="database-item" 
+                  *ngFor="let database of getDatabases(); trackBy: trackByFn"
+                >
+                  <div class="database-header">
+                    <mat-chip class="database-chip" disabled="true">
+                      {{ getDatabaseType(database) }}
+                    </mat-chip>
+                    <h3>{{ getDatabaseName(database) }}</h3>
+                  </div>
+                  <div class="database-details">
+                    <div class="detail-row">
+                      <label>Tipo de cambio:</label>
+                      <span class="change-type">{{ database.changeType || 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                      <label>Descripción del script:</label>
+                      <span>{{ database.scriptDescription || 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row" *ngIf="database.notes">
+                      <label>Notas:</label>
+                      <span>{{ database.notes }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Mensaje cuando no hay bases de datos -->
+              <div class="empty-state" *ngIf="getDatabases().length === 0">
+                <div class="empty-state-icon">
+                  <mat-icon>storage</mat-icon>
+                </div>
+                <div class="empty-state-content">
+                  <h3>Sin bases de datos afectadas</h3>
+                  <p>Este desarrollo no requiere cambios en bases de datos.</p>
                 </div>
               </div>
             </section>

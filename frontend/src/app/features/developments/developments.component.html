@@ -388,7 +388,7 @@
     [isOpen]="isPanelOpen"
     (closePanel)="onClosePanel()"
     (editDevelopment)="onEditFromPanel()"
-    (changeStatus)="onChangeStatusFromPanel()">
+    (changeStatus)="onChangeStatusFromPanel($event)">
   </app-development-details-panel>
 
   <!-- Panel de formulario -->

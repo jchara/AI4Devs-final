@@ -360,7 +360,7 @@ export class DevelopmentService {
     newStatus: DevelopmentStatus
   ): Observable<Development> {
     return this.apiService
-      .patch<BackendDevelopmentResponse>(`developments/${id}/status`, {
+      .patch<any>(`developments/${id}/status`, {
         status: newStatus,
       })
       .pipe(
@@ -368,7 +368,10 @@ export class DevelopmentService {
           this.notificationService.showSuccess(
             'Estado actualizado exitosamente'
           );
-          return DevelopmentMapper.mapDevelopmentFromBackend(response);
+          // El backend devuelve { data: {...}, metadata: {...} }
+          // Necesitamos extraer solo el objeto data
+          const developmentData = response.data || response;
+          return DevelopmentMapper.mapDevelopmentFromBackend(developmentData);
         })
       );
   }
@@ -643,8 +646,11 @@ export class DevelopmentService {
     return this.apiService.get<any>('developments/with-relations').pipe(
       map((response) => {
         this.loadingSubject.next(false);
-        // Extraer solo los datos, no toda la respuesta
-        return response?.data || response;
+        
+        // El backend devuelve { data: [...] }
+        const developments = response?.data || response || [];
+        
+        return developments;
       }),
       catchError((error) => {
         console.error('Error al obtener desarrollos con relaciones:', error);

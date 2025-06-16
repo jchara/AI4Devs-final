@@ -9,7 +9,15 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { memoize } from 'lodash';
 import { Subject } from 'rxjs';
-import { Development, DevelopmentEnvironment, DevelopmentStatus } from '../../../../shared/models/development.model';
+import { 
+  Development, 
+  DevelopmentEnvironment, 
+  DevelopmentStatus, 
+  DevelopmentWithRelations,
+  DevelopmentComponentRelation,
+  DevelopmentDatabaseRelation,
+  ComponentType
+} from '../../../../shared/models/development.model';
 import { BadgeUtilsService } from '../../../../shared/services/badge-utils.service';
 
 @AngularComponent({
@@ -68,7 +76,7 @@ import { BadgeUtilsService } from '../../../../shared/services/badge-utils.servi
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() development!: Development;
+  @Input() development!: Development | DevelopmentWithRelations;
   private _isOpen = false;
   private readonly destroy$ = new Subject<void>();
   private resizeObserver: ResizeObserver | null = null;
@@ -231,18 +239,31 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     return this.badgeUtils.getStatusBadgeClass(status);
   }
 
-  formatDate(date: Date | undefined | null): string {
+  formatDate(date: Date | string | undefined | null): string {
     // Manejar casos donde la fecha es undefined o null
     if (!date) {
       return 'No especificada';
     }
     
-    const key = date.getTime().toString();
+    // Convertir string a Date si es necesario
+    let dateObj: Date;
+    if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else {
+      dateObj = date;
+    }
+    
+    // Verificar que la fecha sea válida
+    if (isNaN(dateObj.getTime())) {
+      return 'Fecha inválida';
+    }
+    
+    const key = dateObj.getTime().toString();
     if (this.cachedDates[key]) {
       return this.cachedDates[key];
     }
     
-    const formatted = date.toLocaleDateString('es-ES', {
+    const formatted = dateObj.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -253,21 +274,34 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     return formatted;
   }
 
-  calculateTimeElapsed(date: Date | undefined | null): string {
+  calculateTimeElapsed(date: Date | string | undefined | null): string {
     // Manejar casos donde la fecha es undefined o null
     if (!date) {
       return 'No disponible';
     }
     
-    const key = date.getTime().toString();
+    // Convertir string a Date si es necesario
+    let dateObj: Date;
+    if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else {
+      dateObj = date;
+    }
+    
+    // Verificar que la fecha sea válida
+    if (isNaN(dateObj.getTime())) {
+      return 'Fecha inválida';
+    }
+    
+    const key = dateObj.getTime().toString();
     const now = new Date();
     
     if (this.cachedTimeElapsed[key] && 
-        (now.getTime() - date.getTime()) < 60000) {
+        (now.getTime() - dateObj.getTime()) < 60000) {
       return this.cachedTimeElapsed[key];
     }
     
-    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffTime = Math.abs(now.getTime() - dateObj.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     this.cachedTimeElapsed[key] = `${diffDays} días`;
     return this.cachedTimeElapsed[key];
@@ -307,6 +341,10 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     // Verificar el tipo de dato y procesarlo adecuadamente
     if (typeof progressValue === 'number') {
       numericProgress = progressValue;
+    } else if (typeof progressValue === 'string') {
+      // Remover el símbolo % si existe y convertir a número
+      const cleanValue = (progressValue as string).replace('%', '').trim();
+      numericProgress = parseFloat(cleanValue);
     }
     
     // Validar que sea un número entre 0 y 100
@@ -327,6 +365,21 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
     return {
       width: `${numericProgress}%`
     };
+  }
+
+  // Método auxiliar para obtener el progreso como string para mostrar
+  getProgressDisplay(): string {
+    const progressValue = this.development.progress;
+    
+    if (typeof progressValue === 'number') {
+      return `${progressValue}%`;
+    } else if (typeof progressValue === 'string') {
+      // Si ya tiene %, devolverlo tal como está, si no, agregarlo
+      const progressStr = progressValue as string;
+      return progressStr.includes('%') ? progressStr : `${progressStr}%`;
+    }
+    
+    return '0%';
   }
 
   onClose(): void {
@@ -434,6 +487,82 @@ export class DevelopmentDetailsPanelComponent implements OnInit, OnDestroy, Afte
   }
 
   getEnvironmentName(): string {
-    return this.development?.environment || 'No especificado';
+    if (!this.development.environment) return 'Sin ambiente';
+    
+    if (typeof this.development.environment === 'string') {
+      return this.development.environment;
+    }
+    
+    if (typeof this.development.environment === 'object') {
+      const envObj = this.development.environment as any;
+      return envObj.name || envObj.type || 'Sin ambiente';
+    }
+    
+    return 'Sin ambiente';
+  }
+
+  // Métodos auxiliares para manejar DevelopmentWithRelations
+  isDevelopmentWithRelations(): boolean {
+    return 'databases' in this.development;
+  }
+
+  getComponents(): DevelopmentComponentRelation[] {
+    if (this.isDevelopmentWithRelations()) {
+      return (this.development as DevelopmentWithRelations).components || [];
+    }
+    return [];
+  }
+
+  getDatabases(): DevelopmentDatabaseRelation[] {
+    if (this.isDevelopmentWithRelations()) {
+      return (this.development as DevelopmentWithRelations).databases || [];
+    }
+    return [];
+  }
+
+  getComponentName(component: DevelopmentComponentRelation): string {
+    return component.component?.name || 'Sin nombre';
+  }
+
+  getComponentType(component: DevelopmentComponentRelation): ComponentType | undefined {
+    return component.component?.type;
+  }
+
+  getComponentTypeLabel(type: ComponentType | undefined): string {
+    if (!type) return 'Sin tipo';
+    
+    switch (type) {
+      case ComponentType.MICROSERVICE:
+        return 'Microservicio';
+      case ComponentType.MICROFRONTEND:
+        return 'Microfrontend';
+      case ComponentType.MONOLITH:
+        return 'Monolito';
+      default:
+        return 'Desconocido';
+    }
+  }
+
+  getComponentTypeClass(type: ComponentType | undefined): string {
+    if (!type) return 'component-unknown';
+    
+    switch (type) {
+      case ComponentType.MICROSERVICE:
+        return 'component-microservice';
+      case ComponentType.MICROFRONTEND:
+        return 'component-microfrontend';
+      case ComponentType.MONOLITH:
+        return 'component-monolith';
+      default:
+        return 'component-unknown';
+    }
+  }
+
+  getDatabaseName(database: DevelopmentDatabaseRelation): string {
+    return database.database?.name || 'Sin nombre';
+  }
+
+  getDatabaseType(database: DevelopmentDatabaseRelation): string {
+    return database.database?.type || 'Sin tipo';
   }
 } 

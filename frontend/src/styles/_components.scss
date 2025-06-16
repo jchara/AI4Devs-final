@@ -118,6 +118,24 @@
 .ambiente-local { @extend .environment-badge--local; }
 .ambiente-producción { @extend .environment-badge--production; }
 
+// Soporte para valores del enum en mayúsculas
+.ambiente-DEVELOPMENT { @extend .environment-badge--development; }
+.ambiente-TESTING { @extend .environment-badge--testing; }
+.ambiente-STAGING { @extend .environment-badge--staging; }
+.ambiente-PRODUCTION { @extend .environment-badge--production; }
+
+// Soporte para valores en español (desde backend)
+.ambiente-desarrollo { @extend .environment-badge--development; }
+.ambiente-pruebas { @extend .environment-badge--testing; }
+.ambiente-preproducción { @extend .environment-badge--staging; }
+.ambiente-producción { @extend .environment-badge--production; }
+
+// Soporte para valores traducidos en español (frontend)
+.ambiente-DESARROLLO { @extend .environment-badge--development; }
+.ambiente-PRUEBAS { @extend .environment-badge--testing; }
+.ambiente-PREPRODUCCIÓN { @extend .environment-badge--staging; }
+.ambiente-PRODUCCIÓN { @extend .environment-badge--production; }
+
 // -----------------------------------------------------------------------------
 // BUTTONS BASE
 // -----------------------------------------------------------------------------
